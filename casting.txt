@@ -1,0 +1,13 @@
+OnBegin        
+OnFail         
+OnPreCast      
+OnCastStart    
+OnCastUpdate   
+OnCastTick     
+OnCastEnd      
+OnEffect       
+OnChannelStart 
+OnChannelUpdate
+OnChannelTick  
+OnChannelEnd   
+OnEnd          

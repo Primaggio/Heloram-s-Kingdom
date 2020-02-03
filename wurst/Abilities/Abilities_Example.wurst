@@ -1,0 +1,66 @@
+package Abilities_Example
+
+/*
+
+import public ObjectIdGenerator
+import public AbilityObjEditing
+import public UnitAnimations
+import public Sounds
+import public Icons
+import public Abilities
+
+//Example
+@compiletime function gen_ability_id_()
+    new AbilityDefinitionPaladinHolyLight(gen_ability_id)
+    //If ability has presets for it
+        //Example:
+        ..setAmountHealedDamaged(level, value)
+    //Basic Info
+        ..setHotkeyLearn(value)
+        ..setHotkeyNormal(value)
+        ..setButtonPositionNormalX(value)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(value)
+        ..setButtonPositionResearchY(2)
+        ..setButtonPositionTurnOffX(value)
+        ..setButtonPositionTurnOffY(2)
+        ..setIconNormal(value)
+        ..setIconResearch(value)
+        ..setIconTurnOff(value)
+        ..setArtTarget(value)
+        //Set effect that shows at the target
+        ..setAnimationNames(value)
+        //Set animation during cast for the caster
+        ..setMissileArt(value)
+        //Set effect of throwing something
+        ..setMissileHomingEnabled(value)
+        //Set if it will throws or not something
+    //Texts
+        ..setName(value)
+        ..setTooltipLearn(value)
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended(value)
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(level, value)
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(level, value)
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(value)
+        ..setRequiredLevel(value)
+        ..setLevelSkipRequirement(value)
+        //Set how much levels need to upgrade the next level
+        ..setEffects(level, value)
+        //Set debuff
+        ..setBuffs(level, value)
+        ..setCastRange(level, value)
+        ..setManaCost(level, value)
+        ..setCastingTime(level, value)
+        ..setCooldown(level, value)
+        ..setEffectSound(value)
+        ..setDurationNormal(level, value)
+        ..setDurationHero(level, value)
+        ..setAreaofEffect(level, value)
+*/
+
+init

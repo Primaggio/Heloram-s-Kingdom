@@ -1,0 +1,28 @@
+package Start_Units
+
+import public ObjectIdGenerator
+import public UnitIds
+import public UnitObjEditing
+
+public int gen_unit_id_horse_master = compiletime(HERO_ID_GEN.next())
+public int gen_unit_id_start_villager_sleeping = compiletime(HERO_ID_GEN.next())
+public int gen_unit_id_start_villager = compiletime(HERO_ID_GEN.next())
+
+@compiletime function gen_unit_id_horse_master()    
+    new HeroDefinition(gen_unit_id_horse_master, UnitIds.uther)
+    ..setName("Horse Master")
+    ..setProperNames("Heloram Guard")
+    ..setModelFile("units\\creeps\\LordGarithos\\LordGarithos")
+    ..setTargetedAs("Ground, Invulnerable")
+    ..setCollisionSize(0)
+    ..setSelectionScale(1)
+
+@compiletime function gen_unit_id_start_villager()    
+    new HeroDefinition(gen_unit_id_start_villager, UnitIds.uther)
+    ..setName("Villager")
+    ..setProperNames("Aprendice")
+    ..setModelFile("units\\human\\Peasant\\Peasant")
+    ..setTargetedAs("Ground, Invulnerable")
+    ..setCollisionSize(0)
+    ..setSpeedBase(0)
+

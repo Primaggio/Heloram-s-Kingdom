@@ -1,0 +1,197 @@
+package Quests
+
+import public Units_neutral
+import public Sounds
+import public Orders
+import public Villager
+import public UnitAnimations
+import public Start_Units
+import public HashMap
+
+public sound pickup_quest = CreateSound(Sounds.questNew, false, false, false, 1, 1, null)
+public sound turnin_quest = CreateSound(Sounds.newTournament, false, false, false, 1, 1, null)
+
+public let quest_value_list = new HashMap<player, string>
+public let start_value_list = new HashMap<player,int>
+
+public int quest_kills
+int quest_value
+int player_check_quests = 0
+real vecx
+real vecy
+
+
+//Quest - Start
+public function start_game() 
+    if start_value_list.get(GetTriggerPlayer()) == 0
+        players[PLAYER_NEUTRAL_PASSIVE].setPlayerAlliance(players[0], ALLIANCE_SHARED_VISION, true)
+        unit start_unit_horseman = createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_id_horse_master, vec2(-5200, 350), angle(DEGTORAD * 2.89))
+        unit start_unit_villager = createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_id_villager, vec2(-5200, 300), angle(DEGTORAD * 270))
+        start_value_list.put(players[0], 1)
+        start_unit_horseman.issuePointOrderById(851986, vec2(-5200, 700))
+        doPeriodically(0.01) cb015 ->
+            if start_unit_horseman.isInRange(vec2(-5200, 700), 75) == false
+                start_unit_villager.setPos((start_unit_horseman.getX()), start_unit_horseman.getY() - 50)
+                players[0].setCameraPosition(start_unit_horseman.getPos())
+            else
+                doAfter(2) ->
+                    start_unit_villager.setAnimation(6)
+                    print("6")
+                doAfter(2) ->
+                    start_unit_villager.setAnimation(5)
+                    print("5")
+                    start_unit_horseman.abortOrder()
+                    start_unit_horseman.setFacing(angle (65.76 * DEGTORAD))
+                destroy cb015
+                doAfter(2) -> 
+                    print("|cffff0000Horse Master:|r King Heloram, i found another villager lost at the southwest woods!")
+                    n32.setFacing(angle(231.37 * DEGTORAD))
+                    doAfter(8) ->
+                        print(" ")
+                        print("|cffff0000King Heloram:|r Another one?! I don't know what is going on, but this events are getting too frequent...")
+                        doAfter(8) ->
+                            start_unit_horseman.setFacing(angle(270 * DEGTORAD))
+                            n32.issuePointOrderById(851986, vec2(-5340, 640))
+                            doAfter(2) -> 
+                                n32.abortOrder()
+                                print(" ")
+                                print("|cffff0000King Heloram:|r Hey, Villager! Wake up!")
+                                n32.setFacing(angle(DEGTORAD * 290))
+                                doAfter(4) ->
+                                    //start_unit_villager.setAnimation("stand,3")                                
+                                    print(" ")
+                                    print("|cffffff00Villager:|r O... Oh... Ham?")
+                                    doAfter(4) ->
+                                        print(" ")
+                                        print("|cffffff00Villager:|r Where am i?")
+                                        start_unit_villager.setFacing(angle(DEGTORAD * 115))
+                                        //start_unit_villager.setAnimation("stand,2")
+                                        doAfter(4) ->
+                                            print(" ")
+                                            print("|cffff0000King Heloram:|r You are at the Heloram Kingdom... I think you got lost... Do you remember what happened?")
+                                            doAfter(6) ->
+                                                print(" ")
+                                                print("|cffffff00Villager:|r I... I don't know, i guess... Maybe something at... The village...")
+                                                doAfter(8) ->
+                                                    print(" ")
+                                                    print("|cffff0000King Heloram:|r My General said that he found you lost at the southwest village... That sounds familiar?")
+                                                    doAfter(8) ->
+                                                        print(" ")
+                                                        print("|cffffff00Villager:|r Yes, i was... We got attacked by... An army i guess... There was some witchers... I don't know, they had the face covered and... They killed everyone! Oh my god...")
+                                                        doAfter(12) ->
+                                                            print(" ")
+                                                            print("|cffff0000King Heloram:|r Ok, do you think you can head over there and try to find something that can help us to investigate what happened?")
+                                                            doAfter(8) ->
+                                                                print(" ")
+                                                                print("|cffffff00Villager:|r Ham... I think so... I guess it's part of mine responsibility now to try help figure this out... I just... Can't belive that this happened...")
+                                                                doAfter(8) ->
+                                                                    PlaySound("Sound\\Interface\\QuestNew.flac")
+                                                                    quest_value_list.put(players[0], "|cffffff00Quest Added:|r Go investigate the southwest village.")
+                                                                    start_unit_villager.hide()
+                                                                    start_unit_horseman.remove()
+                                                                    players_unit_list.put(players[0], createUnit(players[0], gen_unit_id_villager, start_unit_villager.getPos(), start_unit_villager.getFacingAngle()))                                                
+                                                                    start_unit_villager.remove()
+                                                                    print(" ")
+                                                                    players[0].print(quest_value_list.get(players[0]), 3600)
+                                                                    n32.issuePointOrderById(851986, vec2(- 5087.4, 886.2))
+                                                                    doAfter(3) ->
+                                                                        n32.abortOrder()
+                                                                        n32.setFacing(angle(181.278*DEGTORAD))
+
+/*
+//Quest1 - Arthas
+public function start_quest1()
+    //If unit is the wanted one 
+    if GetOrderTargetUnit() == q1
+        //If players unit is at the range of the wanted one  
+        if IsUnitInRange(GetTriggerUnit(), GetOrderTargetUnit(), 150)  
+            //Gets player Id
+            while GetTriggerUnit().getOwner() != players[player_check_quests]
+                player_check_quests += 1
+            //Set the quest for the specific player
+            if quest_value_list.get(GetTriggerUnit().getOwner()) != 0 or quest_value_list.get(player_check_quests) == 0
+                quest_value = 1
+                quest_value_list.set(player_check_quests, quest_value)            
+                PlaySoundBJ(pickup_quest)
+                player_check_quests = 0
+                GetTriggerUnit().getOwner().print("|cffff0000Paladin Master:|r Greetings, stranger... I've heard that you want")
+                GetTriggerUnit().getOwner().print("to became a |cffffff00Master|r |cffffff00of|r  |cffffff00Paladins|r, right? So, i need you to kill")
+                GetTriggerUnit().getOwner().print("a especific creature inside the village then bring me it blood...")
+            else if quest_value_list.get(player_check_quests) == 1
+                if n5.isAlive() == false
+                    GetTriggerUnit().getOwner().print("Well done, stranger. I'll give you my bless...")
+                    let p02 = createUnit(players[0], 'Hart', p01.getPos(), p01.getFacingAngle())
+                    //p02.setAnimation('standVictory'.
+                    p01.remove()
+                    PlaySoundBJ(turnin_quest)
+                    quest_value = 0
+
+
+//Quest 2 - Sunset Village Swordsman
+let creep_count = new LinkedList<unit>
+int creep_killed = 0
+
+public function start_quest_swordsman()
+    vecx = -200
+    vecy = -3500
+    quest_kills = 0
+    //If unit is the wanted one 
+    if GetOrderTargetUnit() == q2
+        //If players unit is at the range of the wanted one  
+        if IsUnitInRange(GetTriggerUnit(), GetOrderTargetUnit(), 150) 
+            //Gets player Id
+            while GetTriggerUnit().getOwner() != players[player_check_quests]
+                player_check_quests += 1
+            //Set the quest for the specific player
+            if quest_value_list.get(player_check_quests) == -1 or quest_value_list.get(player_check_quests) == 0
+                quest_value = 1
+                quest_value_list.set(player_check_quests, quest_value)            
+                PlaySoundBJ(pickup_quest)
+                //Start the quest
+                GetTriggerUnit().getOwner().print("|cffff0000Guard:|r Soldier, i've got the information that some bandits are coming at this moment to attack the village, so i need you to come with me to kill them before they kill the villagers!")
+                for creep_number = 201 to 210
+                    creep_count.set(creep_number, createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], 'nban', vec2(vecx, vecy), angle(0)))
+                    creep_count.get(creep_number).setName(creep_number.toString())
+                    creep_count.get(creep_number).issuePointOrderById(851983, vec2(0,0))
+                    if vecx == 0
+                        vecx = -300
+                        vecy -= 100
+                    vecx += 100
+                q2.setOwner(players[2], false)
+                doPeriodically(1) cb_q21 ->
+                    q2.issuePointOrderById(851983, vec2(-100, -2000.0))    
+                    if quest_kills == 0
+                        destroy cb_q21
+
+
+public function start_quest_swordsman_count()
+    for creep_killed = 200 to 210
+        if creep_count.get(creep_killed).getName() == GetTriggerUnit().getName()
+            quest_kills += 1
+            creep_count.removeAt(creep_killed)
+            print(creep_count.get(creep_killed).getName())
+    if quest_kills == 10
+        GetKillingUnitBJ().getOwner().print("|cffff0000Guard:|r Well done, Soldier! It was an honor to fight beside you. Here's a reward for you help... Beware outside the village to not get trapped by these bandits.")
+        PlaySoundBJ(turnin_quest)
+        quest_kills = 0
+        quest_value = 0
+        //item teste = createItem('rat9', q2.getPos())
+        GetKillingUnitBJ().addItemById('rat9')
+        q2.setHP(q2.getMaxHP())
+        q2.setOwner(players[PLAYER_NEUTRAL_PASSIVE], false)
+        doPeriodically(1) cb_q22 ->
+            q2.issuePointOrderById(851986, vec2(273.2, - 957.3))
+            if q2.isInRange(vec2(273.2, - 957.3), 15) == true
+                q2.abortOrder()
+                q2.setPos(vec2(273.2, - 957.3))
+                q2.setFacing(angle (DEGTORAD * 263.700))                    
+                destroy cb_q22
+*/
+
+init
+
+    
+
+
+
+

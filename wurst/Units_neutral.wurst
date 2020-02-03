@@ -1,0 +1,98 @@
+package Units_neutral
+
+//Basic imports
+import public Vectors
+import public ClosureTimers
+import public Group
+import public HashMap
+
+import Unit_Paladin_Tank
+
+public let players_unit_list = new HashMap<player, unit>
+
+
+
+            //Players Heros
+public unit p01 = createUnit(players[0], gen_unit_id_paladin_tank, vec2(0,0), angle(270))
+
+            //Quests NPCS
+//Quest1 Arthas
+public let q1=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Hart', vec2(769.8, 617.1), angle(DEGTORAD * 226.360))
+
+//Quest2 Swordsman
+public let q2=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hcth', vec2(273.2, - 957.3), angle(DEGTORAD * 205.000))
+
+//QuestStart - Villager investigate
+public let q3=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvil', vec2(- 3029.4, - 2908.7), angle(2.053 * DEGTORAD))
+
+//public class LinkedList<Neutrals>
+            //Neutral Creatures
+public let n1=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvlw', vec2(- 365.6, 137.6), angle(DEGTORAD * 292.870))
+public let n2=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvk2', vec2(- 529.9, 27.0), angle(DEGTORAD * 331.360))
+public let n3=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvlk', vec2(- 450.5, 296.0), angle(DEGTORAD * 284.330))
+public let n4=createUnit(players[PLAYER_NEUTRAL_PASSIVE], '9901', vec2(- 635.7, - 186.1), angle(DEGTORAD * 15.600))
+//Chicken
+public let n5=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nech', vec2(278.8, 226.1), angle(DEGTORAD * 355.240))
+public let n6=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nech', vec2(- 613.9, 665.4), angle(DEGTORAD * 12.660))
+public let n7=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nech', vec2(- 916.2, - 1233.4), angle(DEGTORAD * 18.260))
+public let n8=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nfro', vec2(- 838.1, - 809.0), angle(DEGTORAD * 197.500))
+public let n9=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'necr', vec2(- 324.0, 174.8), angle(DEGTORAD * 278.750))
+public let n10=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nrac', vec2(- 894.6, - 78.0), angle(DEGTORAD * 237.180))
+public let n11=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvil', vec2(483.8, - 46.6), angle(DEGTORAD * 288.970))
+public let n12=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvl2', vec2(358.8, - 793.9), angle(DEGTORAD * 347.000))
+public let n13=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvl2', vec2(- 497.3, - 862.6), angle(DEGTORAD * 15.010))
+public let n14=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvil', vec2(- 229.5, - 554.8), angle(DEGTORAD * 251.440))
+public let n15=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'ngog', vec2(431.5, - 797.2), angle(DEGTORAD * 194.160))
+public let n16=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hrdh', vec2(- 566.2, 290.4), angle(DEGTORAD * 250.250))
+public let n17=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hhdl', vec2(379.6, - 1077.0), angle(DEGTORAD * 44.590))
+public let n18=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvil', vec2(1141.6, - 566.9), angle (DEGTORAD * 23.550))
+public let n19=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvil', vec2(686.4, 540.0), angle(DEGTORAD * 35.190))
+public let n20=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nemi', vec2(607.0, 654.3), angle(DEGTORAD * 291.440))
+public let n21=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nemi', vec2(769.7, 457.8), angle(DEGTORAD * 119.860))
+public let n22=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvil', vec2(1680.0, - 617.4), angle(DEGTORAD * 123.636))
+public let n23=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvlw', vec2(1648.2, - 92.7), angle(DEGTORAD * - 78.031))
+public let n24=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvl2', vec2(1436.6, 53.1), angle(DEGTORAD * - 81.427))
+public let n25=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvlk', vec2(1925.8, - 217.3), angle(DEGTORAD * 225.288))
+public let n26=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvlk', vec2(1944.2, - 592.8), angle(DEGTORAD * 86.172))
+public let n27=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvlk', vec2(1710.7, - 772.2), angle(DEGTORAD * 155.591))
+public let n28=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nvk2', vec2(1158.7, - 805.9), angle(DEGTORAD * 32.229))
+            //Guards
+public let n29=createUnit(players[8], 'hcth', vec2(13.2, - 1819.3), angle(DEGTORAD * - 66.787))
+public let n30=createUnit(players[8], 'hcth', vec2(179.6, - 2003.1), angle(DEGTORAD * 121.669))
+public let n31=createUnit(players[8], 'hcth', vec2(-750,-200), angle(DEGTORAD * 301.07))
+            //King
+public let n32=createUnit(players[8], 'Hmbr', vec2(- 5087.4, 886.2), angle(181.278*DEGTORAD))
+
+//public let =createUnit(players[PLAYER_NEUTRAL_PASSIVE], , vec2(), angle(DEGTORAD * ))
+
+init
+    p01.setXp(90000, true)
+    n1.setInvulnerable(true)
+    n2.setInvulnerable(true)
+    n3.setInvulnerable(true)
+    n4.setInvulnerable(true)
+    n6.setInvulnerable(true)
+    n7.setInvulnerable(true)
+    n8.setInvulnerable(true)
+    n9.setInvulnerable(true)
+    n10.setInvulnerable(true)
+    n11.setInvulnerable(true)
+    n12.setInvulnerable(true)
+    n13.setInvulnerable(true)
+    n14.setInvulnerable(true)
+    n15.setInvulnerable(true)
+    n16.setInvulnerable(true)
+    n17.setInvulnerable(true)
+    n19.setInvulnerable(true)
+    n20.setInvulnerable(true)
+    n21.setInvulnerable(true)
+    n22.setInvulnerable(true)
+    n23.setInvulnerable(true)
+    n24.setInvulnerable(true)
+    n25.setInvulnerable(true)
+    n26.setInvulnerable(true)
+    n27.setInvulnerable(true)
+    n28.setInvulnerable(true)
+    n29.setInvulnerable(true)
+    n30.setInvulnerable(true)
+    q3.setInvulnerable(true)

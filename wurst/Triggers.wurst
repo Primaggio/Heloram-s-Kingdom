@@ -1,0 +1,100 @@
+package Triggers
+
+import public Units_neutral
+import public Quests
+
+int player_check_triggers = 0
+real vecx = -110
+
+//Begin
+let units_aprendices = new LinkedList<unit>
+
+function clear()
+    ClearTextMessages()
+
+function say_dead()
+    print("Come on! I'm a chicken!")
+
+init
+    print("Type |cffff0000-start|r if you want a fresh start")
+    localPlayer.setName("players[0]")
+    print(localPlayer.getName())
+    print(players[0].getName())
+    doAfter(10) -> 
+        p01.kill()    
+
+//Begin    
+    /*CreateTrigger()
+    ..registerPlayerChatEvent(localPlayer, "-start", true)
+    ..addAction(function start_game)
+    */
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[0], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[1], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[2], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[3], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[4], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[5], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[6], "-start", true)
+    ..addAction(function start_game)
+
+    CreateTrigger()
+    ..registerPlayerChatEvent(players[7], "-start", true)
+    ..addAction(function start_game)
+
+    /*CreateTrigger()
+    ..registerPlayerChatEvent(players[player_check_triggers], "-start", true)
+
+        if GetTriggerPlayer() == players[player_check_triggers]
+            start_fresh.addAction(function start_game)*/
+
+
+/*
+
+
+//Quest1 start
+    /*let quest1 = CreateTrigger()
+    ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
+    ..addAction(function start_quest1)
+
+    CreateTrigger()
+    ..registerUnitEvent(p01, EVENT_UNIT_ISSUED_TARGET_ORDER)
+    ..addAction(function start_quest1)
+    
+//Quest1 mission_target
+    CreateTrigger()
+    ..registerUnitEvent(n5, EVENT_UNIT_DEATH)
+    ..addAction(function say_dead)
+    //Quest1 end
+
+//Quest2 start
+    CreateTrigger()
+    ..registerUnitEvent(p01, EVENT_UNIT_ISSUED_TARGET_ORDER)
+    ..addAction(function start_quest_swordsman)
+
+    CreateTrigger()
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DEATH, null)
+    ..addAction(function start_quest_swordsman_count)
+*/
+
+//Quest2 end
+
