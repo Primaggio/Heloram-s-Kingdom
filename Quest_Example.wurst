@@ -1,0 +1,64 @@
+package Quest_Example
+
+/*
+
+public function example_quest()
+    if GetOrderTargetUnit() == QUESTUNIT
+        if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 75)
+            if quest_NUMBER.has(players[0]) == false
+                //Actual quest
+                if quest_value_list.get(players[0]) == CONDITION
+
+                    //Next quest
+                    quest_value_list.put(players[0], NEXT QUEST OR NOTHING)
+
+                    //Get units values
+                    triggered_player = GetTriggerUnit().getOwner()
+                    triggered_unit = GetTriggerUnit()
+                    targeted_unit = GetOrderTargetUnit()
+                    
+                    triggered_unit.setOwner(players[8], false)
+
+                    //Texts
+                    quest_text_list.put(1, "|cffff0000Horse Master:|r King Heloram, i found another villager lost at the southwest woods!")
+                    quest_text_list.put(2, "|cffff0000King Heloram:|r Another one?! I don't know what is going on, but this events are getting too frequent...")
+
+                    doPeriodically(1) cb1 ->
+                        quest_text_display_time += 1
+                        if quest_text_value == 0 or quest_text_display_time > (quest_text_list.get(quest_text_value).length().toReal())/12
+                            quest_text_value += 1
+                            players[0].print(" ")
+                            players[0].print(quest_text_list.get(quest_text_value))                        
+                            quest_text_display_time = 0
+
+                            //Conditions to do actions
+                            if quest_text_value == 1
+                                DoSomeAction
+
+                        //Do at the final
+                        if quest_text_value == FINAL VALUE
+                            quest_text_value = 0
+                            quest_text_list.flush()
+                            destroy cb1
+                                
+                            //Print and sound objective
+                            doAfter(5) ->
+
+                                triggered_unit.setOwner(triggered_player, false)
+                                targeted_unit.setFacing(start_angle)
+
+                                PlaySound("Sound\\Interface\\QuestNew.flac")
+                                quest_value_list.put(players[0], "|cffffff00Quest Added:|r Go investigate the southwest village.")
+                                players[0].print(" ")
+                                players[0].print(quest_value_list.get(players[0]), 10)
+
+                                //Update quest info
+                                quest_actual.setTitle("Southwest Village mistery")
+                                quest_actual.setDescription("Go investigate the Southwest Village to try find informations that can help King Heloram to solve the case.")
+                                quest_actual.setIcon("ReplaceableTextures\\CommandButtons\\BTNVillagerMan.blp")
+                                quest_actual.isEnabled()   
+                            
+*/
+                
+
+                

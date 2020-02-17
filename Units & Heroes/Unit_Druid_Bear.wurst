@@ -1,0 +1,82 @@
+package Unit_Druid_Bear
+
+import public ObjectIdGenerator
+import public UnitIds
+import public AbilityIds
+import public UnitObjEditing
+import public ObjectIds
+import public AllAbilities
+
+public int gen_unit_id_druid_bear = compiletime(HERO_ID_GEN.next())
+
+@compiletime function gen_unit_druid_bear()    
+    new HeroDefinition(gen_unit_id_druid_bear, UnitIds.misha1)
+    //Basic Information
+//--------------------------------------------------------
+        ..setName("Druid Bear Form")
+        ..setProperNames("Novice")
+        ..hideHeroDeathMsg(true)
+        ..setFoodProduced(1)
+        ..setLevel(2)
+        //XP needed to level up = Value of the previous level + level * 100
+        ..setAttacksEnabled(3)
+        ..setCanDropItemsOnDeath(false)
+        ..setCollisionSize(32)
+//--------------------------------------------------------
+    //Basic Stats
+//--------------------------------------------------------
+        //Mana            
+        ..setManaRegeneration(1)
+            //Final mana regeneration per second = Base + (0.05 * INT) + (Ability Bonuses) + (Item Bonuses * (0.01 + (0.05 + INT))) 
+        ..setManaMaximum(0)            
+        ..setManaInitialAmount(100)
+            //Final Mana Capacity = Base + 15 * Int
+//--------------------------------------------------------
+        //Life            
+        ..setHitPointsRegenerationRate(1)
+            //Final HP regeneration per second = ((Base)* + (0.05 * STR) + (Item Bonuses)) * Ability Bonuses 
+            //* Insert 0.25 for non-undead Neutral, Human, and Orc heroes. Insert 0.5 for Night Elf heroes and 2.0 for Undead heroes.                       
+        ..setHitPointsMaximumBase(100)
+            //Final HP = 100 + (25 * STR) + (Item Bonuses) 
+//--------------------------------------------------------
+        //Armor    
+        ..setDefenseBase(2)
+            //Total Armor = (Base Armor) + (0.3 * AGI) + (0.3 * AGI Bonuses) + (Item Bonuses) + (Ability Bonuses)
+            //Dmg Reduction = ((armor)*0.06)/(1+0.06*(armor))
+        ..setArmorType(ArmorType.Hero)
+//--------------------------------------------------------
+        //Stats            
+        ..setStartingStrength(8)
+            //Hit Points: 1 point of Strength = 25 increase in hit points 
+            //Hit Point Regeneration: 1 point of Strength = .05 hit points regenerated per a second    
+        ..setStartingAgility(2)
+            //1 point of Agility = 0.3 increase in armor             
+            //Attack Rate: 1 point of Agility = 2% increase in Attack Rate
+        ..setStartingIntelligence(1)
+            //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
+            //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
+        ..setAttack1CooldownTime(2.4)
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
+        ..setSpeedBase(255)
+        ..setAnimationRunSpeed(255)
+        ..setAnimationWalkSpeed(255)
+        ..setAttack1AttackType(AttackType.Hero)
+        ..setAttack2AttackType(AttackType.Hero)
+//--------------------------------------------------------
+        //Damage
+            //Minimal damage = Base Damage + Number of Dices
+            //Maximum damage = Base Damage + Number of Dices * Sides per Dice
+        ..setAttack1DamageBase(8)
+        ..setAttack1DamageNumberofDice(8)
+        ..setAttack1DamageSidesperDie(2)
+//--------------------------------------------------------    
+    //Stats per Level
+//--------------------------------------------------------
+        ..setStrengthPerLevel(9)
+        ..setAgilityPerLevel(3)
+        ..setIntelligencePerLevel(1)    
+        ..setPrimaryAttribute("STR")
+//--------------------------------------------------------
+    //Spells & Abilities
+        ..setHeroAbilities(commaList(gen_ability_druid_bear_d, gen_ability_druid_bear_hk))
+        ..setNormalAbilities(commaList('AInv'))

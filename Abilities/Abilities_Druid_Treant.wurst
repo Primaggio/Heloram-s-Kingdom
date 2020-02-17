@@ -1,0 +1,151 @@
+package Abilities_Druid_Treant
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public Druid_Players_Hashmaps
+
+public let gen_buff_id_nl = compiletime(createDummyBuffObject("|cff00ff00Nature Spirit:|r", "This unit is beeing healed over second by Nature Spirit.", Icons.bTNRejuvenation))
+public int gen_ability_druid_treant_d = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_druid_treant_nl = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_druid_treant_nature_leaf()
+    new ChannelAbilityPreset(gen_ability_druid_treant_nl, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNRejuvenation)
+        ..setIconResearch(Icons.bTNRejuvenation)
+        //Set effect that shows at the target
+        ..setAnimationNames("attack,two")
+        ..presetTargetTypes(Targettype.UNIT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Nature Leaf")
+        ..setTooltipLearn("Nature Leaf")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Fills your ally with nature energy, healing him by the time. Healing Leaf buffs the target with Nature Spirit, healing instantly it an amount of Health Points.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Nature Leaf - Lvl 1 |  |cffa7fcffCooldown:|r 5 seconds")
+        ..setTooltipNormal(2, "Nature Leaf - Lvl 2 |  |cffa7fcffCooldown:|r 3 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00Health Points per Second:|r +15 HP / s for 3 seconds +15 Instantly with Nature Spirit.")
+        ..setTooltipNormalExtended(2, "|cff00ff00Health Points per Second:|r +35 HP / s for 5 seconds +50 Instantly with Nature Spirit.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 35)
+        ..setManaCost(2, 85)
+        ..setCooldown(1, 5)
+        ..setCooldown(2, 3)
+        ..setTargetsAllowed(1, "friend,self")
+        ..setTargetsAllowed(2, "friend,self")
+
+
+@compiletime function gen_ability_druid_treant_d()
+    new ChannelAbilityPreset(gen_ability_druid_treant_d, 1, true)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSleep)
+        ..setIconResearch(Icons.bTNSleep)
+        //Set effect that shows at the target
+        ..setAnimationNames("death")
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Human Form")
+        ..setTooltipLearn("Human Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Transforms you back to human form.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Human Form")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Transforms you back to human form.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 0)
+        ..setCooldown(1, 0)
+        ..setBuffs(1, "")
+
+init
+    //Human Form
+    EventListener.onCast(gen_ability_druid_treant_d) (unit caster) ->
+        new SoundDefinition("buildings\\NightElf\\AncientOfWonder\\AncientofWonderYes2.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
+        players_unit_list_druid_treant.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_treant.get(caster.getOwner()).getXp(), false)
+        players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_treant.get(caster.getOwner()).getHP())/(players_unit_list_druid_treant.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
+        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD)
+        players_unit_list_druid_human.get(caster.getOwner()).show()
+        SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
+        doAfter(3) ->
+            target_effect.destr()
+            
+    //Nature Leaf
+    EventListener.onTargetCast(gen_ability_druid_treant_nl) (unit caster, unit target) ->    
+        int cb_counter = 0
+        effect caster_effect = addEffect("Abilities\\Spells\\Orc\\Disenchant\\DisenchantSpecialArt.mdl", target, "chest")..setScale(1.5)
+        effect target_effect_1 = addEffect("Abilities\\Spells\\Orc\\Disenchant\\DisenchantSpecialArt.mdl", caster, "chest")..setScale(1.5)
+        doAfter(1) ->
+            caster_effect.destr()
+            target_effect_1.destr()
+        new SoundDefinition("Abilities\\Spells\\NightElf\\HippogryphTaming\\TamingTarget1.flac", false).playOnPoint(caster.getPos3Fly())   
+        new SoundDefinition("Abilities\\Spells\\NightElf\\Tranquility\\TranquilityTarget1.flac", false).playOnPoint(target.getPos3Fly())   
+
+        if GetUnitAbilityLevel(caster, gen_ability_druid_treant_nl) == 1
+            if target.hasAbility(gen_buff_id_nl.abilId) == true
+                target.setHP(target.getHP() + 15)
+            else if target.hasAbility(gen_buff_id_nl.abilId) == false
+                target.addAbility(gen_buff_id_nl.abilId)
+            doPeriodically(1) (cb1) ->   
+                effect target_effect = addEffect("Abilities\\Spells\\Orc\\EtherealForm\\SpiritWalkerChange.mdl", target, "origin")..setScale(1)
+                target.setHP(target.getHP() + 15)
+                cb_counter += 1
+                if cb_counter == 3
+                    destroy cb1
+                    target_effect.destr()
+                    target.removeAbility(gen_buff_id_nl.abilId)
+
+        if GetUnitAbilityLevel(caster, gen_ability_druid_treant_nl) == 2
+            if target.hasAbility(gen_buff_id_nl.abilId) == true
+                target.setHP(target.getHP() + 50)
+            else if target.hasAbility(gen_buff_id_nl.abilId) == false
+                target.addAbility(gen_buff_id_nl.abilId)
+            doPeriodically(1) (cb1) ->
+                effect target_effect = addEffect("Abilities\\Spells\\Orc\\EtherealForm\\SpiritWalkerChange.mdl", target, "origin")..setScale(1)
+                target.setHP(target.getHP() + 35)
+                cb_counter += 1
+                if cb_counter == 5
+                    destroy cb1
+                    target_effect.destr()
+                    target.removeAbility(gen_buff_id_nl.abilId)
+                    
+
+        
+        
+    
+        

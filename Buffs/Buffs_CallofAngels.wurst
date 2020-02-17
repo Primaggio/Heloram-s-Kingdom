@@ -1,0 +1,11 @@
+package Buffs_CallofAngels
+
+import public BuffObjEditing
+import public ObjectIdGenerator
+
+public int gen_buff_id_coa = compiletime(BUFF_ID_GEN.next())
+    
+@compiletime public function gen_buff_id_coa()
+    new BuffDefinition(gen_buff_id_coa, 'BHds')
+    ..setTooltipNormal(1, "Call of Angels")
+    ..setTooltipNormalExtended(1, "This unit is invulnerable.")

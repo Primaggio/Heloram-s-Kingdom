@@ -1,0 +1,181 @@
+package Abilities_Paladin_Tank
+
+import public ObjectIdGenerator
+import public ObjEditingCommons
+import public AbilityObjEditing
+import public UnitAnimations
+import public Sounds
+import public Icons
+import public Abilities
+import public Buffs_HPRegenBonus
+import public ObjectIds
+
+public int gen_ability_id_pal_tank_sof = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_id_pal_tank_lb = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_id_pal_tank_ba = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_id_pal_tank_dp = compiletime(ABIL_ID_GEN.next())
+
+
+
+@compiletime function gen_ability_id_pal_tank_sof()
+    new AbilityDefinitionMountainKingThunderClap(gen_ability_id_pal_tank_sof)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setTooltipLearn("Shield of Faith")
+        ..setArtCaster("Abilities\\Spells\\Undead\\ReplenishHealth\\ReplenishHealthCaster.mdl")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Bash with your shield, doing damage and stunning the enemies around you.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setManaCost(1, 35)
+        ..setManaCost(2, 85)
+        ..setCooldown(1, 5)
+        ..setCooldown(2, 4)
+        ..setTooltipNormal(1, "Shield of Faith - Lvl 1 |  |cffa7fcffCooldown:|r 5 seconds")
+        ..setTooltipNormal(2, "Shield of Faith - Lvl 2 |  |cffa7fcffCooldown:|r 4 seconds")
+        //Shows it when passing the mouse through it
+        ..setAOEDamage(1, 25.0)
+        ..setAOEDamage(2, 75.0)
+        ..setDurationHero(1, 2)
+        ..setDurationNormal(2, 3)
+        ..setAreaofEffect(1, 250)
+        ..setAreaofEffect(2, 300)
+        ..setTooltipNormalExtended(1, "|cffffff00Damage:|r 25 | |cffffff00Stun duration:|r 2 seconds" )
+        ..setTooltipNormalExtended(2, "|cffffff00Damage:|r 75 | |cffffff00Stun duration:|r 3 seconds" )
+        //Shows it when passing the mouse through it (description)
+        ..setMissileHomingEnabled(false)
+//--------------------------------------------------------------------
+        ..setName("paladin_tank_shield_of_faith")
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setButtonPositionTurnOffX(0)
+        ..setButtonPositionTurnOffY(2)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNDivineIntervention.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNDivineIntervention.blp")
+        ..setIconTurnOff("ReplaceableTextures\\CommandButtons\\BTNDivineIntervention.blp")
+        //..setArtTarget(ArtTargpal_tank_sof)
+        ..setAnimationNames("stand,ready")
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+
+@compiletime function gen_ability_id_pal_tank_lb()
+    new AbilityDefinitionUnholyAuracreep(gen_ability_id_pal_tank_lb)
+        ..setLifeRegenerationIncrease(1, 3)
+        ..setLifeRegenerationIncrease(2, 6)
+        ..setMovementSpeedIncrease(1, 0)
+        ..setMovementSpeedIncrease(2, 0)
+        ..setItemAbility(false)
+        ..setHeroAbility(true)
+        ..setTooltipLearn("Life Bright")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("You will be blessed with the Life Bright, increasing your Life Regeneration rate.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setManaCost(1, 0)
+        ..setManaCost(2, 0)
+        ..setCooldown(1, 0)
+        ..setCooldown(2, 0)
+        ..setTooltipNormal(1, "Life Bright - Lvl 1")
+        ..setTooltipNormal(2, "Life Bright - Lvl 2")
+        ..setBuffs(1, commaList(gen_buff_id_hpregenbonus))
+        ..setBuffs(2, commaList(gen_buff_id_hpregenbonus))
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00HP Regen bonus:|r +3 Life Points / s")
+        ..setTooltipNormalExtended(2, "|cff00ff00HP Regen bonus:|r +6 Life Points / s") 
+        //Shows it when passing the mouse through it (description)
+        ..setMissileHomingEnabled(false)
+//--------------------------------------------------------------------
+        ..setName("paladin_tank_life_bright")
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setButtonPositionTurnOffX(1)
+        ..setButtonPositionTurnOffY(2)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNUnholyAura.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNUnholyAura.blp")
+        ..setIconTurnOff("ReplaceableTextures\\CommandButtons\\BTNUnholyAura.blp")
+        ..setArtTarget(Abilities.unholyAura)
+        ..setTargetAttachmentPoint1("origin")
+        ..setLevels(2)
+        ..setRequiredLevel(5)
+        ..setLevelSkipRequirement(4)
+
+@compiletime function gen_ability_id_pal_tank_ba()
+    new AbilityDefinitionPaladinDevotionAura(gen_ability_id_pal_tank_ba)
+    //If ability has presets for it
+        //Example:
+        ..setArmorBonus(1, 3)
+        ..setArmorBonus(2, 5)
+    //Basic Info
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setButtonPositionTurnOffX(2)
+        ..setButtonPositionTurnOffY(2)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNDefend.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNDefend.blp")
+        ..setIconTurnOff("ReplaceableTextures\\CommandButtons\\BTNDefend.blp")
+    //Texts
+        ..setName("paladin_tank_blessed_armor")
+        ..setTooltipLearn("Blessed Armor")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Bless your armor and your shield with a layer of light power, giving you +Armor.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Blessed Armor - Lvl 1")
+        ..setTooltipNormal(2, "Blessed Armor - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff0084ffArmor bonus:|r +3")
+        ..setTooltipNormalExtended(2, "|cff0084ffArmor bonus:|r +5" )
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(3)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+
+@compiletime function gen_ability_id_pal_tank_dp()
+    new AbilityDefinitionTaurenChieftainReincarnation(gen_ability_id_pal_tank_dp)
+    //If ability has presets for it
+        //Example:
+        ..setReincarnationDelay(1, 3)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setButtonPositionTurnOffX(3)
+        ..setButtonPositionTurnOffY(2)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNResurrection.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNResurrection.blp")
+        ..setIconTurnOff("ReplaceableTextures\\CommandButtons\\BTNResurrection.blp")
+        ..setArtTarget(Abilities.resurrecttarget)
+        //Set effect that shows at the target
+    //Texts
+        ..setName("paladin_tank_divine_protection")
+        ..setTooltipLearn("Divine Protection")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("You will be protected by the Sons of Light in case you die in battle, ressurecting.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Divine Protection - Lvl 1")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffa7fcffCooldown:|r 120 seconds (4 minutes)")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(1)
+        ..setRequiredLevel(10)
+        ..setLevelSkipRequirement(0)
+        //Set how much levels need to upgrade the next level
+        ..setCooldown(1, 120)
+        ..setEffectSound(Sounds.altarOfKingsWhat1)
+

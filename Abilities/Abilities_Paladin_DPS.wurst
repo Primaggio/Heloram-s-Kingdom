@@ -1,0 +1,119 @@
+package Abilities_Paladin_DPS
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+
+public int gen_ability_pal_dps_ds = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_pal_dps_divine_storm()
+    new ChannelAbilityPreset(gen_ability_pal_dps_ds, 1, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Divine Storm")
+        ..setTooltipLearn("Divine Storm")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Involves your weapon in lightning, dealing damage to enemies around you.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Divine Storm - Lvl 1 |  |cffa7fcffCooldown:|r 10 seconds")
+        ..setTooltipNormal(2, "Divine Storm - Lvl 2 |  |cffa7fcffCooldown:|r 8 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 80 Health Points")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 200 Health Points")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNHeal)
+        ..setIconResearch(Icons.bTNHeal)
+        //Set effect that shows at the target
+        ..setAnimationNames("attack,spell")
+        //Set animation during cast for the caster
+        
+        ..setAreaofEffect(1, 200)
+        ..setAreaofEffect(2, 200)
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 50)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+        ..setTargetsAllowed(2, "self,hero,nonhero,friend,neutral")
+        ..setBuffs(1, commaList(gen_buff_id_coa))
+
+        /* For target casts
+        ..setCastRange(1, 350)
+        ..setCastRange(2, 450)
+        ..setDurationHero(1, 6)
+        ..setDurationHero(2, 8)
+        ..setDurationNormal(1, 6)
+        ..setDurationNormal(2, 8)
+        */
+
+init   
+    EventListener.onCast(gen_ability_pal_dps_ds) (unit caster) ->        
+        //Damage
+        forUnitsInRange(caster.getPos(), 200) (unit units) ->
+            if units.getOwner().isAllyOf(caster.getOwner()) == false
+                effect target_effect = addEffect("Abilities\\Weapons\\Bolt\\BoltImpact.mdl", units, "chest")
+                if GetUnitAbilityLevel(caster, gen_ability_pal_dps_ds) == 1
+                    units.setHP(units.getHP() - 80)
+                if GetUnitAbilityLevel(caster, gen_ability_pal_dps_ds) == 2
+                    units.setHP(units.getHP() - 200)
+                doAfter(2) ->
+                target_effect.destr()
+        //Effects
+        //effect target_effect_bright_origin1 = addEffect("Abilities\\Spells\\Other\\Awaken\\Awaken.mdl", caster, "origin")..setScale(2)
+        effect target_effect_bright_origin2 = addEffect("Abilities\\Spells\\Human\\Heal\\HealTarget.mdl", caster, "origin")..setScale(1.4)
+        effect target_effect_bright_overhead = addEffect("Abilities\\Spells\\Human\\InnerFire\\InnerFireTarget.mdl", caster, "overhead")..setScale(1)
+        int effect_timer = 0
+        real distance = 120
+        real x1 = caster.getX()
+        real y1 = caster.getY()
+        real x2 = caster.getX()
+        real y2 = caster.getY()
+        real z = caster.getLocalZ()
+        real angle1facing = 270
+        real angle1calc = 0
+        effect target_effect_hammer1 = addEffect("Abilities\\Weapons\\GryphonRiderMissile\\GryphonRiderMissile.mdl", vec3(x1,y1,z))..setScale(1.5)..setYaw(DEGTORAD*(angle(angle1facing)))
+        effect target_effect_hammer2 = addEffect("Abilities\\Weapons\\GryphonRiderMissile\\GryphonRiderMissile.mdl", vec3(x2,y2,z))..setScale(1.5)..setYaw(DEGTORAD*(angle(angle1facing-180)))
+        doPeriodically(0.033) (cb01) ->            
+            x1 = caster.getX() + angle1calc.cos()*(distance)
+            y1 = caster.getY() - angle1calc.sin()*(distance)
+            x2 = caster.getX() + angle1calc.cos()*(-distance)
+            y2 = caster.getY() - angle1calc.sin()*(-distance)
+            angle1calc += 16*DEGTORAD
+            angle1facing -= 16
+            z += 6
+            distance -= 4
+            target_effect_hammer1.setPos(vec3(x1,y1,z))
+            target_effect_hammer1.setYaw(DEGTORAD*(angle(angle1facing)))
+            target_effect_hammer2.setPos(vec3(x2,y2,z))
+            target_effect_hammer2.setYaw(DEGTORAD*(angle(angle1facing-180)))
+            //effect target_effect_hammer2 = addEffect("Abilities\\Spells\\Human\\StormBolt\\StormBoltMissile.mdl", vec3(x2,y2,z2))..setYaw(angle(DEGTORAD * angle2))..destr()
+            if z >= caster.getLocalZ() + 150
+                destroy cb01
+                target_effect_hammer1.destr()
+                target_effect_hammer2.destr()
+                //target_effect_bright_origin1.destr()
+                target_effect_bright_origin2.destr()
+                target_effect_bright_overhead.destr()
+            
+
+            
+        
+        
+
+

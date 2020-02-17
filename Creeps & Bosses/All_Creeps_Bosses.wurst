@@ -1,0 +1,21 @@
+package All_Creeps_Bosses
+
+import public Darkums_Raid
+import public Creeps_1_10
+
+public function respawn_creep()
+
+    //Zombie
+    if GetTriggerUnit().getName() == "Zombie"
+        unit zombie = GetTriggerUnit()
+        doAfter(5) ->
+            zombie.revive(zombie.getPos(), false)
+    //Spider & Rats Crates
+    if GetTriggerUnit().getName() == "Crates"
+        vec2 crates_pos = GetTriggerUnit().getPos()
+        angle crates_facing = GetTriggerUnit().getFacingAngle()
+        createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, GetTriggerUnit().getPos(), angle(GetTriggerUnit().getFacingAngle().radians()))
+        createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, GetTriggerUnit().getPos(), angle(GetTriggerUnit().getFacingAngle().radians()))
+        createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, GetTriggerUnit().getPos(), angle(GetTriggerUnit().getFacingAngle().radians()))
+        doAfter(30) ->
+            createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, crates_pos, angle(crates_facing.radians()))

@@ -1,0 +1,91 @@
+package Abilities_Ward_Circle_Example
+
+/*
+
+import public ObjectIdGenerator
+import public AbilityObjEditing
+import public UnitAnimations
+import public Sounds
+import public Icons
+import public Abilities
+
+public int gen_ability_pal_heal_hc_ward = compiletime(UNIT_ID_GEN.next())
+public int gen_ability_pal_heal_hc_stats = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_heal_hc = compiletime(ABIL_ID_GEN.next())
+
+//Example
+@compiletime function gen_ability_pal_heal_hc()
+    new UnitDefinition(gen_ability_pal_heal_hc_ward, 'ohwd')
+        ..setNormalAbilities(commaList(gen_ability_pal_heal_hc_stats, 'Avul'))
+        ..setModelFile("Abilities\\Spells\\Undead\\UnholyAura\\UnholyAura.mdl")
+        ..setScalingValue(3)
+        ..setCollisionSize(0)
+        ..setSelectionScale(0)
+
+    new AbilityDefinitionAuraRegenerationHealingWard(gen_ability_pal_heal_hc_stats)
+        ..setHeroAbility(true)
+        ..setPercentage(1, false)
+        ..setPercentage(2, false)
+    //If ability has presets for it
+        ..setAmountofHitPointsRegenerated(1, 15)
+        ..setAmountofHitPointsRegenerated(1, 35)
+        ..setAreaofEffect(1, 150)
+        ..setAreaofEffect(2, 250)
+        ..setEffectSound(Sounds.restorationPotion)
+
+    new AbilityDefinitionShadowHunterSerpentWard(gen_ability_pal_heal_hc)
+    //Basic Info
+        ..setDurationHero(1, 8)
+        ..setDurationHero(2, 12)
+        ..setDurationNormal(1, 8)
+        ..setDurationNormal(2, 12)
+        ..setSummonedUnitType(1, commaList(gen_ability_pal_heal_hc_ward))
+        ..setSummonedUnitType(2, commaList(gen_ability_pal_heal_hc_ward))
+        ..setSummonedUnitCount(1, 1)
+        ..setSummonedUnitCount(2, 1)
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(2)
+        ..setButtonPositionTurnOffX(1)
+        ..setButtonPositionTurnOffY(2)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNWindWalkOn.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNWindWalkOn.blp")
+        ..setIconTurnOff("ReplaceableTextures\\CommandButtons\\BTNWindWalkOn.blp")
+        //Set effect that shows at the target
+        ..setAnimationNames("attack,spell")
+        //Set animation during cast for the caster
+        ..setMissileHomingEnabled(false)
+        //Set if it will throws or not something
+    //Texts
+        ..setName("Healing Circle")
+        ..setTooltipLearn("Healing Circle")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("The power of the light involves the soul of the warriors, healing them")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Healing Circle - Lvl 1")
+        ..setTooltipNormal(2, "Healing Circle - Lvl 2")
+        ..setTooltipNormalExtended(1, "Healing Circle - Lvl 1 | |cffffff00Mana cost:|r 65 | |cffa7fcffCooldown:|r 15 seconds")
+        ..setTooltipNormalExtended(2, "Healing Circle - Lvl 2 | |cffffff00Mana cost:|r 175 | |cffa7fcffCooldown:|r 12 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00HP HP / s:|r +15 Life Points / s")
+        ..setTooltipNormalExtended(2, "|cff00ff00HP HP / s:|r +35 Life Points / s") 
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        //Set how much levels need to upgrade the next level
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 400)
+        ..setManaCost(1, 65)
+        ..setManaCost(2, 175)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setCooldown(1, 15)
+        ..setCooldown(2, 12)
+*/
+
+init

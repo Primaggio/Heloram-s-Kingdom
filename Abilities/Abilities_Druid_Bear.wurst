@@ -1,0 +1,134 @@
+package Abilities_Druid_Bear
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public Druid_Players_Hashmaps
+
+public int gen_ability_druid_bear_d = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_druid_bear_hk = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_druid_bear_hk()
+    new ChannelAbilityPreset(gen_ability_druid_bear_hk, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNDOCAdeptTraining)
+        ..setIconResearch(Icons.bTNDOCAdeptTraining)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Heavy Kick")
+        ..setTooltipLearn("Heavy Kick")
+        ..setAnimationNames("attack,slam")
+        ..setArtCaster("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Stomp the ground with you claw, stunning enemies in range and dealing damage to them.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Heavy Kick - Lvl 1 |  |cffa7fcffCooldown:|r 12 seconds")
+        ..setTooltipNormal(2, "Heavy Kick - Lvl 2 |  |cffa7fcffCooldown:|r 10 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 45 Health Points + 2 seconds of Stun.")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 100 Health Points + 3 seconds of Stun.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 35)
+        ..setManaCost(2, 75)
+        ..setCooldown(1, 12)
+        ..setCooldown(2, 10)
+        ..setAreaofEffect(1, 150)
+        ..setAreaofEffect(2, 200)
+
+@compiletime function gen_ability_druid_bear_d()
+    new ChannelAbilityPreset(gen_ability_druid_bear_d, 1, true)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSleep)
+        ..setIconResearch(Icons.bTNSleep)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Human Form")
+        ..setTooltipLearn("Human Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Transforms you back to human form.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Human Form")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Transforms you back to human form.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 0)
+        ..setCooldown(1, 0)
+        ..setBuffs(1, "")
+
+init
+    //Human Form
+    EventListener.onCast(gen_ability_druid_bear_d) (unit caster) ->        
+        new SoundDefinition("Units\\NightElf\\DruidOfTheClaw\\DruidOfTheClawMorphAlternate1.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
+        players_unit_list_druid_bear.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_bear.get(caster.getOwner()).getXp(), false)
+        players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_bear.get(caster.getOwner()).getHP())/(players_unit_list_druid_bear.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
+        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())      
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD)      
+        players_unit_list_druid_human.get(caster.getOwner()).show()
+        SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
+        doAfter(3) ->
+            target_effect.destr()
+            
+    //Heavy Kick
+    EventListener.onCast(gen_ability_druid_bear_hk) (unit caster) ->
+        if GetUnitAbilityLevel(caster, gen_ability_druid_bear_hk) == 1
+            new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playForPlayer(caster.getOwner())
+            forUnitsInRange(caster.getPos(), 300) (unit units) ->
+                if units.isAllyOf(caster.getOwner()) == false or units != caster and units.getOwner() != players[8]
+                    units.setHP(units.getHP() - 45)
+                    units.pause()
+                    effect target_effect_stun = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl", units, "overhead")
+                    doAfter(2) ->
+                        target_effect_stun.destr()
+                        units.unpause()                        
+            
+        if GetUnitAbilityLevel(caster, gen_ability_druid_bear_hk) == 2
+            new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playForPlayer(caster.getOwner())
+            forUnitsInRange(caster.getPos(), 300) (unit units) ->
+                if units.isAllyOf(caster.getOwner()) == false or units != caster and units.getOwner() != players[8]
+                    units.setHP(units.getHP() - 100)
+                    units.pause()
+                    effect target_effect_stun = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl", units, "overhead")
+                    doAfter(3) ->
+                        target_effect_stun.destr()
+                        units.unpause()     
+                    
+
+        
+        
+    
+        

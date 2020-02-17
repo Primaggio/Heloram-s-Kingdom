@@ -1,0 +1,16 @@
+package Lesson4_loops
+
+//import ClosureTimers
+
+//public var num = 5
+
+init
+/*	doPeriodically(1) cb ->
+		if num > 0
+			print(num)
+			num = num - 1
+		else
+			print("Done!")
+			destroy(cb)
+*/
+

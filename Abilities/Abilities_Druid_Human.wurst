@@ -1,0 +1,231 @@
+package Abilities_Druid_Human
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public Druid_Players_Hashmaps
+
+public int gen_ability_druid_wolf = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_druid_bear = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_druid_moonkin = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_druid_treant = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_druid_wolf()
+    new ChannelAbilityPreset(gen_ability_druid_wolf, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNImprovedStrengthOfTheWild)
+        ..setIconResearch(Icons.bTNImprovedStrengthOfTheWild)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Wolf Form")
+        ..setTooltipLearn("Wolf Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call the warriors spirits and let them transform you to a Wolf. Teaches Bleed Cut")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Wolf Form - Lvl 1")
+        ..setTooltipNormal(2, "Wolf Form - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Wolf Form is focused on Attack Speed and Damage, teaching you spells that does Bleeding debuffs to the enemies.")
+        ..setTooltipNormalExtended(2, "Wolf Form is focused on Attack Speed and Damage, teaching you spells that does Bleeding debuffs to the enemies.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        ..setAnimationNames("stand,three")
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 60)
+        ..setManaCost(2, 140)
+        ..setCooldown(1, 2)
+        ..setCooldown(2, 2)
+        ..setBuffs(1, "")
+
+@compiletime function gen_ability_druid_bear()
+    new ChannelAbilityPreset(gen_ability_druid_bear, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNEnchantedBears)
+        ..setIconResearch(Icons.bTNEnchantedBears)
+        //Set effect that shows at the target
+        ..setAnimationNames("stand,three")
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Bear Form")
+        ..setTooltipLearn("Bear Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Fills you with strenght spirit and transform you to a Bear. Teaches Heavy Kick")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Bear Form - Lvl 1")
+        ..setTooltipNormal(2, "Bear Form - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Bear Form is focused on Heavy Damage and Life, teaching you spells that does Stun and Heavy Stomps.")
+        ..setTooltipNormalExtended(2, "Bear Form is focused on Heavy Damage and Life, teaching you spells that does Stun and Heavy Stomps.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 60)
+        ..setManaCost(2, 140)
+        ..setCooldown(1, 2)
+        ..setCooldown(2, 2)
+        ..setBuffs(1, "")
+
+@compiletime function gen_ability_druid_moonkin()
+    new ChannelAbilityPreset(gen_ability_druid_moonkin, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNForceOfNature)
+        ..setIconResearch(Icons.bTNForceOfNature)
+        //Set effect that shows at the target
+        ..setAnimationNames("stand,three")
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Moonkin Form")
+        ..setTooltipLearn("Moonkin Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("The spirits of nature fills you with magic, transforming you to a Moonkin. Teaches Starfall")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Moonkin Form - Lvl 1")
+        ..setTooltipNormal(2, "Moonkin Form - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Moonkin Form is focused on Intelligence and Magic, teaching you spells that does Magic Damage.")
+        ..setTooltipNormalExtended(2, "Moonkin Form is focused on Intelligence and Magic, teaching you spells that does Magic Damage.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 60)
+        ..setManaCost(2, 140)
+        ..setCooldown(1, 2)
+        ..setCooldown(2, 2)
+        ..setBuffs(1, "")
+
+@compiletime function gen_ability_druid_treant()
+    new ChannelAbilityPreset(gen_ability_druid_treant, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNEnt.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNEnt.blp")
+        //Set effect that shows at the target
+        ..setAnimationNames("stand,three")
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Treant Form")
+        ..setTooltipLearn("Treant Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Nature spirits purify your essence, transforming you to a Tree. Teaches Rejuvenation")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Treant Form - Lvl 1")
+        ..setTooltipNormal(2, "Treant Form - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Treant Form is focused on Healing, teaching you spells that Heals Overtime.")
+        ..setTooltipNormalExtended(2, "Treant Form is focused on Healing, teaching you spells that Heals Overtime.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 60)
+        ..setManaCost(2, 140)
+        ..setCooldown(1, 2)
+        ..setCooldown(2, 2)
+        ..setBuffs(1, "")
+
+
+
+init
+    //Wolf Form
+    EventListener.onCast(gen_ability_druid_wolf) (unit caster) ->
+        new SoundDefinition("Units\\Orc\\Spiritwolf\\SpiritWolfWhat1.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
+        players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_wolf.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
+        players_unit_list_druid_wolf.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_wolf.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_wolf.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
+        players_unit_list_druid_wolf.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
+        players_unit_list_druid_wolf.get(caster.getOwner()).show() //Show the form
+        SelectUnit(players_unit_list_druid_wolf.get(caster.getOwner()), true) //Select the form unit
+        doAfter(3) ->
+            target_effect.destr() 
+
+    //Bear Form
+    EventListener.onCast(gen_ability_druid_bear) (unit caster) ->
+        new SoundDefinition("Units\\NightElf\\DruidOfTheClaw\\DruidOfTheClawMorph1.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
+        players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_bear.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
+        players_unit_list_druid_bear.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_bear.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_bear.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
+        players_unit_list_druid_bear.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
+        players_unit_list_druid_bear.get(caster.getOwner()).show() //Show the form
+        SelectUnit(players_unit_list_druid_bear.get(caster.getOwner()), true) //Select the form unit
+        doAfter(3) ->
+            target_effect.destr() 
+        
+    //Moonkin Form
+    EventListener.onCast(gen_ability_druid_moonkin) (unit caster) ->
+        new SoundDefinition("Units\\Creeps\\Owlbear\\OwlBearYes1.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
+        players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_moonkin.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
+        players_unit_list_druid_moonkin.get(caster.getOwner()).show() //Show the form
+        SelectUnit(players_unit_list_druid_moonkin.get(caster.getOwner()), true) //Select the form unit
+        doAfter(3) ->
+            target_effect.destr() 
+
+    //Treant Form
+    EventListener.onCast(gen_ability_druid_treant) (unit caster) ->
+        new SoundDefinition("buildings\\NightElf\\AncientOfWonder\\AncientofWonderYes3.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
+        players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_treant.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
+        players_unit_list_druid_treant.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_treant.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_treant.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
+        players_unit_list_druid_treant.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
+        players_unit_list_druid_treant.get(caster.getOwner()).show() //Show the form
+        SelectUnit(players_unit_list_druid_treant.get(caster.getOwner()), true) //Select the form unit
+        doAfter(3) ->
+            target_effect.destr() 

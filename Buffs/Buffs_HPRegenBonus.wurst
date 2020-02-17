@@ -1,0 +1,17 @@
+package Buffs_HPRegenBonus
+
+import public BuffObjEditing
+import public ObjectIdGenerator
+
+public int gen_buff_id_hpregenbonus = compiletime(BUFF_ID_GEN.next())
+    
+@compiletime public function gen_buff_id_hpregenbonus()
+    new BuffDefinition(gen_buff_id_hpregenbonus, 'BHad')
+    ..setName(1, "hp_regen_bonus")
+    ..setName(2, "hp_regen_bonus")
+    ..setTooltipNormal(1, "Life Bright")
+    ..setTooltipNormal(2, "Life Bright")
+    ..setTooltipNormalExtended(1, "You are blessed with Life Bright.")
+    ..setTooltipNormalExtended(2, "You are blessed with Life Bright.")
+    ..setIconNormal(1, "ReplaceableTextures\\CommandButtons\\BTNUnholyAura.blp")
+    ..setIconNormal(2, "ReplaceableTextures\\CommandButtons\\BTNUnholyAura.blp")

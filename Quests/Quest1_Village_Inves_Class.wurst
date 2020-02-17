@@ -1,0 +1,22 @@
+package Quest1_Village_Inves_Class
+import public Quest
+
+//Quest Classes
+public quest quest1_1 = CreateQuest()
+    ..setTitle("Southwest Village mistery")
+    ..setDescription("Go investigate the Southwest Village to try find informations that can help King Heloram to solve the case.")
+    ..setIcon("ReplaceableTextures\\CommandButtons\\BTNVillagerMan.blp")
+public quest quest1_2 = CreateQuest()
+    ..setTitle("Southwest Village mistery")
+    ..setDescription("Go back to Heloram's Kingdom and head to the castle to give King Heloram the information you've got about what happened to the southwest village.")
+    ..setIcon("ReplaceableTextures\\CommandButtons\\BTNHeroMountainKing.blp")
+public quest quest1_3 = CreateQuest()
+    ..setTitle("The Revenge Preparation")
+    ..setDescription("Heloram's Kingdom has an incredible army, with many Class Masters that train the soldiers of King Heloram. Try to find one that can train you to be part of it.")
+    ..setIcon("ReplaceableTextures\\CommandButtons\\BTNDeathPact.blp")
+
+init
+
+    QuestSetEnabled(quest1_1, false)
+    QuestSetEnabled(quest1_2, false)
+    QuestSetEnabled(quest1_3, false)

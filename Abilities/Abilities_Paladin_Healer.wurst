@@ -1,0 +1,215 @@
+package Abilities_Paladin_Healer
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+
+
+public int gen_ability_pal_heal_hl = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_heal_hc_ward = compiletime(UNIT_ID_GEN.next())
+public int gen_ability_pal_heal_hc_stats = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_heal_hc = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_heal_hc_test = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_heal_lc = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_heal_coa = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_pal_heal_holy_light()
+    new AbilityDefinitionPaladinHolyLight(gen_ability_pal_heal_hl)
+        ..setAmountHealedDamaged(1, 75)
+        ..setAmountHealedDamaged(2, 200)
+        ..setTargetsAllowed(1, "self,hero,nonhero,friend,neutral,enemy")
+        ..setTargetsAllowed(2, "self,hero,nonhero,friend,neutral,enemy")
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNHeal)
+        ..setIconResearch(Icons.bTNHeal)
+        //Set effect that shows at the target
+        ..setAnimationNames("attack,spell")
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Holy Light")
+        ..setTooltipLearn("Holy Light")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call a bright of light force that heals an ally or purify the enemy soul, dealing damage.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Holy Light - Lvl 1 |  |cffa7fcffCooldown:|r 10 seconds")
+        ..setTooltipNormal(2, "Holy Light - Lvl 2 |  |cffa7fcffCooldown:|r 8 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffffff00Healing / Damage Amount:|r 75 Health Points and half for Damage")
+        ..setTooltipNormalExtended(2, "|cffffff00Healing / Damage Amount:|r 200 Health Points and half for Damage")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        //Set how much levels need to upgrade the next level
+        ..setCastRange(1, 350)
+        ..setCastRange(2, 450)
+        ..setManaCost(1, 50)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+
+@compiletime function gen_ability_pal_heal_healing_circle()
+    new ChannelAbilityPreset(gen_ability_pal_heal_hc, 2, true)
+        ..setName("Healing Circle")
+        ..setTooltipLearn("Healing Circle")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("The power of the light involves the soul of the warriors, healing them.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Healing Circle - Lvl 1 |  |cffa7fcffCooldown:|r 15 seconds")
+        ..setTooltipNormal(2, "Healing Circle - Lvl 2 |  |cffa7fcffCooldown:|r 12 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00Health Points per Second:|r +10 HP / s")
+        ..setTooltipNormalExtended(2, "|cff00ff00Health Points per Second:|r +30 HP / s") 
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setIconNormal(Icons.bTNCOP)
+        ..setIconResearch(Icons.bTNCOP)
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setManaCost(1, 65)
+        ..setManaCost(2, 175)
+        ..setCooldown(1, 15)
+        ..setCooldown(2, 12)
+        ..presetTargetTypes(Targettype.POINT)
+        ..setAnimationNames("attack,spell")
+        ..setDurationHero(1, 6)
+        ..setDurationHero(2, 8)
+        ..setDurationNormal(1, 6)
+        ..setDurationNormal(2, 8)
+        ..setRequiredLevel(3)
+        ..setLevelSkipRequirement(5)
+
+@compiletime function gen_ability_pal_heal_light_connection()
+    new AbilityDefinitionShadowHunterHealingWave(gen_ability_pal_heal_lc)
+        ..setDamageperTarget(1, 60)
+        ..setDamageperTarget(2, 150)
+        ..setDamageReductionperTarget(1, 10)
+        ..setDamageReductionperTarget(2, 20)
+        ..setNumberofTargetsHit(1, 6)
+        ..setNumberofTargetsHit(2, 15)
+    //Basic Info
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNHealingWave)
+        ..setIconResearch(Icons.bTNHealingWave)
+        ..setIconTurnOff(Icons.bTNHealingWave)
+        //Set effect that shows at the target
+        ..setAnimationNames("attack,spell")
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Light Connection")
+        ..setTooltipLearn("Light Connection")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Fills you with holy power and raises you and your allies purity, healing all targets.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Light Connection - Lvl 1 |  |cffa7fcffCooldown:|r 12 seconds")
+        ..setTooltipNormal(2, "Light Connection - Lvl 2 |  |cffa7fcffCooldown:|r 10 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00Healing Amount:|r 60 minus 10 per target")
+        ..setTooltipNormalExtended(2, "|cff00ff00Healing Amount:|r 150 minus 20 per target")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setLevels(2)
+        ..setRequiredLevel(5)
+        ..setLevelSkipRequirement(5)
+        //Set how much levels need to upgrade the next level
+        ..setCastRange(1, 350)
+        ..setCastRange(2, 450)
+        ..setManaCost(1, 65)
+        ..setManaCost(2, 175)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setCooldown(1, 12)
+        ..setCooldown(2, 10)
+
+@compiletime function gen_ability_pal_heal_call_of_angels()
+    new ChannelAbilityPreset(gen_ability_pal_heal_coa, 1, true)
+        ..setName("Call of the Angels")
+        ..setTooltipLearn("Call of the Angels")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Divine angels comes upon the skies to protect you or an ally, absorbing all damage.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Call of the Angels - Lvl 1 |  |cffa7fcffCooldown:|r 150 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff7300Absorbs all damage taken by the target|r")
+        //Shows it when passing the mouse through it (description)
+        ..presetIcon(Icons.bTNInvulnerable)
+        ..presetButtonPosNormal(3, 2)
+        ..presetHotkey("R")
+        ..presetTargetTypes(Targettype.UNIT)
+        ..presetTargetsAllowed(lvl -> "self,friend")
+        ..setCooldown(1, 150)
+        ..setCastRange(1, 400)
+        ..setManaCost(1, 300)
+        ..setRequiredLevel(7)
+        ..setAnimationNames("attack,spell")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+
+init
+    //Holy Light
+    EventListener.onTargetCast(gen_ability_pal_heal_hl) (unit caster, unit target) ->
+        let abil_sound = new SoundDefinition("Abilities\\Spells\\Items\\AIma\\ManaPotion.flac", false).playOnPoint(target.getPos3Fly())
+        effect target_effect = addEffect("Abilities\\Spells\\Undead\\ReplenishHealth\\ReplenishHealthCasterOverhead.mdl", target, "overhead")
+        doAfter(2) ->
+            target_effect.destr()
+            destroy abil_sound
+        
+    //Healing Circle
+    EventListener.onPointCast(gen_ability_pal_heal_hc) (caster, target_loc) ->
+        int spell_count_hc = 0
+        effect target_effect_circle_hc = addEffect("Abilities\\Spells\\Undead\\UnholyAura\\UnholyAura.mdl", vec3(target_loc.x, target_loc.y, target_loc.getTerrainZ() - 35))..setScale(3)
+        doPeriodically(1) (cb1) ->
+            spell_count_hc += 1
+            PlaySoundAtPointBJ(CreateSound("Abilities\\Spells\\Human\\Heal\\HealTarget.flac", false, false, true, 0, 0, null), 75, Location(target_loc.x, target_loc.y), 5)
+            forUnitsInRange(target_loc, 300) (units) ->
+                if units.getOwner().isAllyOf(caster.getOwner())
+                    effect target_effect_heal_hc = addEffect("Abilities\\Spells\\Human\\Heal\\HealTarget.mdl", units, "origin")
+                    units.setHP(units.getHP() + 100)
+            if spell_count_hc == 6 and GetUnitAbilityLevel(caster, gen_ability_pal_heal_hc) == 1
+                destroy cb1
+                target_effect_circle_hc.destr()
+            if spell_count_hc == 8 and GetUnitAbilityLevel(caster, gen_ability_pal_heal_hc) == 2
+                destroy cb1
+                target_effect_circle_hc.destr()
+
+    // Call of Angels (Divine Shield)
+    EventListener.onTargetCast(gen_ability_pal_heal_coa) (unit caster, unit target) ->
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\DivineShield\\DivineShieldTarget.mdl", target, "origin")..setScale(1.3)
+        target.setInvulnerable(true)
+        target.addAbility(gen_buff_id_coa)
+        doAfter(6) ->
+            target.setInvulnerable(false)
+            target_effect.destr()
+            target.removeAbility(gen_buff_id_coa)
+        
+        
+        

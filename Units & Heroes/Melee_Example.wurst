@@ -1,0 +1,85 @@
+package Melee_Example
+
+import public ObjectIdGenerator
+import public UnitIds
+import public AbilityIds
+import public UnitObjEditing
+
+public int gen_unit_id_melee = compiletime(HERO_ID_GEN.next())
+
+@compiletime function gen_unit_melee()    
+    new HeroDefinition(gen_unit_id_melee, UnitIds.uther)
+    //Basic Information
+//--------------------------------------------------------
+        ..setName("Name at the xp bar")
+        ..setProperNames("Top name")
+        ..setTooltipExtended("Description of the unit")
+        ..setModelFile("units\\critters\\VillagerMan\\VillagerMan")
+        ..setIconGameInterface("ReplaceableTextures\\CommandButtons\\BTNVillagerMan.blp")
+        ..hideHeroDeathMsg(true)
+        ..setFoodProduced(1)
+        ..setLevel(2)
+        //XP needed to level up = Value of the previous level + level * 100
+        ..setAttack1WeaponSound(WeaponSound.Nothing)
+        ..setAttacksEnabled(3)
+        ..setCanDropItemsOnDeath(false)
+        ..setCollisionSize(16)
+        ..setUnitSoundSet("VillagerMan")
+//--------------------------------------------------------
+    //Basic Stats
+//--------------------------------------------------------
+        //Mana            
+        ..setManaRegeneration(1)
+            //Final mana regeneration per second = Base + (0.05 * INT) + (Ability Bonuses) + (Item Bonuses * (0.01 + (0.05 + INT))) 
+        ..setManaMaximum(0)            
+        ..setManaInitialAmount(100)
+            //Final Mana Capacity = Base + 15 * Int
+//--------------------------------------------------------
+        //Life            
+        ..setHitPointsRegenerationRate(0.25)
+            //Final HP regeneration per second = ((Base)* + (0.05 * STR) + (Item Bonuses)) * Ability Bonuses 
+            //* Insert 0.25 for non-undead Neutral, Human, and Orc heroes. Insert 0.5 for Night Elf heroes and 2.0 for Undead heroes.                       
+        ..setHitPointsMaximumBase(100)
+            //Final HP = 100 + (25 * STR) + (Item Bonuses) 
+//--------------------------------------------------------
+        //Armor    
+        ..setDefenseBase(1)
+            //Total Armor = (Base Armor) + (0.3 * AGI) + (0.3 * AGI Bonuses) + (Item Bonuses) + (Ability Bonuses)
+            //Dmg Reduction = ((armor)*0.06)/(1+0.06*(armor))
+        ..setArmorType(ArmorType.Hero)
+//--------------------------------------------------------
+        //Stats            
+        ..setStartingStrength(1)
+            //Hit Points: 1 point of Strength = 25 increase in hit points 
+            //Hit Point Regeneration: 1 point of Strength = .05 hit points regenerated per a second    
+        ..setStartingAgility(1)
+            //1 point of Agility = 0.3 increase in armor             
+            //Attack Rate: 1 point of Agility = 2% increase in Attack Rate
+        ..setStartingIntelligence(1)
+            //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
+            //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
+        ..setAttack1CooldownTime(1.75)
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
+        ..setSpeedBase(280)
+        ..setAnimationRunSpeed(280)
+        ..setAnimationWalkSpeed(280)
+        ..setAttack1AttackType(AttackType.Hero)
+        ..setAttack2AttackType(AttackType.Hero)
+//--------------------------------------------------------
+        //Damage
+            //Minimal damage = Base Damage + Number of Dices
+            //Maximum damage = Base Damage + Number of Dices * Sides per Dice
+        ..setAttack1DamageBase(5)
+        ..setAttack1DamageNumberofDice(1)
+        ..setAttack1DamageSidesperDie(2)
+//--------------------------------------------------------    
+    //Stats per Level
+//--------------------------------------------------------
+        ..setStrengthPerLevel(1)
+        ..setAgilityPerLevel(1)
+        ..setIntelligencePerLevel(1)    
+//--------------------------------------------------------
+    //Spells & Abilities
+        ..setHeroAbilities("Import abilities from Abilities_Generator")
+        ..setNormalAbilities(AbilityIds.inventory.toString())
+        //..setArtTarget("war3mapImported\\Aura.mdx")

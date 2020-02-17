@@ -1,0 +1,149 @@
+package Abilities_Druid_Moonkin
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public Druid_Players_Hashmaps
+
+public let gen_buff_id_sf = compiletime(createDummyBuffObject("|cffc300ffStar Magic:|r", "This unit takes more damage by Starfall.", Icons.bTNRejuvenation))
+public int gen_ability_druid_moonkin_d = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_druid_moonkin_sf = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_druid_moonkin_starfall()
+    new ChannelAbilityPreset(gen_ability_druid_moonkin_sf, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNStarFall)
+        ..setIconResearch(Icons.bTNStarFall)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.POINT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Heavy Kick")
+        ..setTooltipLearn("Heavy Kick")
+        ..setAnimationNames("spell")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call the spirits of nature, sending magic stars to deal damage at your enemies. Starfall debuffs the targets with Star Magic for 5 seconds, increasing the damage of successive Starfalls.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Starfall - Lvl 1 |  |cffa7fcffCooldown:|r 5 seconds")
+        ..setTooltipNormal(2, "Starfall - Lvl 2 |  |cffa7fcffCooldown:|r 3 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff574bffDamage Amount:|r 75 Health Points +15 with Star Magic.")
+        ..setTooltipNormalExtended(2, "|cff574bffDamage Amount:|r 200 Health Points +25 with Star Magic.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 35)
+        ..setManaCost(2, 75)
+        ..setCooldown(1, 5)
+        ..setCooldown(2, 3)
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 450)
+
+@compiletime function gen_ability_druid_moonkin_d()
+    new ChannelAbilityPreset(gen_ability_druid_moonkin_d, 1, true)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSleep)
+        ..setIconResearch(Icons.bTNSleep)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Human Form")
+        ..setTooltipLearn("Human Form")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Transforms you back to human form.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Human Form")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "Transforms you back to human form.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 0)
+        ..setCooldown(1, 0)
+        ..setBuffs(1, "")
+
+init
+    //Human Form
+    EventListener.onCast(gen_ability_druid_moonkin_d) (unit caster) ->
+        new SoundDefinition("Units\\Creeps\\Owlbear\\OwlBearWhat1.flac", false).playForPlayer(caster.getOwner())
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
+        players_unit_list_druid_moonkin.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_moonkin.get(caster.getOwner()).getXp(), false)
+        players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_moonkin.get(caster.getOwner()).getHP())/(players_unit_list_druid_moonkin.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
+        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD)
+        players_unit_list_druid_human.get(caster.getOwner()).show()
+        SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
+        doAfter(3) ->
+            target_effect.destr()
+            
+    //Starfall
+    EventListener.onPointCast(gen_ability_druid_moonkin_sf) (unit caster, vec2 target) ->
+        int cb_counter = 0
+        caster.setAnimation("spell")
+        effect caster_effect = addEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallCaster.mdl", caster, "origin")..setScale(1.0)
+        effect target_effect = addEffect("Abilities\\Spells\\NightElf\\Starfall\\StarfallTarget.mdl", target)..setScale(1.0)
+        new SoundDefinition("Abilities\\Spells\\Human\\InnerFire\\InnerFireBirth.flac", false).playOnPoint(caster.getPos3Fly())        
+        doAfter(1) ->
+            new SoundDefinition("Abilities\\Spells\\NightElf\\Tranquility\\TranquilityTarget1.flac", false).playOnPoint(vec3(target.x,target.y,0))
+
+            if GetUnitAbilityLevel(caster, gen_ability_druid_moonkin_sf) == 1
+                forUnitsInRange(target, 35) (unit units) ->
+                    if units.isAllyOf(caster.getOwner()) == false or units != caster or units.getOwner() != players[8]
+                        if units.hasAbility(gen_buff_id_sf.abilId) == true
+                            units.setHP(units.getHP() - 15)
+                        else if units.hasAbility(gen_buff_id_sf.abilId) == false
+                            units.addAbility(gen_buff_id_sf.abilId)
+                        units.setHP(units.getHP() - 75)                        
+                        doPeriodically(1) cb1 ->
+                            cb_counter += 1
+                            if cb_counter == 5
+                                units.removeAbility(gen_buff_id_sf.abilId)
+
+            if GetUnitAbilityLevel(caster, gen_ability_druid_moonkin_sf) == 2
+                forUnitsInRange(target, 60) (unit units) ->
+                    if units.isAllyOf(caster.getOwner()) == false or units != caster or units.getOwner() != players[8]
+                        if units.hasAbility(gen_buff_id_sf.abilId)
+                            units.setHP(units.getHP() - 25)
+                        else if units.hasAbility(gen_buff_id_sf.abilId) == false
+                            units.addAbility(gen_buff_id_sf.abilId)
+                        units.setHP(units.getHP() - 200)
+                        doPeriodically(1) cb1 ->
+                            cb_counter += 1
+                            if cb_counter == 5
+                                units.removeAbility(gen_buff_id_sf.abilId)
+        doAfter(3) ->
+            caster_effect.destr()
+            target_effect.destr()
+                    
+
+        
+        
+    
+        

@@ -1,0 +1,4 @@
+package AllQuests
+
+import public Quest1_Village_Inves_Class
+import public Quest2_Class_Masters

@@ -1,0 +1,9 @@
+package Druid_Players_Hashmaps
+
+import public HashMap
+
+public let players_unit_list_druid_human = new IterableMap<player, unit>
+public let players_unit_list_druid_wolf = new IterableMap<player, unit>
+public let players_unit_list_druid_bear = new IterableMap<player, unit>
+public let players_unit_list_druid_moonkin = new IterableMap<player, unit>
+public let players_unit_list_druid_treant = new IterableMap<player, unit>

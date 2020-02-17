@@ -1,0 +1,13 @@
+package Buffs_Starfall
+
+import public BuffObjEditing
+import public ObjectIdGenerator
+import public Icons
+
+public int gen_buff_id_sf = compiletime(BUFF_ID_GEN.next())
+    
+@compiletime public function gen_buff_id_starfall()
+    new BuffDefinition(gen_buff_id_sf, 'BHds')
+    ..setIconNormal(1, Icons.bTNStarFall)
+    ..setTooltipNormal(1, "Star Magic")
+    ..setTooltipNormalExtended(1, "This unit is affected by Star Magic.")

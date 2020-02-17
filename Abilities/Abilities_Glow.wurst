@@ -1,0 +1,22 @@
+package Abilities_Glow
+
+import public ObjectIdGenerator
+import public ObjEditingCommons
+import public AbilityObjEditing
+import public UnitAnimations
+import public Sounds
+import public Icons
+import public Abilities
+import public Buffs_HPRegenBonus
+import public ObjectIds
+
+public int gen_ability_glow = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_glow()
+    new AbilityDefinitionAIde(gen_ability_glow)
+        ..setDefenseBonus(1, 0)
+        ..setArtTarget("war3mapImported\\GeneralHeroGlow.mdx")
+        ..setTargetAttachmentPoint1("origin")
+        ..setTargetAttachmentPoint("origin")
+        
+

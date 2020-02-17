@@ -1,0 +1,301 @@
+package Triggers
+
+import public Units_neutral
+import public Quests
+import public All_Creeps_Bosses
+
+
+
+int player_check_triggers = 0
+real vecx = -110
+
+region regionentercastle = CreateRegion()..addRect(gg_rct_regionentercastle)
+region regionexitcastle = CreateRegion()..addRect(gg_rct_regionexitcastle)
+
+region regionentertavern = CreateRegion()..addRect(gg_rct_regionentertavern)
+region regionexittavern = CreateRegion()..addRect(gg_rct_regionexittavern)
+
+region regionenterblacksmith = CreateRegion()..addRect(gg_rct_regionenterblacksmith)
+region regionexitblacksmith = CreateRegion()..addRect(gg_rct_regionexitblacksmith)
+
+region regionenternature = CreateRegion()..addRect(gg_rct_regionenteraltarnature)
+region regionexitnature = CreateRegion()..addRect(gg_rct_regionexitaltarnature)
+region regionaltardruid = CreateRegion()..addRect(gg_rct_regionaltardruid)
+region regionaltarshaman = CreateRegion()..addRect(gg_rct_regionaltarshaman)
+
+region regionenterlight = CreateRegion()..addRect(gg_rct_regionenteraltarlight)
+region regionexitlight = CreateRegion()..addRect(gg_rct_regionexitaltarlight)
+region regionaltarpaladin = CreateRegion()..addRect(gg_rct_regionaltarpaladin)
+
+region regionentermagic = CreateRegion()..addRect(gg_rct_regionenteraltarmagic)
+region regionexitmagic = CreateRegion()..addRect(gg_rct_regionexitaltarmagic)
+region regionaltarmage = CreateRegion()..addRect(gg_rct_regionaltarmage)
+region regionaltarwarlock = CreateRegion()..addRect(gg_rct_regionaltarwarlock)
+
+region regionaltararcher = CreateRegion()..addRect(gg_rct_regionaltararcher)
+
+int trig_value = 0
+unit trig_test_unit
+
+function test_name_trigger()
+    print(GetTriggerUnit().getName())
+    print(GetOrderTargetUnit().getName())
+
+//Enters & Exits
+
+    //Castle
+function enter_castle()
+    GetTriggerUnit().setPos(-8300, 900)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+function exit_castle()
+    GetTriggerUnit().setPos(2450, -515)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+
+    //Tavern
+function enter_tavern()
+    GetTriggerUnit().setPos(vec2(-8177,-2903))
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+function exit_tavern()
+    GetTriggerUnit().setPos(vec2(1303,-1289))
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+
+    //Blacksmith
+function enter_blacksmith()
+    GetTriggerUnit().setPos(vec2(-6095,-2855))
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+function exit_blacksmith()
+    GetTriggerUnit().setPos(vec2(-145,-840))
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+
+    //Paladins
+
+function altar_paladin()
+    if GetTriggerUnit().getName() == "Paladin Healer" or GetTriggerUnit().getName() == "Paladin Tank" or GetTriggerUnit().getName() == "Paladin Bruiser" or GetTriggerUnit().getName() == "Villager"
+        if quest2_player_list.get(players[0]) == 1
+            quest2_player_list.put(players[0], 3)
+            quest_sound_next.playForPlayer(players[0])
+            players[0].print(" ")
+            players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")            
+function enter_light()
+    GetTriggerUnit().setPos(200, 1815)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())    
+function exit_light()
+    GetTriggerUnit().setPos(-1500, 1327)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+
+    //Druid & Shaman
+
+function altar_druid()
+    if GetTriggerUnit().getName() == "Druid" or GetTriggerUnit().getName() == "Villager"
+        if quest2_player_list.get(players[0]) == 1
+            quest2_player_list.put(players[0],3)
+            quest_sound_next.playForPlayer(players[0])
+            players[0].print(" ")
+            players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")
+
+function altar_shaman()
+    if GetTriggerUnit().getName() == "Shaman Elemental" or GetTriggerUnit().getName() == "Shaman Healer" or GetTriggerUnit().getName() == "Villager"
+        if quest2_player_list.get(players[0]) == 1
+            quest2_player_list.put(players[0],3)
+            quest_sound_next.playForPlayer(players[0])
+            players[0].print(" ")
+            players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")       
+
+function enter_nature()
+    GetTriggerUnit().setPos(75, 2975)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+function exit_nature()
+    GetTriggerUnit().setPos(-2500, 2400)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+
+    //Mages & Warlock
+
+function altar_mage()
+    if GetTriggerUnit().getName() == "Mage Fire" or GetTriggerUnit().getName() == "Mage Frost" or GetTriggerUnit().getName() == "Villager"
+        if quest2_player_list.get(players[0]) == 1
+            quest2_player_list.put(players[0],3)
+            quest_sound_next.playForPlayer(players[0])
+            players[0].print(" ")
+            players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")     
+
+function altar_warlock()
+    if GetTriggerUnit().getName() == "Warlock" or GetTriggerUnit().getName() == "Villager"
+        if quest2_player_list.get(players[0]) == 1
+            quest2_player_list.put(players[0],3)
+            quest_sound_next.playForPlayer(players[0])
+            players[0].print(" ")
+            players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")
+
+    //Archer & Hunter
+
+function altar_archer()
+    if GetTriggerUnit().getName() == "Archer" or GetTriggerUnit().getName() == "Hunter" or GetTriggerUnit().getName() == "Villager"
+        if quest2_player_list.get(players[0]) == 1
+            quest2_player_list.put(players[0],3)
+            quest_sound_next.playForPlayer(players[0])
+            players[0].print(" ")
+            players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")
+
+function enter_magic()
+    GetTriggerUnit().setPos(-2923, -4383)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+function exit_magic()
+    GetTriggerUnit().setPos(-1800, -4100)
+    GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
+
+function test_trigg()
+    if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+        if trig_value != 1
+            trig_value = 1
+            trig_test_unit = GetOrderTargetUnit()
+            int aeae = 0
+            doPeriodically(2) cb5 ->      
+                aeae += 1
+                trig_test_unit.setAnimation(aeae)
+                print(aeae)
+                if aeae == 25
+                    destroy cb5
+                    trig_value = 0
+
+init
+    print("Type |cffff0000-start|r to start the game.")
+    cm4.issueTargetOrderById(851983, cm7)
+    cm7.issueTargetOrderById(851983, cm4)
+
+    let start_trigger = CreateTrigger()..addAction(function start_game)
+    for i = 0 to 7
+        start_trigger.registerPlayerChatEvent(players[i], "-start", true)
+
+    let hero_trigger = CreateTrigger()..addAction(function quest_start)
+    for i = 0 to 7
+        hero_trigger.registerPlayerUnitEvent(players[i], EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null)
+
+//Enters & Exits
+
+    //Castle
+    CreateTrigger()
+    ..registerEnterRegion(regionentercastle, null)
+    ..addAction(function enter_castle)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionexitcastle, null)
+    ..addAction(function exit_castle)
+
+    //Blacksmith
+    CreateTrigger()
+    ..registerEnterRegion(regionenterblacksmith, null)
+    ..addAction(function enter_blacksmith)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionexitblacksmith, null)
+    ..addAction(function exit_blacksmith)
+
+    //Tavern
+    CreateTrigger()
+    ..registerEnterRegion(regionentertavern, null)
+    ..addAction(function enter_tavern)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionexittavern, null)
+    ..addAction(function exit_tavern)
+
+    //Paladins
+    CreateTrigger()
+    ..registerEnterRegion(regionenterlight, null)
+    ..addAction(function enter_light)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionexitlight, null)
+    ..addAction(function exit_light)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionaltarpaladin, null)
+    ..addAction(function altar_paladin)
+
+    //Druid & Shaman
+    CreateTrigger()
+    ..registerEnterRegion(regionenternature, null)
+    ..addAction(function enter_nature)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionexitnature, null)
+    ..addAction(function exit_nature)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionaltardruid, null)
+    ..addAction(function altar_druid)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionaltarshaman, null)
+    ..addAction(function altar_shaman)
+
+    //Mages & Warlock
+    CreateTrigger()
+    ..registerEnterRegion(regionentermagic, null)
+    ..addAction(function enter_magic)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionexitmagic, null)
+    ..addAction(function exit_magic)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionaltarmage, null)
+    ..addAction(function altar_mage)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionaltarwarlock, null)
+    ..addAction(function altar_warlock)
+
+    //Archer & Hunter
+    CreateTrigger()
+    ..registerEnterRegion(regionaltararcher, null)
+    ..addAction(function altar_archer)
+
+    CreateTrigger()
+    ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
+    ..addAction(function respawn_creep)
+
+    
+
+
+    //CreateTrigger()
+    //..registerPlayerUnitEvent(players[0], EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null)
+    //..addAction(function test_trigg)
+
+    /*CreateTrigger()
+    ..registerPlayerChatEvent(players[player_check_triggers], "-start", true)
+
+        if GetTriggerPlayer() == players[player_check_triggers]
+            start_fresh.addAction(function start_game)*/
+
+
+/*
+
+
+//Quest1 start
+    /*let quest1 = CreateTrigger()
+    ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER)
+    ..addAction(function start_quest1)
+
+    CreateTrigger()
+    ..registerUnitEvent(p01, EVENT_UNIT_ISSUED_TARGET_ORDER)
+    ..addAction(function start_quest1)
+    
+//Quest1 mission_target
+    CreateTrigger()
+    ..registerUnitEvent(n5, EVENT_UNIT_DEATH)
+    ..addAction(function say_dead)
+    //Quest1 end
+
+//Quest2 start
+    CreateTrigger()
+    ..registerUnitEvent(p01, EVENT_UNIT_ISSUED_TARGET_ORDER)
+    ..addAction(function start_quest_swordsman)
+
+    CreateTrigger()
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DEATH, null)
+    ..addAction(function start_quest_swordsman_count)
+*/
+
+//Quest2 end
+

@@ -1,0 +1,11 @@
+package AllAbilities
+
+import public Abilities_Paladin_Healer
+import public Abilities_Paladin_Tank
+import public Abilities_Glow
+import public Abilities_Paladin_DPS
+import public Abilities_Druid_Human
+import public Abilities_Druid_Wolf
+import public Abilities_Druid_Bear
+import public Abilities_Druid_Moonkin
+import public Abilities_Druid_Treant

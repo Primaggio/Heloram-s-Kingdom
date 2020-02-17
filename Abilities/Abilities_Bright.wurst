@@ -1,0 +1,23 @@
+package Abilities_Bright
+
+import public ObjectIdGenerator
+import public ObjEditingCommons
+import public AbilityObjEditing
+import public UnitAnimations
+import public Sounds
+import public Icons
+import public Abilities
+import public Buffs_HPRegenBonus
+import public ObjectIds
+
+public int gen_ability_bright = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_bright()
+    new AbilityDefinitionItemAuraDevotion(gen_ability_bright)
+        ..setAreaofEffect(1, 0)
+        ..setArmorBonus(1, 0)
+        ..setBuffs(1, "")
+        ..setArtTarget("units\\nightelf\\Wisp\\Wisp")
+        ..setTargetAttachmentPoint("origin")
+        
+

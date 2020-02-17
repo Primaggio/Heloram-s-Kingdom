@@ -1,0 +1,103 @@
+package Creeps_1_10
+
+import public ObjectIdGenerator
+import public UnitIds
+import public AbilityIds
+import public UnitObjEditing
+import public ObjectIds
+import public AllAbilities
+
+public int gen_unit_creep_zombie_lvl_1 = compiletime(HERO_ID_GEN.next())
+public int gen_unit_crate_spider_rats = compiletime(UNIT_ID_GEN.next())
+public int gen_unit_creep_spider_crates = compiletime(UNIT_ID_GEN.next())
+public int gen_unit_creep_spider_lvl_2 = compiletime(HERO_ID_GEN.next())
+
+@compiletime function gen_unit_creep_zombie_lvl_1()
+    new HeroDefinition(gen_unit_creep_zombie_lvl_1, UnitIds.zombie)
+        ..setName("Zombie")
+        ..setProperNames("Dark'uns Creature")
+        ..setAttack1DamageBase(12)
+        ..setArmorType(ArmorType.Unarmored)
+        ..setAttack1CooldownTime(1.75)
+        ..setAttack1DamageNumberofDice(1)
+        ..setAttack1DamageSidesperDie(1)
+        ..setAttacksEnabled(3)
+        ..setDefenseBase(2)
+        ..setHitPointsMaximumBase(200)
+        ..setHitPointsRegenerationType("none")
+        ..setPointValue(5)
+        ..setSleeps(false)
+        ..setGoldBountyAwardedBase(0)
+        ..setGoldBountyAwardedNumberofDice(0)
+        ..setGoldBountyAwardedSidesperDie(0)
+        ..setLevel(1)
+    
+@compiletime function gen_unit_crate_spider_rats()
+    new UnitDefinition(gen_unit_crate_spider_rats, UnitIds.villagerman)
+        ..setModelFile("Doodads\\LordaeronSummer\\Terrain\\Crates\\Crates0.mdl")
+        ..setName("Crates")
+        ..setHitPointsMaximumBase(10)
+        ..setSleeps(false)
+        ..setGoldBountyAwardedBase(0)
+        ..setGoldBountyAwardedNumberofDice(0)
+        ..setGoldBountyAwardedSidesperDie(0)
+
+@compiletime function gen_unit_creep_spider_crates()
+    new UnitDefinition(gen_unit_creep_spider_crates, UnitIds.spiderblack)
+        ..setName("Little Spider")
+        ..setScalingValue(0.6)
+        ..setAttack1DamageBase(4)
+        ..setArmorType(ArmorType.Unarmored)
+        ..setAttack1CooldownTime(1.75)
+        ..setAttack1DamageNumberofDice(1)
+        ..setAttack1DamageSidesperDie(2)
+        ..setAttacksEnabled(3)
+        ..setDefenseBase(0)
+        ..setHitPointsMaximumBase(200)
+        ..setHitPointsRegenerationType("none")
+        ..setPointValue(5)
+        ..setSleeps(false)
+        ..setGoldBountyAwardedBase(0)
+        ..setGoldBountyAwardedNumberofDice(0)
+        ..setGoldBountyAwardedSidesperDie(0)
+
+@compiletime function gen_unit_creep_spider_lvl_2()
+    new HeroDefinition(gen_unit_creep_spider_lvl_2, UnitIds.spittingspider)
+        ..setName("Spider")
+        ..setProperNames("Dark'uns Creature")
+        ..setScalingValue(1.3)
+        ..setAttack1DamageBase(4)
+        ..setArmorType(ArmorType.Unarmored)
+        ..setAttack1CooldownTime(1.75)
+        ..setAttack1DamageNumberofDice(1)
+        ..setAttack1DamageSidesperDie(2)
+        ..setAttacksEnabled(3)
+        ..setDefenseBase(0)
+        ..setHitPointsMaximumBase(200)
+        ..setHitPointsRegenerationType("none")
+        ..setPointValue(5)
+        ..setSleeps(false)
+        ..setGoldBountyAwardedBase(0)
+        ..setGoldBountyAwardedNumberofDice(0)
+        ..setGoldBountyAwardedSidesperDie(0)
+
+init
+    //Zombies
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_zombie_lvl_1, vec2(-65,-4312), angle(DEGTORAD*270))
+    //Spider and Rats Crates
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(2352.1, - 6014.1), angle(173.875))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(2478.4, - 6045.9), angle(174.095))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(2149.4, - 7288.5), angle(0.110))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(2847.6, - 8101.7), angle(309.934))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(2961.7, - 8189.2), angle(307.440))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(4324.9, - 7866.9), angle(5.087))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(4940.7, - 7609.6), angle(288.510))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(5169.7, - 6524.9), angle(250.496))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(5274.4, - 6577.6), angle(219.821))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(4564.4, - 5985.9), angle(56.131))
+    createUnit(players[PLAYER_NEUTRAL_PASSIVE], gen_unit_crate_spider_rats, vec2(4640.4, - 5458.2), angle(53.582))
+    /*
+    local real dx = GetLocationX(locB) - GetLocationX(locA)
+    local real dy = GetLocationY(locB) - GetLocationY(locA)
+    return SquareRoot(dx * dx + dy * dy)
+    */

@@ -1,0 +1,53 @@
+package Unit_Paladin_Tank
+
+import public ObjectIdGenerator
+import public UnitIds
+import public AbilityIds
+import public UnitObjEditing
+import public ObjectIds
+import public AllAbilities
+
+public int gen_unit_id_paladin_tank = compiletime(HERO_ID_GEN.next())
+
+//Paladin_tank
+@compiletime function gen_unit_paladin_tank()
+    new HeroDefinition(gen_unit_id_paladin_tank, UnitIds.footman)
+        ..setScalingValue(1.0)
+        ..setCollisionSize(32)
+        ..setName("Paladin Tank")
+        ..setProperNames("Novice")
+        ..setIconGameInterface("ReplaceableTextures\\CommandButtons\\BTNFootman.blp")
+        ..setLevel(2)
+        ..setStartingStrength(6)
+        ..setStartingAgility(1)
+        ..setStartingIntelligence(2)
+        ..setHitPointsRegenerationRate(1.0)
+        ..setManaRegeneration(1)
+        ..setManaInitialAmount(100)
+        ..setDefenseBase(4)
+        ..setAttack1CooldownTime(2.2)
+        ..setAttack1DamageBase(4)
+        ..setAttack1DamageNumberofDice(2)
+        ..setAttack1DamageSidesperDie(2)
+        ..setStrengthPerLevel(8)
+        ..setAgilityPerLevel(1)
+        ..setIntelligencePerLevel(2)    
+        ..setSpeedBase(250)
+        ..setAnimationRunSpeed(250)
+        ..setAnimationWalkSpeed(250)
+        ..setNormalAbilities(commaList('Aihn'))
+        ..setHeroAbilities(commaList(gen_ability_id_pal_tank_sof, gen_ability_id_pal_tank_lb, gen_ability_id_pal_tank_dp, gen_ability_id_pal_tank_ba))
+        ..setAttack1WeaponSound(WeaponSound.MetalHeavyBash)
+        ..setFoodProduced(0)
+        ..setAttacksEnabled(3)
+        ..setArmorType(ArmorType.Hero)
+        ..setAttack1AttackType(AttackType.Hero)
+        ..setAttack2AttackType(AttackType.Hero)
+init
+
+
+//	print("Lesson 1")
+
+
+
+

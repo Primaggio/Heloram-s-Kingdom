@@ -1,0 +1,36 @@
+package Villager
+
+import public ObjectIdGenerator
+import public UnitIds
+import public AbilityIds
+import public UnitObjEditing
+import public LinkedList
+
+public let players_unit = new LinkedList<unit>
+public int gen_unit_id_villager = compiletime(HERO_ID_GEN.next())
+
+@compiletime function gen_unit_villager()
+    new HeroDefinition(gen_unit_id_villager, UnitIds.villagerman)
+        ..setName("Villager")
+        ..setProperNames("Aprendice")
+        ..setTooltipExtended("Found lost at south of the village")
+        ..setModelFile("units\\critters\\VillagerMan\\VillagerMan")
+        ..setIconGameInterface("ReplaceableTextures\\CommandButtons\\BTNVillagerMan.blp")
+        ..setLevel(2)
+        ..setStartingStrength(1)
+        ..setStartingAgility(1)
+        ..setStartingIntelligence(1)
+        ..setHitPointsRegenerationRate(0.25)
+        ..setManaRegeneration(0)
+        ..setManaInitialAmount(0)
+        ..setDefenseBase(1)
+        ..setAttack1CooldownTime(1.75)
+        ..setAttack1DamageBase(5)
+        ..setAttack1DamageNumberofDice(1)
+        ..setAttack1DamageSidesperDie(2)
+        ..setStrengthPerLevel(1)
+        ..setAgilityPerLevel(1)
+        ..setIntelligencePerLevel(1)    
+        ..setSpeedBase(280)
+        ..setAttack1WeaponSound(WeaponSound.Nothing)
+        ..setFoodCost(0)
