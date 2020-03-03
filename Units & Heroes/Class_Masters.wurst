@@ -353,7 +353,8 @@ public int gen_unit_warlock_grand_master = compiletime(UNIT_ID_GEN.next())
     //Warlock
     new UnitDefinition(gen_unit_warlock_Novice, UnitIds.villagerman)
         ..setName("Warlock Novice")
-        ..setModelFile("units\\creeps\\OrcWarlockRed\\OrcWarlockRed")
+        ..setModelFile("Units\\Creeps\\DarkTrollHighPriest\\DarkTrollHighPriest")
+        
         ..setCollisionSize(9)
         ..setScalingValue(1.0)
         ..setHitPointsMaximumBase(100)
@@ -361,7 +362,7 @@ public int gen_unit_warlock_grand_master = compiletime(UNIT_ID_GEN.next())
     
     new UnitDefinition(gen_unit_warlock_master, UnitIds.villagerman)
         ..setName("Warlock Master")
-        ..setModelFile("Units\\Creeps\\DarkTrollHighPriest\\DarkTrollHighPriest")
+        ..setModelFile("units\\creeps\\OrcWarlockRed\\OrcWarlockRed")
         ..setCollisionSize(16)
         ..setScalingValue(1.3)
         ..setHitPointsMaximumBase(5000)

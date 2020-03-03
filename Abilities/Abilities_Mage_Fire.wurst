@@ -1,0 +1,321 @@
+package Abilities_Mage_Fire
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public HashMap
+import public UnitObjEditing
+import public DamageEvent
+
+public int gen_ability_mage_fire_fs = compiletime(ABIL_ID_GEN.next())
+public let gen_buff_id_fs = compiletime(createDummyBuffObject("|cffff0000Scald|r", "This unit is affected by Scald.", Icons.bTNIncinerate))
+public let fire_spear = new HashMap<unit,int>
+public int gen_ability_mage_fire_fis = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_mage_fire_fis_fly = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_mage_fire_ds = compiletime(ABIL_ID_GEN.next())
+public let gen_buff_id_ds = compiletime(createDummyBuffObject("|cffff0000Deep Scald|r", "This unit does more damage to enemies affected by Scald.", Icons.bTNImmolationOn))
+public int gen_ability_mage_fire_pc = compiletime(ABIL_ID_GEN.next())
+
+@compiletime function gen_ability_mage_fire_fire_spear()
+    new ChannelAbilityPreset(gen_ability_mage_fire_fs, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSearingArrows)
+        ..setIconResearch(Icons.bTNSearingArrows)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.POINT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Fire Spear")
+        ..setTooltipLearn("Fire Spear")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Channel your inner fire magic, making a powerfull flaming spear that burns the target. Fire Spear debuffs your enemy with Scald for 2 seconds, dealing more damage with your skills and hits.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Fire Spear - Lvl 1 |  |cffffa24bCooldown:|r 8 seconds")
+        ..setTooltipNormal(2, "Fire Spear - Lvl 2 |  |cffffa24bCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 80 Health Points.")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 220 Health Points.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 45)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 8)
+        ..setCooldown(2, 6)
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 450)     
+        ..setCastingTime(1, 0)       
+        ..setCastingTime(2, 0)       
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_mage_fire_fire_spirit()
+    new ChannelAbilityPreset(gen_ability_mage_fire_fis, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSelfDestruct)
+        ..setIconResearch(Icons.bTNSelfDestruct)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.UNIT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Fire Spirit")
+        ..setTooltipLearn("Fire Spirit")
+        ..setAnimationNames("attack,spell")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call the magical spirits, spawning flames at the target point, levitating and throwing your enemy against the ground. Fire Spirit debuffs your enemy with Scald for 2 seconds.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Fire Spirit - Lvl 1 |  |cffffa24bCooldown:|r 10 seconds")
+        ..setTooltipNormal(2, "Fire Spirit - Lvl 2 |  |cffffa24bCooldown:|r 8 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 75 Health Points.")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 175 Health Points.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 60)
+        ..setManaCost(2, 130)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 450)
+        ..setTargetsAllowed(1, "enemy")
+        ..setTargetsAllowed(2, "enemy")
+    
+    new AbilityDefinitionRavenFormDruidoftheTalon(gen_ability_mage_fire_fis_fly)
+        ..setCastingTime(1, 99)
+        ..setIconNormal("")
+        ..setIconResearch("")
+        ..setRequiredLevel(99)
+
+@compiletime function gen_ability_mage_fire_deep_scalds()
+    new AbilityDefinitionPaladinDevotionAura(gen_ability_mage_fire_ds)
+    //Basic Info
+        ..setLevels(2)
+        ..setPercentBonus(1, false)
+        ..setPercentBonus(2, false)
+        ..setArmorBonus(1, 0)
+        ..setArmorBonus(2, 0)
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.pASBTNImmolation)
+        ..setIconResearch(Icons.pASBTNImmolation)
+        //Set effect that shows at the target
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Deep Scalds")
+        ..setTooltipLearn("Deep Scalds")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Makes your target skin to burn and damage nearby enemies. This ability only works when your target has Scald debuff.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Deep Scalds - Lvl 1")
+        ..setTooltipNormal(2, "Deep Scalds - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffffa24bDamage Amount:|r 10 Health Points per hit.")
+        ..setTooltipNormalExtended(2, "|cffffa24bDamage Amount:|r 25 Health Points per hit.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        ..setBuffs(1, commaList(gen_buff_id_ds.buffId))
+        ..setBuffs(2, commaList(gen_buff_id_ds.buffId))
+        ..setAreaofEffect(1, 0)
+        ..setAreaofEffect(2, 0)
+        ..setArtTarget("")
+
+@compiletime function gen_ability_mage_fire_phoenix_call()
+    new ChannelAbilityPreset(gen_ability_mage_fire_pc, 1, true)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNWallOfFire)
+        ..setIconResearch(Icons.bTNWallOfFire)
+        //Set effect that shows at the target
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Phoenix Call")
+        ..setTooltipLearn("Phoenix Call")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("The spirit of the fire calls the Ancient Fire Dragon Phoenix upon the skies, burning the land and exploding at the end, damaging your enemies.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Phoenix Call - Lvl 1 |  |cffffa24bDuration:|r 6 seconds.")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 50 Health Points per Second for nearby enemies + 100 HP at death.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setCooldown(1, 10)
+        ..presetTargetTypes(Targettype.POINT)
+
+init
+    //Fire Spear
+    EventListener.onPointCast(gen_ability_mage_fire_fs) (unit caster, vec2 target) ->
+        caster.pause()
+        caster.setAnimation("attack spell one")
+        doPeriodicallyCounted(1.534, 1) (CallbackCounted cb) ->
+            caster.setAnimation("stand one")        
+        doPeriodicallyCounted(0.7, 1) (CallbackCounted cb) ->    
+            caster.unpause()        
+            new SoundDefinition("Abilities\\Weapons\\SearingArrow\\SearingArrowMissileLaunch1.flac", false).playOnPoint(caster.getPos3Fly())
+            effect spear = addEffect("Abilities\\Weapons\\SearingArrow\\SearingArrowMissile.mdl", vec3(caster.getX(), caster.getY(), 100))..setScale(2)..setYaw(caster.getPos().angleTo(target))
+            effect spear_fire = addEffect("Doodads\\Cinematic\\FireTrapSide\\FireTrapSide", vec3(caster.getX(), caster.getY(), 100))..setScale(1.0)..setYaw(caster.getPos().angleTo(target)+angle(90*DEGTORAD))
+            real counter = 0
+            int counter_cb14 = 1
+            real valuex = caster.getPos().angleTo(target).cos()*25 //angle that the CASTER are looking * MaxDistancePerSecond
+            real valuey = caster.getPos().angleTo(target).sin()*25
+            doPeriodically(0.033) (cb33) ->
+                spear.setX(spear.getLocalX() + valuex) //get the missile.x and add distance.x/30 
+                spear_fire.setX(spear.getLocalX() + valuex) //get the missile.x and add distance.x/30
+                spear.setY(spear.getLocalY() + valuey) //get the coin.y and add distance.y/30 (because of the 30FPS that i set)
+                spear_fire.setY(spear.getLocalY() + valuey) //get the coin.y and add distance.y/30 (because of the 30FPS that i set)
+                spear.setZ(100)
+                spear_fire.setZ(100)
+                counter += 0.033 //when counter = 1, it will be passed 30 frames
+                forUnitsInRange(vec2(spear.getLocalX(),spear.getLocalY()), 75) (unit units) ->         
+                    if fire_spear.has(units) == false and GetUnitAbilityLevel(caster, gen_ability_mage_fire_fs) == 1 and units != caster and units.isAllyOf(caster.getOwner()) == false
+                        units.setHP(units.getHP() - 80)
+                        fire_spear.put(units,1)
+                        doPeriodicallyCounted(2,1) (cb21) ->
+                            fire_spear.remove(units)
+                    else if fire_spear.has(units) == false and GetUnitAbilityLevel(caster, gen_ability_mage_fire_fs) == 2 and units != caster and units.isAllyOf(caster.getOwner()) == false
+                        units.setHP(units.getHP() - 220)
+                        fire_spear.put(units,1)
+                        doPeriodicallyCounted(2,1) (cb21) ->
+                            fire_spear.remove(units)
+                    if units.hasAbility(gen_buff_id_fs.abilId) == false and units != caster and units.isAllyOf(caster.getOwner()) == false
+                        new SoundDefinition("Abilities\\Weapons\\SearingArrow\\SearingArrowTarget3.flac", false).playOnPoint(units.getPos3Fly())
+                        units.addAbility(gen_buff_id_fs.abilId)
+                        effect target_effect = addEffect("Abilities\\Spells\\Other\\Incinerate\\IncinerateBuff.mdl", units, "origin")..setScale(0.7)
+                        doPeriodicallyCounted(2,1) (cb) ->
+                            units.removeAbility(gen_buff_id_fs.abilId)
+                            target_effect.destr()
+                if counter >= 3
+                    destroy cb33
+                    spear.destr()
+                    spear_fire.destr()
+        
+    //Fire Spirit
+    EventListener.onTargetCast(gen_ability_mage_fire_fis) (unit caster, unit target) ->
+        real angle_counter = 0
+        int cb_14 = 0
+        new SoundDefinition("Abilities\\Spells\\Demon\\RainOfFire\\RainOfFireTarget2.flac", false).playOnPoint(vec3(target.getX(),target.getY(),0))
+        effect flame = addEffect("Abilities\\Spells\\Human\\FlameStrike\\FlameStrike1.mdl", vec3(target.getX(),target.getY(),0))..setScale(1.0)
+        target.addAbility(gen_buff_id_fs.abilId)
+        effect target_effect = addEffect("Abilities\\Spells\\Other\\Incinerate\\IncinerateBuff.mdl", target, "origin")..setScale(0.7)
+        target.addAbility(gen_ability_mage_fire_fis_fly)        
+        doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->            
+            target.removeAbility(gen_buff_id_fs.abilId)
+            target_effect.destr()
+        target.pause()
+        doPeriodicallyCounted(0.033, 60) (CallbackCounted cb033) ->
+            target.setFlyHeight(target.getFlyHeight() + 5, 0)
+            angle_counter += 1.5
+            if angle_counter >= 90
+                target.setFlyHeight(0, 0)
+                target.removeAbility(gen_ability_mage_fire_fis_fly)
+                target.unpause()
+                flashEffect("Objects\\Spawnmodels\\Orc\\Orcblood\\OrdBloodWyvernRider.mdl", vec3(target.getX(),target.getY(),0))
+                new SoundDefinition("Units\\Orc\\HeroTaurenChieftain\\WarStompBirth1.flac", false).playOnPoint(vec3(target.getX(),target.getY(),0))
+                if GetUnitAbilityLevel(caster, gen_ability_mage_fire_fis) == 1
+                    target.setHP(target.getHP() - 75)                    
+                else if GetUnitAbilityLevel(caster, gen_ability_mage_fire_fis) == 2
+                    target.setHP(target.getHP() - 175)
+    
+    //Deep Scalds
+    DamageEvent.addListener() ->
+        if DamageEvent.getTarget().hasAbility(gen_buff_id_fs.abilId) == true
+            if DamageEvent.getSource().getName() == "Mage Fire" and DamageEvent.getSource().getProperName() == "Novice"
+                if DamageEvent.getSource().hasAbility(gen_ability_mage_fire_ds)
+                    if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_mage_fire_ds) == 1
+                        forUnitsInRange(DamageEvent.getTarget().getPos(), 175) (unit u) ->
+                            if u.getOwner().isAllyOf(DamageEvent.getSource().getOwner()) == false and u != DamageEvent.getSource()
+                                u.setHP(u.getHP() - 10)
+                                flashEffect("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", u, "chest")
+                                new SoundDefinition("Abilities\\Weapons\\LordofFlameMissile\\FireLordMissileDeath1.flac", false).playOnPoint(u.getPos3Fly())
+                    
+                    else if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_mage_fire_ds) == 2
+                        forUnitsInRange(DamageEvent.getTarget().getPos(), 350) (unit u) ->
+                            if u.getOwner().isAllyOf(DamageEvent.getSource().getOwner()) == false and u != DamageEvent.getSource()
+                                u.setHP(u.getHP() - 25)
+                                flashEffect("Abilities\\Spells\\Human\\Feedback\\SpellBreakerAttack.mdl", u, "chest")
+                                new SoundDefinition("Abilities\\Weapons\\LordofFlameMissile\\FireLordMissileDeath1.flac", false).playOnPoint(u.getPos3Fly())
+
+    //Phoenix Call
+    EventListener.onPointCast(gen_ability_mage_fire_pc) (unit caster, vec2 target) ->
+        var sound_counter = 0
+        var cb_counter = 0
+        real phoenix_height = 200
+        effect flaming_circle = addEffect("Abilities\\Spells\\Orc\\SpiritLink\\SpiritLinkTarget.mdl", vec3(target.x, target.y, 0))..setScale(3.5)
+        effect phoenix = addEffect("units\\human\\phoenix\\phoenix", vec3(target.x, target.y, phoenix_height))..setScale(1.0)
+        new SoundDefinition("Units\\Human\\Phoenix\\PhoenixWhat3.flac", false).playOnPoint(vec3(target.x, target.y, 0))
+        doPeriodicallyCounted(0.033, 180) (CallbackCounted cb) ->
+            phoenix.setZ(phoenix_height)
+            phoenix_height -= 1
+        doPeriodicallyCounted(1,6) (cb) ->
+            cb_counter += 1
+            effect flaming = addEffect("Abilities\\Spells\\Undead\\ReplenishHealth\\ReplenishHealthCaster.mdl", vec3(target.x, target.y, 0))..resetScale()..setScale(3.0)
+            sound_counter = GetRandomInt(1, 3)
+            if sound_counter == 1
+                new SoundDefinition("Units\\Human\\Phoenix\\PhoenixYes1.wav", false).playOnPoint(vec3(target.x, target.y, 0))
+            else if sound_counter == 2
+                new SoundDefinition("Units\\Human\\Phoenix\\PhoenixYes2.wav", false).playOnPoint(vec3(target.x, target.y, 0))
+            else if sound_counter == 3
+                new SoundDefinition("Units\\Human\\Phoenix\\PhoenixYes3.wav", false).playOnPoint(vec3(target.x, target.y, 0))            
+            forUnitsInRange(target, 300) (unit u) ->
+                if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                    if u.hasAbility(gen_buff_id_fs.abilId) == false
+                        u.addAbility(gen_buff_id_fs.abilId)
+                        doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                            u.removeAbility(gen_buff_id_fs.abilId)    
+                        u.setHP(u.getHP() - 50)                    
+            if cb_counter == 6
+                forUnitsInRange(target, 300) (unit u) ->
+                    if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                        u.setHP(u.getHP() - 100)                    
+                phoenix.destr()
+                flaming_circle.destr()
+                flaming.destr()
+                effect flaming_explosion = addEffect("Abilities\\Spells\\Demon\\DarkPortal\\DarkPortalTarget.mdl", vec3(target.x, target.y, 0))..setScale(1.5)
+                new SoundDefinition("Sound\\Destructibles\\BarrelExplosion3.flac", false).playOnPoint(vec3(target.x, target.y, 0))
+                doAfter(2) ->
+                    flaming_explosion.destr()
+                    
+                    
+                
+
+
+            
+            
+        

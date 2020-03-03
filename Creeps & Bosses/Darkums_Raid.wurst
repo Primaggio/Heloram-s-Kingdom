@@ -15,8 +15,8 @@ public int gen_unit_dg1_boss_abomination = compiletime(HERO_ID_GEN.next())
         ..setSelectionScale(3)
         //Basic Information
 //--------------------------------------------------------
-        ..setName("Dark'umn Zombie")
-        ..setProperNames("Dark'umn Zombie")
+        ..setName("Dark'umn's Zombie")
+        ..setProperNames("Dark'umn's Zombie")
         ..hideHeroDeathMsg(true)
         ..setFoodProduced(1)
         ..setLevel(1)
@@ -85,13 +85,13 @@ public int gen_unit_dg1_boss_abomination = compiletime(HERO_ID_GEN.next())
 
 @compiletime function gen_unit_dg1_boss_abomination()  
     new HeroDefinition(gen_unit_dg1_boss_abomination, UnitIds.zombie)
-        ..setCollisionSize(49)
+        ..setCollisionSize(48)
         ..setScalingValue(4)
         ..setSelectionScale(3)
         //Basic Information
 //--------------------------------------------------------
-        ..setName("Dark'umn Zombie")
-        ..setProperNames("Dark'umn Zombie")
+        ..setName("Dark'umn's Transformed Zombie")
+        ..setProperNames("Dark'umn's Transformed Zombie")
         ..hideHeroDeathMsg(true)
         ..setFoodProduced(1)
         ..setLevel(1)

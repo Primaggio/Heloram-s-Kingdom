@@ -1,0 +1,368 @@
+package Abilities_Shaman_Healer
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public DamageEvent
+import public UnitIds
+import public HashMap
+
+public int gen_ability_shaman_heal_ht = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_shaman_heal_tt = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_shaman_heal_hw = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_shaman_heal_fc = compiletime(ABIL_ID_GEN.next())
+let healing_wave_targets = new IterableMap<unit,int>
+let thorns_totem_targets = new IterableMap<unit,int>
+//public let gen_buff_id_lw = compiletime(createDummyBuffObject("|cff00b7ffLightning Weapon|r", "This unit has a chance to do damage to the target unit when hitting it.", Icons.bTNMonsoon))
+
+
+@compiletime function gen_ability_shaman_heal_healing_totem()
+    new ChannelAbilityPreset(gen_ability_shaman_heal_ht, 2, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Healing Totem")
+        ..setTooltipLearn("Healing Totem")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Invokes a life spirit totem that heals you and your allies.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Healing Totem - Lvl 1 |  |cffa7fcffCooldown:|r 10 seconds")
+        ..setTooltipNormal(2, "Healing Totem - Lvl 2 |  |cffa7fcffCooldown:|r 8 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00Healing Amount:|r +15 Health Points per second for 4 seconds.")
+        ..setTooltipNormalExtended(2, "|cff00ff00Healing Amount:|r +35 Health Points per second for 6 seconds.")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSentryWard)
+        ..setIconResearch(Icons.bTNSentryWard)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 65)
+        ..setManaCost(2, 175)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_shaman_heal_thorns_totem()
+    new ChannelAbilityPreset(gen_ability_shaman_heal_tt, 2, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Thorns Totem")
+        ..setTooltipLearn("Thorns Totem")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Invokes a nature spirit totem that roots your enemies.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Thorns Totem - Lvl 1 |  |cffa7fcffCooldown:|r 8 seconds")
+        ..setTooltipNormal(2, "Thorns Totem - Lvl 2 |  |cffa7fcffCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff007e15Roots Duration:|r 2 seconds | |cff93ffa5Totem Duration:|r 5 seconds")
+        ..setTooltipNormalExtended(2, "|cff007e15Roots Duration:|r 3 seconds | |cff93ffa5Totem Duration:|r 6 seconds")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal("ReplaceableTextures\\CommandButtons\\BTNWatcherWard.blp")
+        ..setIconResearch("ReplaceableTextures\\CommandButtons\\BTNWatcherWard.blp")
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 50)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 8)
+        ..setCooldown(2, 6)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_shaman_heal_healing_wave()
+    new ChannelAbilityPreset(gen_ability_shaman_heal_hw, 2, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Healing Wave")
+        ..setTooltipLearn("Healing Wave")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Summong a healing wave around you, healing your allies when it pass through them.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Healing Wave - Lvl 1 |  |cffa7fcffCooldown:|r 10 seconds")
+        ..setTooltipNormal(2, "Healing Wave - Lvl 2 |  |cffa7fcffCooldown:|r 8 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00ff00Healing Amount:|r 70 Health Points")
+        ..setTooltipNormalExtended(2, "|cff00ff00Healing Amount:|r 160 Health Points")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNNeutralManaShield)
+        ..setIconResearch(Icons.bTNNeutralManaShield)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 70)
+        ..setManaCost(2, 150)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_shaman_heal_furious_call()
+    new ChannelAbilityPreset(gen_ability_shaman_heal_fc, 1, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Furious Call")
+        ..setTooltipLearn("Furious Call")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Enrage yourself and your allies, raising attack speed and damage.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Furious Call - Lvl 1 |  |cffa7fcffCooldown:|r 120 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Bonus:|r +20 Damage Points | |cffff8800Attack Speed Bonus:|r +25% Attack Percent Bonus")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNUnholyFrenzy)
+        ..setIconResearch(Icons.bTNUnholyFrenzy)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 175)
+        ..setCooldown(1, 120)
+        ..setCastingTime(1, 0)
+        ..setAnimationNames("none")
+
+init   
+    //Healing Totem
+    EventListener.onCast(gen_ability_shaman_heal_ht) (unit caster) ->
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(0.02, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->   
+            effect totem = addEffect("units\\orc\\SentryWard\\SentryWard.mdl", vec3(caster.getX() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).sin()*150, 0))..setScale(1.0)..setYaw(caster.getFacingAngle())
+            vec2 totem_pos = totem.getPos()
+            new SoundDefinition("Abilities\\Spells\\Other\\CrushingWave\\CrushingWaveCaster1.flac", false).playOnPoint(caster.getPos3Fly())
+            effect healing_wave = addEffect("Abilities\\Spells\\Undead\\Unsummon\\UnsummonTarget.mdl", vec3(caster.getX() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).sin()*150, 0))..setScale(1.0)
+            doPeriodicallyCounted(1, 5) (CallbackCounted cb) ->            
+                forUnitsInRange(totem_pos, 450) (unit u) ->
+                    if u.getOwner().isAllyOf(caster.getOwner()) == true
+                        if GetUnitAbilityLevel(caster, gen_ability_shaman_heal_ht) == 1
+                            u.setHP(u.getHP() + 15)
+                        else if GetUnitAbilityLevel(caster, gen_ability_shaman_heal_ht) == 2
+                            u.setHP(u.getHP() + 35)
+                        effect target_effect_heal = addEffect("Abilities\\Spells\\Items\\RitualDagger\\RitualDaggerTarget.mdl", u, "origin")
+                        new SoundDefinition("Abilities\\Spells\\NightElf\\Tranquility\\TranquilityTarget1.flac", false).playOnPoint(u.getPos3Fly())
+                        doPeriodicallyCounted(0.9, 1) (CallbackCounted cb) ->
+                            target_effect_heal.destr()
+            doPeriodicallyCounted(5, 1) (CallbackCounted cb) ->
+                totem.destr()
+                healing_wave.destr()
+
+    //Thorns Totem
+    EventListener.onCast(gen_ability_shaman_heal_tt) (unit caster) ->
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(0.02, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->
+            real cb_counter = 0
+            effect totem = addEffect("units\\orc\\WatcherWard\\WatcherWard.mdl", vec3(caster.getX() + ((caster.getFacingAngle().degrees() - 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() - 45)*DEGTORAD).sin()*150, 0))..setScale(1.0)..setYaw(caster.getFacingAngle())
+            vec2 totem_pos = totem.getPos()
+            new SoundDefinition("Units\\Orc\\HealingWard\\PlaceAncestralGuardian.flac", false).playOnPoint(caster.getPos3Fly())
+            effect thorn_wave = addEffect("Abilities\\Spells\\NightElf\\Taunt\\TauntCaster.mdl", vec3(caster.getX() + ((caster.getFacingAngle().degrees() - 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() - 45)*DEGTORAD).sin()*150, 0))..setScale(1.0)
+            doPeriodicallyCounted(0.5, 12) (CallbackCounted cb) ->     
+                cb_counter += 0.5       
+                forUnitsInRange(totem_pos, 150) (unit u) ->
+                    if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster and thorns_totem_targets.has(u) == false
+                        thorns_totem_targets.put(u,1)
+                        doPeriodicallyCounted(6, 1) (CallbackCounted cb) ->
+                            thorns_totem_targets.getAndRemove(u)
+                        if u.isPaused() == false
+                            u.pause()
+                            effect thorn_roots = addEffect("Abilities\\Spells\\NightElf\\EntanglingRoots\\EntanglingRootsTarget.mdl", vec3(u.getX(), u.getY(), 0))   
+                            if GetUnitAbilityLevel(caster, gen_ability_shaman_heal_tt) == 1
+                                doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                                    thorn_roots.destr()
+                                    u.unpause()
+                            else if GetUnitAbilityLevel(caster, gen_ability_shaman_heal_tt) == 2
+                                doPeriodicallyCounted(3, 1) (CallbackCounted cb) ->
+                                    thorn_roots.destr()
+                                    u.unpause()
+                if cb_counter == 6
+                    totem.destr()
+
+    //Healing Wave
+    EventListener.onCast(gen_ability_shaman_heal_hw) (unit caster) ->    
+        caster.pause()
+        caster.setAnimation("spell two")                
+        doPeriodicallyCounted(0.02, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.4, 1) (CallbackCounted cb) ->
+            new SoundDefinition("Units\\Orc\\SentryWard\\SentryWard.flac", false).playOnPoint(caster.getPos3Fly())
+            effect wave = addEffect("Abilities\\Spells\\Undead\\ReplenishMana\\ReplenishManaCaster.mdl", caster.getPos3Fly())..setScale(4) 
+            doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->                
+                wave.destr()                     
+        vec2 cast_pos = caster.getPos()
+        real cb_counter = 0
+        doPeriodicallyCounted(0.033, 20) (CallbackCounted cb) ->
+            forUnitsInRange(cast_pos, cb_counter*15) (unit u) ->                
+                if cast_pos.distanceTo(u.getPos()) <= (cb_counter*15 + 15) and cast_pos.distanceTo(u.getPos()) >= (cb_counter*15 - 15)
+                    if healing_wave_targets.has(u) == false and u.getOwner().isAllyOf(caster.getOwner()) == true and u != caster
+                        if GetUnitAbilityLevel(caster, gen_ability_shaman_heal_hw) == 1
+                            u.setHP(u.getHP() + 75)
+                        else if GetUnitAbilityLevel(caster, gen_ability_shaman_heal_hw) == 2
+                            u.setHP(u.getHP() + 175)
+                        healing_wave_targets.put(u, 1)
+                        doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                            healing_wave_targets.getAndRemove(u)
+                        flashEffect("Abilities\\Spells\\NightElf\\MoonWell\\MoonWellCasterArt.mdl", u, "origin")    
+                        new SoundDefinition("Abilities\\Spells\\NightElf\\Tranquility\\TranquilityTarget1.flac", false).playOnPoint(caster.getPos3Fly())                
+                        
+            cb_counter += 1
+
+    //Furious Call
+    EventListener.onCast(gen_ability_shaman_heal_fc) (unit caster) ->
+        caster.pause()
+        caster.setAnimation("spell two")                
+        doPeriodicallyCounted(0.02, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.05, 1) (CallbackCounted cb) ->            
+            int cb_counter = 0
+            new SoundDefinition("Abilities\\Spells\\Orc\\Bloodlust\\BloodlustTarget.flac", false).playOnPoint(caster.getPos3Fly())
+            effect bloodlust_caster = addEffect("Abilities\\Spells\\Orc\\Voodoo\\VoodooAuraTarget.mdl", caster, "origin")..setScale(2.5)        
+            forUnitsInRange(caster.getPos(), 350) (unit u) ->
+                if u.getOwner().isAllyOf(caster.getOwner()) == true or u == caster 
+                    if u != caster
+                        effect bloodlust = addEffect("Abilities\\Spells\\Orc\\Bloodlust\\BloodlustTarget.mdl", u, "overhead")..setScale(1.5)
+                        doPeriodicallyCounted(9.95, 1) (CallbackCounted cb) ->
+                            bloodlust.destr()
+                    doPeriodicallyCounted(0.033, 15) (CallbackCounted cb) ->
+                        cb_counter += 1
+                        u.setScale(1.0 + cb_counter*0.025)
+                    //Damage Bonus
+                    int base_dice_0 = u.getDiceNumber(0)
+                    int base_dice_1 = u.getDiceNumber(1)
+                    u.setDiceNumber(base_dice_0 + 20, 0)
+                    u.setDiceNumber(base_dice_0 + 20, 1)
+                    //Attack Speed Bonus
+                    real base_cd_0 = u.getAttackCooldown(0)
+                    real base_cd_1 = u.getAttackCooldown(1)
+                    u.setAttackCooldownPercChange(0.25, 0)
+                    u.setAttackCooldownPercChange(0.25, 1)
+                    doPeriodicallyCounted(10, 1) (CallbackCounted cb) ->
+                        u.setDiceNumber(base_dice_0, 0)
+                        u.setDiceNumber(base_dice_1, 1)
+                        u.setAttackCooldown(base_cd_0, 0)
+                        u.setAttackCooldown(base_cd_1, 1)                        
+                        bloodlust_caster.destr()
+                        cb_counter = 15
+                        doPeriodicallyCounted(0.033, 15) (CallbackCounted cb) ->    
+                            cb_counter -= 1                    
+                            u.setScale(1.0 + cb_counter*0.025)
+
+                
+                
+                    
+                    
+            
+        
+                
+                    
+                
+            
+        
+            
+            
+        
+    /*
+    DamageEvent.addListener() ->
+        if DamageEvent.getSource().hasAbility(gen_ability_pal_dps_lw)
+            if DamageEvent.getSource().getName() == "Paladin Bruiser" and DamageEvent.getSource().getProperName() == "Novice"
+                if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_pal_dps_lw) == 1
+                    int number = GetRandomInt(1, 100)
+                    if number >= 1 and number <= 10
+                        DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 25)
+                        flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                        new SoundDefinition("Abilities\\Spells\\Orc\\LightningBolt\\LightningBolt.flac", false).playOnPoint(DamageEvent.getTarget().getPos3Fly()) 
+
+                if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_pal_dps_lw) == 2
+                    int number = GetRandomInt(1, 100)
+                    if number >= 1 and number <= 25
+                        DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 50)
+                        flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                        new SoundDefinition("Abilities\\Spells\\Orc\\LightningBolt\\LightningBolt.flac", false).playOnPoint(DamageEvent.getTarget().getPos3Fly()) 
+
+    //Storm Call
+    EventListener.onCast(gen_ability_pal_dps_sc) (unit caster) ->
+        int cb_counter = 0
+        new SoundDefinition("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.flac", false).playOnPoint(caster.getPos3Fly()) 
+        effect target_effect_angel = addEffect("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.mdl", caster, "origin")..setScale(1)
+        doPeriodicallyCounted(1, 17) (CallbackCounted cb) ->
+            cb_counter += 1
+            if cb_counter == 2
+                players_unit_list_pal_sc.put(caster.getOwner(),createUnit(caster.getOwner(), gen_unit_pal_sc, caster.getPos(), angle(0))..setColor(PLAYER_COLOR_LIGHT_BLUE))
+            if cb_counter == 4
+                target_effect_angel.destr()
+            else if cb_counter == 17
+                players_unit_list_pal_sc.get(caster.getOwner()).pause()
+                players_unit_list_pal_sc.get(caster.getOwner()).setInvulnerable(true)
+                new SoundDefinition("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.flac", false).playOnPoint(caster.getPos3Fly()) 
+                effect target_effect_angel_recall = addEffect("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.mdl", players_unit_list_pal_sc.get(caster.getOwner()), "origin")..setScale(1)
+                doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                    players_unit_list_pal_sc.get(caster.getOwner()).remove()
+                    target_effect_angel_recall.destr()
+
+    DamageEvent.addListener() -> 
+        if DamageEvent.getSource().getName() == "Paladin Bruiser Warrior"
+            if sc_warrior_counter == 0                
+                new SoundDefinition("Abilities\\Spells\\Human\\StormBolt\\StormBoltLaunch.flac", false).playOnPoint(DamageEvent.getTarget().getPos3Fly())
+                effect target_effect_lightning_1 = addEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                effect target_effect_lightning_2 = addEffect("Abilities\\Spells\\Undead\\ReplenishMana\\ReplenishManaCaster.mdl", DamageEvent.getTarget(), "origin")
+                DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 125)
+                doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                    target_effect_lightning_1.destr()
+                    target_effect_lightning_2.destr()                 
+                sc_warrior_counter = 1
+                doPeriodicallyCounted(5, 1) (CallbackCounted cb) ->
+                    sc_warrior_counter = 0
+
+            */
+                
+                    
+                        
+            
+            
+        
+        
+                        
+
+                        
+                    
+        
+        
+        
+            
+
+            
+        
+        
+
+

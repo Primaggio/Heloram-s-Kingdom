@@ -1,0 +1,534 @@
+package Abilities_Warlock
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public HashMap
+import public UnitObjEditing
+import public DamageEvent
+import public Timer
+import public UnitIds
+
+let dark_magic_orb = new HashMap<unit,int>
+let dark_magic_counter = new HashMap<unit,int>
+let dark_magic_cb = new HashMap<unit,int>
+
+public int gen_ability_warlock_taso = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_warlock_cupu = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_warlock_dama = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_warlock_vowa = compiletime(ABIL_ID_GEN.next())
+public int gen_unit_warlock_vw = compiletime(UNIT_ID_GEN.next())
+let players_unit_list_warlock_vw = new IterableMap<player, unit>
+public let gen_buff_id_dama = compiletime(createDummyBuffObject("|cff7e0069Dark Magic|r", "This unit generates orbs at the enemy target, raising it abilities damage.", Icons.bTNOrbOfDarkness))
+
+@compiletime function gen_ability_warlock_get_soul()
+    new ChannelAbilityPreset(gen_ability_warlock_taso, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNDoom)
+        ..setIconResearch(Icons.bTNDoom)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.UNIT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Take Soul")
+        ..setTooltipLearn("Take Soul")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Brings a death spirit of the ground, getting the enemy soul and dealing damage to it.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Take Soul - Lvl 1 |  |cffff00eaCooldown:|r 8 seconds")
+        ..setTooltipNormal(2, "Take Soul - Lvl 2 |  |cffff00eaCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffcc00ffDamage Amount:|r 100 Health Points.")
+        ..setTooltipNormalExtended(2, "|cffcc00ffDamage Amount:|r 225 Health Points.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 35)
+        ..setManaCost(2, 100)
+        ..setCooldown(1, 8)
+        ..setCooldown(2, 6)
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 450)     
+        ..setCastingTime(1, 0)       
+        ..setCastingTime(2, 0)       
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_warlock_cursed_puppet()
+    new ChannelAbilityPreset(gen_ability_warlock_cupu, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNOrbOfCorruption)
+        ..setIconResearch(Icons.bTNOrbOfCorruption)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.UNIT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Cursed Puppet")
+        ..setTooltipLearn("Cursed Puppet")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Makes a voodo dark curse at yourself, dealing damage to your target.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Cursed Puppet - Lvl 1 |  |cffae00ffCooldown:|r 9 seconds")
+        ..setTooltipNormal(2, "Cursed Puppet - Lvl 2 |  |cffae00ffCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffcc00ffDamage Amount:|r 125 Health Points.")
+        ..setTooltipNormalExtended(2, "|cffcc00ffDamage Amount:|r 200 Health Points.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 45)
+        ..setManaCost(2, 115)
+        ..setCooldown(1, 9)
+        ..setCooldown(2, 6)
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 450)     
+        ..setCastingTime(1, 0)       
+        ..setCastingTime(2, 0)       
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_warlock_dark_magic()
+    new AbilityDefinitionPaladinDevotionAura(gen_ability_warlock_dama)
+    //Basic Info
+        ..setLevels(2)
+        ..setPercentBonus(1, false)
+        ..setPercentBonus(2, false)
+        ..setArmorBonus(1, 0)
+        ..setArmorBonus(2, 0)
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNOrbOfDarkness)
+        ..setIconResearch(Icons.bTNOrbOfDarkness)
+        //Set effect that shows at the target
+        //Set animation during cast for the caster
+        //Texts
+        ..setName("Dark Magic")
+        ..setTooltipLearn("Dark Magic")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Hitting your target spawns a dark orb around it, raising your spell damage against it.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Dark Magic - Lvl 1")
+        ..setTooltipNormal(2, "Dark Magic - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffcc00ffDamage Amount:|r +15 Damage Points per orb.")
+        ..setTooltipNormalExtended(2, "|cffcc00ffDamage Amount:|r +25 Damage Points per orb.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        ..setAreaofEffect(1, 0)
+        ..setAreaofEffect(2, 0)
+        ..setBuffs(1, commaList(gen_buff_id_dama.buffId))
+        ..setBuffs(2, commaList(gen_buff_id_dama.buffId))
+        ..setArtTarget("")
+
+@compiletime function gen_ability_warlock_void_walker()
+
+    //Paladin Bruiser
+    new UnitDefinition(gen_unit_warlock_vw, 'nvdw')
+        ..setName("Void Walker")
+        ..setCollisionSize(24)
+        ..setScalingValue(1.25)
+        ..setHitPointsMaximumBase(450)
+        ..setHitPointsRegenerationRate(5)
+        ..setDefenseBase(10)
+        ..setAttack1DamageBase(45)
+        ..setAttack1DamageNumberofDice(3)
+        ..setAttack1DamageSidesperDie(3)
+        ..setAttack1CooldownTime(1.0)
+        ..setNormalAbilities("")
+        ..setDefaultActiveAbility("")
+
+    new ChannelAbilityPreset(gen_ability_warlock_vowa, 1, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Void Walker")
+        ..setTooltipLearn("Void Walker")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Embeed your soul with darkness, calling the shadow spirits and summoning a Void Walker to fight beside you. He has a chance to cast Get Soul or Cursed Puppet and generates orb for Dark Magic.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Void Walker - Lvl 1 |  |cffc300ffCooldown:|r 150 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff00b3Duration:|r 20 seconds | |cff9900ffSpell Damage:|r 50% of your spells damage.")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNVoidWalker)
+        ..setIconResearch(Icons.bTNVoidWalker)
+        ..setRequiredLevel(1)
+        ..setManaCost(1, 0)
+        ..setCooldown(1, 5)
+        ..setCastingTime(1, 0)
+
+init        
+    //Get Soul
+    EventListener.onTargetCast(gen_ability_warlock_taso) (unit caster, unit target) ->
+        effect target_effect = addEffect("Abilities\\Spells\\Items\\AIso\\AIsoTarget.mdl", vec3(target.getX(), target.getY(), 0))..setScale(1.25)..setYaw(90*DEGTORAD)
+        new SoundDefinition("Abilities\\Spells\\Demon\\SoulPreservation\\SoulPreservation.flac", false).playOnPoint(target.getPos3Fly())
+        doPeriodicallyCounted(0.033, 90) (CallbackCounted cb) ->
+            target_effect.setX(target.getX())
+            target_effect.setY(target.getY())
+            target_effect.setZ(target_effect.getPos3().getTerrainZ())
+        doPeriodicallyCounted(2.0, 1) (CallbackCounted cb) ->
+            if GetUnitAbilityLevel(caster, gen_ability_warlock_taso) == 1
+                target.setHP(target.getHP() - 100)
+                if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 1
+                    target.setHP(target.getHP() - 15*dark_magic_orb.getAndRemove(target))
+                    dark_magic_counter.getAndRemove(target)
+                else if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 2
+                    target.setHP(target.getHP() - 25*dark_magic_orb.getAndRemove(target))
+                    dark_magic_counter.getAndRemove(target)
+            else if GetUnitAbilityLevel(caster, gen_ability_warlock_taso) == 2
+                target.setHP(target.getHP() - 225)
+                if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 1
+                    target.setHP(target.getHP() - 15*dark_magic_orb.getAndRemove(target))
+                    dark_magic_counter.getAndRemove(target)
+                else if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 2
+                    target.setHP(target.getHP() - 25*dark_magic_orb.getAndRemove(target))
+                    dark_magic_counter.getAndRemove(target)
+            new SoundDefinition("Abilities\\Spells\\Undead\\Impale\\ImpaleLand.flac", false).playOnPoint(target.getPos3Fly())
+            target_effect.destr()
+            target_effect = null
+
+    EventListener.onTargetCast(gen_ability_warlock_cupu) (unit caster, unit target) ->
+        new SoundDefinition("Abilities\\Spells\\Undead\\Possession\\PossessionMissileLaunch1.flac", false).playOnPoint(target.getPos3Fly())
+        int cb_counter = 0
+        real distance = 0
+        real height = 0
+        effect needle_target_1 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX() + 75, target.getY(), 75))..setScale(1.5)..setYaw(0*DEGTORAD)..setPitch(155*DEGTORAD)
+        effect needle_target_2 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX() - 75, target.getY(), 75))..setScale(1.5)..setYaw(180*DEGTORAD)..setPitch(155*DEGTORAD)
+        effect needle_target_3 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX(), target.getY() + 75, 75))..setScale(1.5)..setYaw(270*DEGTORAD)..setPitch(65*DEGTORAD)
+        effect needle_target_4 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX(), target.getY() - 75, 75))..setScale(1.5)..setYaw(90*DEGTORAD)..setPitch(65*DEGTORAD)
+        effect needle_caster_1 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX() + 75, caster.getY(), 75))..setScale(1.5)..setYaw(0*DEGTORAD)..setPitch(155*DEGTORAD)
+        effect needle_caster_2 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX() - 75, caster.getY(), 75))..setScale(1.5)..setYaw(180*DEGTORAD)..setPitch(155*DEGTORAD)
+        effect needle_caster_3 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX(), caster.getY() + 75, 75))..setScale(1.5)..setYaw(270*DEGTORAD)..setPitch(65*DEGTORAD)
+        effect needle_caster_4 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX(), caster.getY() - 75, 75))..setScale(1.5)..setYaw(90*DEGTORAD)..setPitch(65*DEGTORAD)
+        doPeriodicallyCounted(0.033, 30) (CallbackCounted cb) ->
+            cb_counter += 1
+            if cb_counter <= 15
+                needle_target_1.setX(target.getX() + 75)
+                needle_target_2.setX(target.getX() - 75)
+                needle_target_3.setX(target.getX())
+                needle_target_4.setX(target.getX())
+                needle_target_1.setY(target.getY())
+                needle_target_2.setY(target.getY())
+                needle_target_3.setY(target.getY() + 75)
+                needle_target_4.setY(target.getY() - 75)
+                needle_target_1.setZ(needle_target_1.getPos3().getTerrainZ() + 75.0)
+                needle_target_2.setZ(needle_target_2.getPos3().getTerrainZ() + 75.0)
+                needle_target_3.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0)
+                needle_target_4.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0)
+
+                needle_caster_1.setX(caster.getX() + 75)
+                needle_caster_2.setX(caster.getX() - 75)
+                needle_caster_3.setX(caster.getX())
+                needle_caster_4.setX(caster.getX())
+                needle_caster_1.setY(caster.getY())
+                needle_caster_2.setY(caster.getY())
+                needle_caster_3.setY(caster.getY() + 75)
+                needle_caster_4.setY(caster.getY() - 75)
+                needle_caster_1.setZ(needle_caster_1.getPos3().getTerrainZ() + 75.0)
+                needle_caster_2.setZ(needle_caster_2.getPos3().getTerrainZ() + 75.0)
+                needle_caster_3.setZ(needle_caster_3.getPos3().getTerrainZ() + 75.0)
+                needle_caster_4.setZ(needle_caster_4.getPos3().getTerrainZ() + 75.0)
+
+            if cb_counter > 15
+                distance += 5
+                height += 4
+                needle_target_1.setX(target.getX() + 75 - distance)
+                needle_target_2.setX(target.getX() - 75 + distance)
+                needle_target_3.setX(target.getX())
+                needle_target_4.setX(target.getX())
+                needle_target_1.setY(target.getY())
+                needle_target_2.setY(target.getY())
+                needle_target_3.setY(target.getY() + 75 - distance)
+                needle_target_4.setY(target.getY() - 75 + distance)
+                needle_target_1.setZ(needle_target_1.getPos3().getTerrainZ() + 75.0 - height)
+                needle_target_2.setZ(needle_target_2.getPos3().getTerrainZ() + 75.0 - height)
+                needle_target_3.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0 - height)
+                needle_target_4.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0 - height)
+    
+                needle_caster_1.setX(caster.getX() + 75 - distance)
+                needle_caster_2.setX(caster.getX() - 75 + distance)
+                needle_caster_3.setX(caster.getX())
+                needle_caster_4.setX(caster.getX())
+                needle_caster_1.setY(caster.getY())
+                needle_caster_2.setY(caster.getY())
+                needle_caster_3.setY(caster.getY() + 75 - distance)
+                needle_caster_4.setY(caster.getY() - 75 + distance)
+                needle_caster_1.setZ(needle_caster_1.getPos3().getTerrainZ() + 75.0 - height)
+                needle_caster_2.setZ(needle_caster_2.getPos3().getTerrainZ() + 75.0 - height)
+                needle_caster_3.setZ(needle_caster_3.getPos3().getTerrainZ() + 75.0 - height)
+                needle_caster_4.setZ(needle_caster_4.getPos3().getTerrainZ() + 75.0 - height)
+
+            if cb_counter >= 30
+                new SoundDefinition("Abilities\\Spells\\Undead\\Possession\\PossessionMissileHit1.flac", false).playOnPoint(target.getPos3Fly())                
+                needle_target_1.destr()
+                needle_target_1 = null
+                needle_target_2.destr()
+                needle_target_2 = null
+                needle_target_3.destr()
+                needle_target_3 = null
+                needle_target_4.destr()
+                needle_target_4 = null
+
+                needle_caster_1.destr()
+                needle_caster_1 = null
+                needle_caster_2.destr()
+                needle_caster_2 = null
+                needle_caster_3.destr()
+                needle_caster_3 = null
+                needle_caster_4.destr()
+                needle_caster_4 = null
+
+                if GetUnitAbilityLevel(caster, gen_ability_warlock_cupu) == 1
+                    target.setHP(target.getHP() - 125)
+                    if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 1
+                        target.setHP(target.getHP() - 15*dark_magic_orb.getAndRemove(target))
+                        dark_magic_counter.getAndRemove(target)
+                    else if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 2
+                        target.setHP(target.getHP() - 25*dark_magic_orb.getAndRemove(target))
+                        dark_magic_counter.getAndRemove(target)
+                else if GetUnitAbilityLevel(caster, gen_ability_warlock_cupu) == 2
+                    target.setHP(target.getHP() - 200)
+                    if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 1
+                        target.setHP(target.getHP() - 15*dark_magic_orb.getAndRemove(target))
+                        dark_magic_counter.getAndRemove(target)
+                    else if GetUnitAbilityLevel(caster, gen_ability_warlock_dama) == 2
+                        target.setHP(target.getHP() - 25*dark_magic_orb.getAndRemove(target))
+                        dark_magic_counter.getAndRemove(target)
+
+    //Dark Magic
+    DamageEvent.addListener() -> 
+        if DamageEvent.getSource().hasAbility(gen_ability_warlock_dama) == true or DamageEvent.getSource().getName() == "Void Walker"
+            if DamageEvent.getType() == ATTACK           
+                unit target_unit = DamageEvent.getTarget()
+                unit caster_unit = DamageEvent.getSource()
+                dark_magic_counter.put(target_unit, 5)
+                if dark_magic_orb.get(target_unit) < 4
+                    dark_magic_orb.put(target_unit, dark_magic_orb.get(target_unit) + 1)
+                    int height_mult = dark_magic_orb.get(target_unit)
+                    effect orb = addEffect("Abilities\\Spells\\Items\\OrbCorruption\\OrbCorruption.mdl", vec3(target_unit.getX(), target_unit.getY(), 0 + 25.0*dark_magic_orb.get(target_unit)))..setScale(1.25)
+                    doPeriodically(0.033) (CallbackPeriodic cb) ->
+                        orb.setX(target_unit.getX())
+                        orb.setY(target_unit.getY())
+                        orb.setZ(target_unit.getPos().getTerrainZ() + height_mult*25)
+                        if dark_magic_counter.has(target_unit) == false or target_unit.isAlive() == false
+                            orb.destr()
+                            orb = null
+                            destroy cb
+                    if dark_magic_cb.has(target_unit) == false
+                        dark_magic_cb.put(target_unit, 1)
+                        doPeriodically(1) (cb) ->
+                            if dark_magic_counter.get(target_unit) != 0
+                                dark_magic_counter.put(target_unit, dark_magic_counter.get(target_unit) - 1)           
+                                print(dark_magic_counter.get(target_unit))             
+                            else if dark_magic_counter.get(target_unit) == 0
+                                destroy cb
+                                print(dark_magic_counter.get(target_unit))
+                                dark_magic_counter.getAndRemove(target_unit)
+                                dark_magic_orb.getAndRemove(target_unit)                            
+                                dark_magic_cb.getAndRemove(target_unit)
+
+    //Void Walker
+    EventListener.onCast(gen_ability_warlock_vowa) (unit caster) ->
+        int cb_counter = 0
+        new SoundDefinition("buildings\\Undead\\Ziggurat\\FrostTowerWhat1.flac", false).playOnPoint(caster.getPos3Fly()) 
+        effect target_effect_summon = addEffect("Abilities\\Spells\\Human\\FlameStrike\\FlameStrikeTarget.mdl", caster, "origin")..setScale(1.25)
+        doPeriodicallyCounted(1, 22) (CallbackCounted cb) ->
+            cb_counter += 1
+            if cb_counter == 2
+                players_unit_list_warlock_vw.put(caster.getOwner(),createUnit(caster.getOwner(), gen_unit_warlock_vw, caster.getPos(), angle(0)))
+            if cb_counter == 3
+                target_effect_summon.destr()
+            else if cb_counter == 22
+                players_unit_list_warlock_vw.get(caster.getOwner()).setInvulnerable(true)
+                new SoundDefinition("buildings\\Undead\\Ziggurat\\FrostTowerWhat1.flac", false).playOnPoint(caster.getPos3Fly()) 
+                effect target_effect_recall = addEffect("Abilities\\Spells\\Human\\FlameStrike\\FlameStrikeTarget.mdl", players_unit_list_warlock_vw.get(caster.getOwner()), "origin")..setScale(1.25)
+                doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                    players_unit_list_warlock_vw.get(caster.getOwner()).remove()
+                    target_effect_recall.destr()
+
+    DamageEvent.addListener() -> 
+        if DamageEvent.getSource().getName() == "Void Walker"
+            if DamageEvent.getType() == ATTACK  
+                
+            //Chance to cast
+                unit target = DamageEvent.getTarget()
+                unit caster = DamageEvent.getSource()    
+                int value = GetRandomInt(1, 100)
+
+                //Get Soul
+                if value > 0 and value <= 15
+                    players_unit_list_warlock_vw.get(caster.getOwner()).pause()
+                    players_unit_list_warlock_vw.get(caster.getOwner()).setAnimation("spell one")
+                    doPeriodicallyCounted(2.5, 1) (CallbackCounted cb) ->
+                        players_unit_list_warlock_vw.get(caster.getOwner()).setAnimation("stand one")        
+                    doPeriodicallyCounted(2.0, 1) (CallbackCounted cb) ->    
+                        players_unit_list_warlock_vw.get(caster.getOwner()).unpause()
+                    effect target_effect = addEffect("Abilities\\Spells\\Items\\AIso\\AIsoTarget.mdl", vec3(target.getX(), target.getY(), 0))..setScale(1.25)..setYaw(90*DEGTORAD)
+                    new SoundDefinition("Abilities\\Spells\\Demon\\SoulPreservation\\SoulPreservation.flac", false).playOnPoint(target.getPos3Fly())
+                    doPeriodicallyCounted(0.033, 90) (CallbackCounted cb) ->
+                        target_effect.setX(target.getX())
+                        target_effect.setY(target.getY())
+                        target_effect.setZ(target_effect.getPos3().getTerrainZ())
+                    doPeriodicallyCounted(2.0, 1) (CallbackCounted cb) ->
+                        if GetUnitAbilityLevel(caster, gen_ability_warlock_taso) == 1
+                            target.setHP(target.getHP() - 50)
+                        else if GetUnitAbilityLevel(caster, gen_ability_warlock_taso) == 2
+                            target.setHP(target.getHP() - 112)
+                        new SoundDefinition("Abilities\\Spells\\Undead\\Impale\\ImpaleLand.flac", false).playOnPoint(target.getPos3Fly())
+                        target_effect.destr()
+                        target_effect = null
+
+                //Cursed Puppet
+                if value > 15 and value <= 30
+                    players_unit_list_warlock_vw.get(caster.getOwner()).pause()
+                    players_unit_list_warlock_vw.get(caster.getOwner()).setAnimation("spell one")
+                    doPeriodicallyCounted(2.5, 1) (CallbackCounted cb) ->
+                        players_unit_list_warlock_vw.get(caster.getOwner()).setAnimation("stand one")        
+                    doPeriodicallyCounted(2.0, 1) (CallbackCounted cb) ->    
+                        players_unit_list_warlock_vw.get(caster.getOwner()).unpause()
+                    new SoundDefinition("Abilities\\Spells\\Undead\\Possession\\PossessionMissileLaunch1.flac", false).playOnPoint(target.getPos3Fly())
+                    int cb_counter_2 = 0
+                    real distance = 0
+                    real height = 0
+                    effect needle_target_1 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX() + 75, target.getY(), 75))..setScale(1.5)..setYaw(0*DEGTORAD)..setPitch(155*DEGTORAD)
+                    effect needle_target_2 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX() - 75, target.getY(), 75))..setScale(1.5)..setYaw(180*DEGTORAD)..setPitch(155*DEGTORAD)
+                    effect needle_target_3 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX(), target.getY() + 75, 75))..setScale(1.5)..setYaw(270*DEGTORAD)..setPitch(65*DEGTORAD)
+                    effect needle_target_4 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(target.getX(), target.getY() - 75, 75))..setScale(1.5)..setYaw(90*DEGTORAD)..setPitch(65*DEGTORAD)
+                    effect needle_caster_1 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX() + 75, caster.getY(), 75))..setScale(1.5)..setYaw(0*DEGTORAD)..setPitch(155*DEGTORAD)
+                    effect needle_caster_2 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX() - 75, caster.getY(), 75))..setScale(1.5)..setYaw(180*DEGTORAD)..setPitch(155*DEGTORAD)
+                    effect needle_caster_3 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX(), caster.getY() + 75, 75))..setScale(1.5)..setYaw(270*DEGTORAD)..setPitch(65*DEGTORAD)
+                    effect needle_caster_4 = addEffect("Abilities\\Weapons\\BristleBackMissile\\BristleBackMissile.mdl", vec3(caster.getX(), caster.getY() - 75, 75))..setScale(1.5)..setYaw(90*DEGTORAD)..setPitch(65*DEGTORAD)
+                    doPeriodicallyCounted(0.033, 30) (CallbackCounted cb) ->
+                        cb_counter_2 += 1
+                        if cb_counter_2 <= 15
+                            needle_target_1.setX(target.getX() + 75)
+                            needle_target_2.setX(target.getX() - 75)
+                            needle_target_3.setX(target.getX())
+                            needle_target_4.setX(target.getX())
+                            needle_target_1.setY(target.getY())
+                            needle_target_2.setY(target.getY())
+                            needle_target_3.setY(target.getY() + 75)
+                            needle_target_4.setY(target.getY() - 75)
+                            needle_target_1.setZ(needle_target_1.getPos3().getTerrainZ() + 75.0)
+                            needle_target_2.setZ(needle_target_2.getPos3().getTerrainZ() + 75.0)
+                            needle_target_3.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0)
+                            needle_target_4.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0)
+
+                            needle_caster_1.setX(caster.getX() + 75)
+                            needle_caster_2.setX(caster.getX() - 75)
+                            needle_caster_3.setX(caster.getX())
+                            needle_caster_4.setX(caster.getX())
+                            needle_caster_1.setY(caster.getY())
+                            needle_caster_2.setY(caster.getY())
+                            needle_caster_3.setY(caster.getY() + 75)
+                            needle_caster_4.setY(caster.getY() - 75)
+                            needle_caster_1.setZ(needle_caster_1.getPos3().getTerrainZ() + 75.0)
+                            needle_caster_2.setZ(needle_caster_2.getPos3().getTerrainZ() + 75.0)
+                            needle_caster_3.setZ(needle_caster_3.getPos3().getTerrainZ() + 75.0)
+                            needle_caster_4.setZ(needle_caster_4.getPos3().getTerrainZ() + 75.0)
+
+                        if cb_counter_2 > 15
+                            distance += 5
+                            height += 4
+                            needle_target_1.setX(target.getX() + 75 - distance)
+                            needle_target_2.setX(target.getX() - 75 + distance)
+                            needle_target_3.setX(target.getX())
+                            needle_target_4.setX(target.getX())
+                            needle_target_1.setY(target.getY())
+                            needle_target_2.setY(target.getY())
+                            needle_target_3.setY(target.getY() + 75 - distance)
+                            needle_target_4.setY(target.getY() - 75 + distance)
+                            needle_target_1.setZ(needle_target_1.getPos3().getTerrainZ() + 75.0 - height)
+                            needle_target_2.setZ(needle_target_2.getPos3().getTerrainZ() + 75.0 - height)
+                            needle_target_3.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0 - height)
+                            needle_target_4.setZ(needle_target_3.getPos3().getTerrainZ() + 75.0 - height)
+                
+                            needle_caster_1.setX(caster.getX() + 75 - distance)
+                            needle_caster_2.setX(caster.getX() - 75 + distance)
+                            needle_caster_3.setX(caster.getX())
+                            needle_caster_4.setX(caster.getX())
+                            needle_caster_1.setY(caster.getY())
+                            needle_caster_2.setY(caster.getY())
+                            needle_caster_3.setY(caster.getY() + 75 - distance)
+                            needle_caster_4.setY(caster.getY() - 75 + distance)
+                            needle_caster_1.setZ(needle_caster_1.getPos3().getTerrainZ() + 75.0 - height)
+                            needle_caster_2.setZ(needle_caster_2.getPos3().getTerrainZ() + 75.0 - height)
+                            needle_caster_3.setZ(needle_caster_3.getPos3().getTerrainZ() + 75.0 - height)
+                            needle_caster_4.setZ(needle_caster_4.getPos3().getTerrainZ() + 75.0 - height)
+
+                        if cb_counter_2 >= 30
+                            new SoundDefinition("Abilities\\Spells\\Undead\\Possession\\PossessionMissileHit1.flac", false).playOnPoint(target.getPos3Fly())                
+                            needle_target_1.destr()
+                            needle_target_1 = null
+                            needle_target_2.destr()
+                            needle_target_2 = null
+                            needle_target_3.destr()
+                            needle_target_3 = null
+                            needle_target_4.destr()
+                            needle_target_4 = null
+
+                            needle_caster_1.destr()
+                            needle_caster_1 = null
+                            needle_caster_2.destr()
+                            needle_caster_2 = null
+                            needle_caster_3.destr()
+                            needle_caster_3 = null
+                            needle_caster_4.destr()
+                            needle_caster_4 = null
+
+                            if GetUnitAbilityLevel(caster, gen_ability_warlock_cupu) == 1
+                                target.setHP(target.getHP() - 62)
+                            else if GetUnitAbilityLevel(caster, gen_ability_warlock_cupu) == 2
+                                target.setHP(target.getHP() - 100)
+                                
+                            
+
+            
+        
+
+        
+
+
+                    
+                    
+                              
+                    
+                
+
+
+            
+            
+        

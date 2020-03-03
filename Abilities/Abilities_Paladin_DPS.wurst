@@ -12,11 +12,22 @@ import public ChannelAbilityPreset //abilities presets
 import public ClosureTimers //doAfter, doPeriodically
 import public Effect //options for create Effect
 import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public DamageEvent
+import public UnitIds
+import public HashMap
 
 public int gen_ability_pal_dps_ds = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_dps_th = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_pal_dps_lw = compiletime(ABIL_ID_GEN.next())
+public let gen_buff_id_lw = compiletime(createDummyBuffObject("|cff00b7ffLightning Weapon|r", "This unit has a chance to do damage to the target unit when hitting it.", Icons.bTNMonsoon))
+public int gen_ability_pal_dps_sc = compiletime(ABIL_ID_GEN.next())
+int gen_unit_pal_sc = compiletime(UNIT_ID_GEN.next())
+let players_unit_list_pal_sc = new IterableMap<player, unit>
+int sc_warrior_counter = 0
 
 @compiletime function gen_ability_pal_dps_divine_storm()
-    new ChannelAbilityPreset(gen_ability_pal_dps_ds, 1, true)
+    new ChannelAbilityPreset(gen_ability_pal_dps_ds, 2, true)
         ..presetTargetTypes(Targettype.PASSIVE)
         ..setName("Divine Storm")
         ..setTooltipLearn("Divine Storm")
@@ -26,8 +37,8 @@ public int gen_ability_pal_dps_ds = compiletime(ABIL_ID_GEN.next())
         ..setTooltipNormal(1, "Divine Storm - Lvl 1 |  |cffa7fcffCooldown:|r 10 seconds")
         ..setTooltipNormal(2, "Divine Storm - Lvl 2 |  |cffa7fcffCooldown:|r 8 seconds")
         //Shows it when passing the mouse through it
-        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 80 Health Points")
-        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 200 Health Points")
+        ..setTooltipNormalExtended(1, "|cff006effDamage Amount:|r 80 Health Points")
+        ..setTooltipNormalExtended(2, "|cff006effDamage Amount:|r 200 Health Points")
         //Shows it when passing the mouse through it (description)
         ..setHotkeyLearn("Q")
         ..setHotkeyNormal("Q")
@@ -35,23 +46,16 @@ public int gen_ability_pal_dps_ds = compiletime(ABIL_ID_GEN.next())
         ..setButtonPositionNormalY(2)
         ..setButtonPositionResearchX(0)
         ..setButtonPositionResearchY(1)
-        ..setIconNormal(Icons.bTNHeal)
-        ..setIconResearch(Icons.bTNHeal)
-        //Set effect that shows at the target
-        ..setAnimationNames("attack,spell")
-        //Set animation during cast for the caster
-        
-        ..setAreaofEffect(1, 200)
-        ..setAreaofEffect(2, 200)
-        ..setLevels(2)
+        ..setIconNormal(Icons.bTNStormBolt)
+        ..setIconResearch(Icons.bTNStormBolt)
         ..setRequiredLevel(1)
         ..setLevelSkipRequirement(5)
         ..setManaCost(1, 50)
         ..setManaCost(2, 125)
         ..setCooldown(1, 10)
         ..setCooldown(2, 8)
-        ..setTargetsAllowed(2, "self,hero,nonhero,friend,neutral")
-        ..setBuffs(1, commaList(gen_buff_id_coa))
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
 
         /* For target casts
         ..setCastRange(1, 350)
@@ -62,7 +66,128 @@ public int gen_ability_pal_dps_ds = compiletime(ABIL_ID_GEN.next())
         ..setDurationNormal(2, 8)
         */
 
+@compiletime function gen_ability_pal_dps_thunder_hammer()
+    new ChannelAbilityPreset(gen_ability_pal_dps_th, 2, true)
+        ..presetTargetTypes(Targettype.POINT)
+        ..setName("Thunder Hammer")
+        ..setTooltipLearn("Thunder Hammer")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Throws your hammer at the ground, dealing lightning damage to the enemies around.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Thunder Hammer - Lvl 1 |  |cffa7fcffCooldown:|r 8 seconds")
+        ..setTooltipNormal(2, "Thunder Hammer - Lvl 2 |  |cffa7fcffCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff008cffDamage Amount:|r 60 Health Points + 10 per Second.")
+        ..setTooltipNormalExtended(2, "|cff008cffDamage Amount:|r 150 Health Points + 20 per Second.")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNStormHammer)
+        ..setIconResearch(Icons.bTNStormHammer) 
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 50)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 8)
+        ..setCooldown(2, 6)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+
+        /* For target casts
+        ..setCastRange(1, 350)
+        ..setCastRange(2, 450)
+        ..setDurationHero(1, 6)
+        ..setDurationHero(2, 8)
+        ..setDurationNormal(1, 6)
+        ..setDurationNormal(2, 8)
+        */
+
+@compiletime function gen_ability_pal_dps_lightning_weapon()
+    new AbilityDefinitionPaladinDevotionAura(gen_ability_pal_dps_lw)
+    //Basic Info
+        ..setLevels(2)
+        ..setPercentBonus(1, false)
+        ..setPercentBonus(2, false)
+        ..setArmorBonus(1, 0)
+        ..setArmorBonus(2, 0)
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNMonsoon)
+        ..setIconResearch(Icons.bTNMonsoon)
+        //Set effect that shows at the target
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Lightning Weapon")
+        ..setTooltipLearn("Lightning Weapon")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Gives your Paladin a chance to fill his hammer with lightning energy deal extra damage to the target.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Lightning Weapon - Lvl 1")
+        ..setTooltipNormal(2, "Lightning Weapon - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00b7ffDamage Amount:|r 25 Health Points per hit | |cff002fffPercent Chance:|r 10%")
+        ..setTooltipNormalExtended(2, "|cff00b7ffDamage Amount:|r 50 Health Points per hit | |cff002fffPercent Chance:|r 25%")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        ..setBuffs(1, "")
+        ..setBuffs(2, "")
+        ..setAreaofEffect(1, 0)
+        ..setAreaofEffect(2, 0)
+        ..setArtTarget("")
+        ..setBuffs(1, commaList(gen_buff_id_lw.buffId))
+        ..setBuffs(2, commaList(gen_buff_id_lw.buffId))
+
+@compiletime function gen_ability_pal_dps_storm_call()
+
+    //Paladin Bruiser
+    new UnitDefinition(gen_unit_pal_sc, UnitIds.halahk)
+        ..setName("Paladin Bruiser Warrior")
+        ..setCollisionSize(32)
+        ..setScalingValue(1.0)
+        ..setHitPointsMaximumBase(500)
+        ..setHitPointsRegenerationRate(5)
+        ..setDefenseBase(25)
+        ..setAttack1DamageBase(50)
+        ..setAttack1DamageNumberofDice(2)
+        ..setAttack1DamageSidesperDie(2)
+        ..setAttack1CooldownTime(1.75)
+
+    new ChannelAbilityPreset(gen_ability_pal_dps_sc, 1, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Storm Call")
+        ..setTooltipLearn("Storm Call")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call the spirits of the heaven, bringing a warrior to fight at your side against your enemies. The Warrior can cast Judgment Lightning that does damage to the target enemy and has 5 seconds of cooldown.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Storm Call - Lvl 1 |  |cffffff00Cooldown:|r 120 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffffff00Duration:|r 15 seconds | |cffff0000Judgement Lightning Damage:|r 125 Health Points")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNResurrection)
+        ..setIconResearch(Icons.bTNResurrection)
+        ..setRequiredLevel(1)
+        ..setManaCost(1, 175)
+        ..setCooldown(1, 120)
+        ..setCastingTime(1, 0)
+
 init   
+    //Divine Storm
     EventListener.onCast(gen_ability_pal_dps_ds) (unit caster) ->        
         //Damage
         forUnitsInRange(caster.getPos(), 200) (unit units) ->
@@ -110,6 +235,129 @@ init
                 //target_effect_bright_origin1.destr()
                 target_effect_bright_origin2.destr()
                 target_effect_bright_overhead.destr()
+
+    //Thunder Hammer
+    EventListener.onPointCast(gen_ability_pal_dps_th) (unit caster, vec2 target) ->
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(1.0, 1) (CallbackCounted cb) ->
+            caster.setAnimation("stand one")
+        doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->    
+            caster.unpause()
+            real angle = -180
+            real cb_counter = 0
+            real valuex = (caster.getPos().angleTo(target).cos()*SquareRoot((target.x*target.x) + (caster.getX()*caster.getX())))/15
+            real valuey = (caster.getPos().angleTo(target).sin()*SquareRoot((target.y*target.y) + (caster.getY()*caster.getY())))/15
+            real distancebetween = SquareRoot((target.x - caster.getX())*(target.x - caster.getX()) + (target.y - caster.getY())*(target.y - caster.getY()))/15
+            real valuez = 0
+            effect target_effect_hammer = addEffect("Abilities\\Weapons\\GryphonRiderMissile\\GryphonRiderMissile.mdl", vec3(caster.getX(), caster.getY(), 50))..setScale(1.5)..setYaw(caster.getPos().angleTo(target))
+            new SoundDefinition("Abilities\\Spells\\Human\\StormBolt\\StormBoltLaunch.wav", false).playOnPoint(vec3(target.x, target.y, 30))
+            doPeriodicallyCounted(0.033, 15) (CallbackCounted cb) ->
+                valuez += 1.7
+                target_effect_hammer.setX(target_effect_hammer.getLocalX() + caster.getPos().angleTo(target).cos()*distancebetween)
+                target_effect_hammer.setY(target_effect_hammer.getLocalY() + caster.getPos().angleTo(target).sin()*distancebetween)
+                angle += 38
+                target_effect_hammer.setOrientation(caster.getPos().angleTo(target).radians(), angle*DEGTORAD, 0)
+                target_effect_hammer.setZ(50 - valuez)
+                cb_counter += 1
+                if cb_counter >= 15
+                    cb_counter = 0
+                    effect target_effect_lightning = addEffect("Abilities\\Spells\\Orc\\Purge\\PurgeBuffTarget.mdl", vec3(target.x, target.y, -30))..setScale(2.5)
+                    new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playOnPoint(vec3(target.x, target.y, 30))                      
+                    if GetUnitAbilityLevel(caster, gen_ability_pal_dps_th) == 1
+                        forUnitsInRange(target, 250) (unit u) ->
+                            if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                                u.setHP(u.getHP() - 60)
+                        doPeriodicallyCounted(1, 5) (CallbackCounted cb) ->
+                            forUnitsInRange(target, 250) (unit u) ->
+                                if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                                    u.setHP(u.getHP() - 10)
+                                    new SoundDefinition("Abilities\\Spells\\Orc\\Purge\\PurgeTarget1.wav", false).playOnPoint(u.getPos3Fly()) 
+                                    flashEffect("Abilities\\Weapons\\FarseerMissile\\FarseerMissile.mdl", u, "chest")
+                            cb_counter += 1
+                            if cb_counter >= 5
+                                target_effect_hammer.destr()
+                                target_effect_lightning.destr()
+                    else if GetUnitAbilityLevel(caster, gen_ability_pal_dps_th) == 2
+                        forUnitsInRange(target, 250) (unit u) ->
+                            if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                                u.setHP(u.getHP() - 150)
+                        doPeriodicallyCounted(1, 5) (CallbackCounted cb) ->
+                            forUnitsInRange(target, 250) (unit u) ->
+                                if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                                    u.setHP(u.getHP() - 20)
+                                    new SoundDefinition("Abilities\\Spells\\Orc\\Purge\\PurgeTarget1.wav", false).playOnPoint(u.getPos3Fly()) 
+                                    flashEffect("Abilities\\Weapons\\FarseerMissile\\FarseerMissile.mdl", u, "chest")
+                            cb_counter += 1
+                            if cb_counter >= 5
+                                target_effect_hammer.destr()
+                                target_effect_lightning.destr()
+
+    //Lightning Weapon
+    DamageEvent.addListener() ->
+        if DamageEvent.getSource().hasAbility(gen_ability_pal_dps_lw)
+            if DamageEvent.getSource().getName() == "Paladin Bruiser" and DamageEvent.getSource().getProperName() == "Novice"
+                if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_pal_dps_lw) == 1
+                    int number = GetRandomInt(1, 100)
+                    if number >= 1 and number <= 10
+                        DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 25)
+                        flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                        new SoundDefinition("Abilities\\Spells\\Orc\\LightningBolt\\LightningBolt.wav", false).playOnPoint(DamageEvent.getTarget().getPos3Fly()) 
+
+                if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_pal_dps_lw) == 2
+                    int number = GetRandomInt(1, 100)
+                    if number >= 1 and number <= 25
+                        DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 50)
+                        flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                        new SoundDefinition("Abilities\\Spells\\Orc\\LightningBolt\\LightningBolt.wav", false).playOnPoint(DamageEvent.getTarget().getPos3Fly()) 
+
+    //Storm Call
+    EventListener.onCast(gen_ability_pal_dps_sc) (unit caster) ->
+        int cb_counter = 0
+        new SoundDefinition("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.wav", false).playOnPoint(caster.getPos3Fly()) 
+        effect target_effect_angel = addEffect("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.mdl", caster, "origin")..setScale(1)
+        doPeriodicallyCounted(1, 17) (CallbackCounted cb) ->
+            cb_counter += 1
+            if cb_counter == 2
+                players_unit_list_pal_sc.put(caster.getOwner(),createUnit(caster.getOwner(), gen_unit_pal_sc, caster.getPos(), angle(0))..setColor(PLAYER_COLOR_LIGHT_BLUE))
+            if cb_counter == 4
+                target_effect_angel.destr()
+            else if cb_counter == 17
+                players_unit_list_pal_sc.get(caster.getOwner()).pause()
+                players_unit_list_pal_sc.get(caster.getOwner()).setInvulnerable(true)
+                new SoundDefinition("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.wav", false).playOnPoint(caster.getPos3Fly()) 
+                effect target_effect_angel_recall = addEffect("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.mdl", players_unit_list_pal_sc.get(caster.getOwner()), "origin")..setScale(1)
+                doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                    players_unit_list_pal_sc.get(caster.getOwner()).remove()
+                    target_effect_angel_recall.destr()
+
+    DamageEvent.addListener() -> 
+        if DamageEvent.getSource().getName() == "Paladin Bruiser Warrior"
+            if sc_warrior_counter == 0                
+                new SoundDefinition("Abilities\\Spells\\Human\\StormBolt\\StormBoltLaunch.wav", false).playOnPoint(DamageEvent.getTarget().getPos3Fly())
+                effect target_effect_lightning_1 = addEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                effect target_effect_lightning_2 = addEffect("Abilities\\Spells\\Undead\\ReplenishMana\\ReplenishManaCaster.mdl", DamageEvent.getTarget(), "origin")
+                DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 125)
+                doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                    target_effect_lightning_1.destr()
+                    target_effect_lightning_2.destr()                 
+                sc_warrior_counter = 1
+                doPeriodicallyCounted(5, 1) (CallbackCounted cb) ->
+                    sc_warrior_counter = 0
+                
+                    
+                        
+            
+            
+        
+        
+                        
+
+                        
+                    
+        
+        
+        
             
 
             

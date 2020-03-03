@@ -55,8 +55,6 @@ public int gen_unit_id_druid_wolf = compiletime(HERO_ID_GEN.next())
         ..setStartingIntelligence(2)
             //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
             //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
-        ..setAttack1CooldownTime(2.2)
-            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
         ..setSpeedBase(270)
         ..setAnimationRunSpeed(270)
         ..setAnimationWalkSpeed(270)
@@ -66,10 +64,16 @@ public int gen_unit_id_druid_wolf = compiletime(HERO_ID_GEN.next())
         //Damage
             //Minimal damage = Base Damage + Number of Dices
             //Maximum damage = Base Damage + Number of Dices * Sides per Dice
-        ..setAttack1DamageBase(6)
-        ..setAttack1DamageNumberofDice(8)
-        ..setAttack1DamageSidesperDie(4)
-//--------------------------------------------------------    
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses))
+            ..setAttack1CooldownTime(2.2)            
+            ..setAttack1DamageBase(6)
+            ..setAttack1DamageNumberofDice(8)
+            ..setAttack1DamageSidesperDie(4)
+            ..setAttack2CooldownTime(2.2)
+            ..setAttack2DamageBase(6)
+            ..setAttack2DamageNumberofDice(8)
+            ..setAttack2DamageSidesperDie(4)
+    //-------------------------------------------------------- 
     //Stats per Level
 //--------------------------------------------------------
         ..setStrengthPerLevel(4)

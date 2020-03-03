@@ -21,7 +21,7 @@ public int gen_unit_id_druid_human = compiletime(HERO_ID_GEN.next())
         //XP needed to level up = Value of the previous level + level * 100
         ..setAttacksEnabled(3)
         ..setCanDropItemsOnDeath(false)
-        ..setCollisionSize(32)
+        ..setCollisionSize(24)
 //--------------------------------------------------------
     //Basic Stats
 //--------------------------------------------------------
@@ -55,8 +55,6 @@ public int gen_unit_id_druid_human = compiletime(HERO_ID_GEN.next())
         ..setStartingIntelligence(6)
             //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
             //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
-        ..setAttack1CooldownTime(2.4)
-            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
         ..setSpeedBase(265)
         ..setAnimationRunSpeed(265)
         ..setAnimationWalkSpeed(265)
@@ -66,10 +64,16 @@ public int gen_unit_id_druid_human = compiletime(HERO_ID_GEN.next())
         //Damage
             //Minimal damage = Base Damage + Number of Dices
             //Maximum damage = Base Damage + Number of Dices * Sides per Dice
-        ..setAttack1DamageBase(4)
-        ..setAttack1DamageNumberofDice(2)
-        ..setAttack1DamageSidesperDie(2)
-//--------------------------------------------------------    
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses))
+            ..setAttack1CooldownTime(2.4)            
+            ..setAttack1DamageBase(4)
+            ..setAttack1DamageNumberofDice(2)
+            ..setAttack1DamageSidesperDie(2)
+            ..setAttack2CooldownTime(2.4)
+            ..setAttack2DamageBase(4)
+            ..setAttack2DamageNumberofDice(2)
+            ..setAttack2DamageSidesperDie(2)
+    //--------------------------------------------------------  
     //Stats per Level
 //--------------------------------------------------------
         ..setStrengthPerLevel(3)
@@ -80,5 +84,3 @@ public int gen_unit_id_druid_human = compiletime(HERO_ID_GEN.next())
     //Spells & Abilities
         ..setHeroAbilities(commaList(gen_ability_druid_wolf, gen_ability_druid_bear, gen_ability_druid_moonkin, gen_ability_druid_treant))
         ..setNormalAbilities(commaList('AInv'))
-
-init

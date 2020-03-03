@@ -15,7 +15,7 @@ import public ClosureForGroups //for onPointCast group units
 import public SoundUtils //play sound for player or location
 import public Druid_Players_Hashmaps
 
-public let gen_buff_id_sf = compiletime(createDummyBuffObject("|cffc300ffStar Magic:|r", "This unit takes more damage by Starfall.", Icons.bTNRejuvenation))
+public let gen_buff_id_sf = compiletime(createDummyBuffObject("|cffc300ffStar Magic|r", "This unit takes more damage by Starfall.", Icons.bTNStarFall))
 public int gen_ability_druid_moonkin_d = compiletime(ABIL_ID_GEN.next())
 public int gen_ability_druid_moonkin_sf = compiletime(ABIL_ID_GEN.next())
 
@@ -34,8 +34,8 @@ public int gen_ability_druid_moonkin_sf = compiletime(ABIL_ID_GEN.next())
         ..presetTargetTypes(Targettype.POINT)
         //Set animation during cast for the caster
     //Texts
-        ..setName("Heavy Kick")
-        ..setTooltipLearn("Heavy Kick")
+        ..setName("Starfall")
+        ..setTooltipLearn("Starfall")
         ..setAnimationNames("spell")
         //Shows it when passing the mouse through it when learning
         ..setTooltipLearnExtended("Call the spirits of nature, sending magic stars to deal damage at your enemies. Starfall debuffs the targets with Star Magic for 5 seconds, increasing the damage of successive Starfalls.")
@@ -94,10 +94,10 @@ init
         new SoundDefinition("Units\\Creeps\\Owlbear\\OwlBearWhat1.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
         players_unit_list_druid_moonkin.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle())
         players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_moonkin.get(caster.getOwner()).getXp(), false)
         players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_moonkin.get(caster.getOwner()).getHP())/(players_unit_list_druid_moonkin.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
-        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())
-        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD)
+        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())        
         players_unit_list_druid_human.get(caster.getOwner()).show()
         SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
         doAfter(3) ->
@@ -115,7 +115,7 @@ init
 
             if GetUnitAbilityLevel(caster, gen_ability_druid_moonkin_sf) == 1
                 forUnitsInRange(target, 35) (unit units) ->
-                    if units.isAllyOf(caster.getOwner()) == false or units != caster or units.getOwner() != players[8]
+                    if units.isAllyOf(caster.getOwner()) == false and units != caster
                         if units.hasAbility(gen_buff_id_sf.abilId) == true
                             units.setHP(units.getHP() - 15)
                         else if units.hasAbility(gen_buff_id_sf.abilId) == false
@@ -128,7 +128,7 @@ init
 
             if GetUnitAbilityLevel(caster, gen_ability_druid_moonkin_sf) == 2
                 forUnitsInRange(target, 60) (unit units) ->
-                    if units.isAllyOf(caster.getOwner()) == false or units != caster or units.getOwner() != players[8]
+                    if units.isAllyOf(caster.getOwner()) == false and units != caster
                         if units.hasAbility(gen_buff_id_sf.abilId)
                             units.setHP(units.getHP() - 25)
                         else if units.hasAbility(gen_buff_id_sf.abilId) == false

@@ -1,0 +1,16 @@
+package Quest2_Artifact
+
+import public ItemObjEditing
+import public ObjectIdGenerator //id generator
+import public Icons
+
+public int gen_item_quest2_artifact = compiletime(ITEM_ID_GEN.next())
+
+@compiletime function gen_item_quest2_artifact()
+    new ItemDefinition(gen_item_quest2_artifact, 'ches')
+        ..setAbilities("")
+        ..setCanBeDropped(false)
+        ..setDescription("This artifact has the knowledge about one of the basic magic spells taught by the Ancient Dragons.")
+        ..setName("Alindor's Artifact")
+        ..setCanBeDropped(false)
+        ..setInterfaceIcon(Icons.bTNStone)

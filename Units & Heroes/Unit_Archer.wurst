@@ -4,27 +4,23 @@ import public ObjectIdGenerator
 import public UnitIds
 import public AbilityIds
 import public UnitObjEditing
+import public AllAbilities
 
 public int gen_unit_id_archer = compiletime(HERO_ID_GEN.next())
 
 @compiletime function gen_unit_ranged()    
-    new HeroDefinition(gen_unit_id_archer, UnitIds.sylvanuswindrunner)
+    new HeroDefinition(gen_unit_id_archer, UnitIds.archer)
     //Basic Information
 //--------------------------------------------------------
         ..setName("Archer")
         ..setProperNames("Novice")
-        ..setModelFile("units\\creeps\\SylvanusWindrunner\\SylvanusWindrunner")
-        ..setIconGameInterface("ReplaceableTextures\\CommandButtons\\BTNSylvanusWindrunner.blp")
         ..hideHeroDeathMsg(true)
         ..setFoodProduced(1)
         ..setLevel(2)
         //XP needed to level up = Value of the previous level + level * 100
-        ..setAttack1ProjectileArt("Abilities\\Weapons\\MoonPriestessMissile\\MoonPriestessMissile.mdl")
-        ..setAttack1ProjectileSpeed(900)
         ..setAttacksEnabled(3)
         ..setCanDropItemsOnDeath(false)
-        ..setCollisionSize(32)
-        ..setUnitSoundSet("Sylvanus")
+        ..setCollisionSize(24)
 //--------------------------------------------------------
     //Basic Stats
 //--------------------------------------------------------
@@ -58,8 +54,6 @@ public int gen_unit_id_archer = compiletime(HERO_ID_GEN.next())
         ..setStartingIntelligence(3)
             //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
             //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
-        ..setAttack1CooldownTime(2.2)
-            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
         ..setSpeedBase(275)
         ..setAnimationRunSpeed(275)
         ..setAnimationWalkSpeed(275)
@@ -71,16 +65,23 @@ public int gen_unit_id_archer = compiletime(HERO_ID_GEN.next())
         //Damage
             //Minimal damage = Base Damage + Number of Dices
             //Maximum damage = Base Damage + Number of Dices * Sides per Dice
-        ..setAttack1DamageBase(8)
-        ..setAttack1DamageNumberofDice(4)
-        ..setAttack1DamageSidesperDie(8)
-//--------------------------------------------------------    
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses))
+            ..setAttack1CooldownTime(2.2)            
+            ..setAttack1DamageBase(8)
+            ..setAttack1DamageNumberofDice(4)
+            ..setAttack1DamageSidesperDie(8)
+            ..setAttack2CooldownTime(2.2)
+            ..setAttack2DamageBase(8)
+            ..setAttack2DamageNumberofDice(4)
+            ..setAttack2DamageSidesperDie(8)
+    //-------------------------------------------------------- 
     //Stats per Level
 //--------------------------------------------------------
         ..setStrengthPerLevel(3)
         ..setAgilityPerLevel(8)
         ..setIntelligencePerLevel(3)    
+        ..setPrimaryAttribute("AGI")
 //--------------------------------------------------------
     //Spells & Abilities
-        ..setHeroAbilities("Import abilities from Units_Abilities")
-        ..setNormalAbilities(AbilityIds.inventory.toString())
+        ..setHeroAbilities(commaList(gen_ability_archer_tash, gen_ability_archer_enbo, gen_ability_archer_mush, gen_ability_archer_spar))
+        ..setNormalAbilities(commaList('AInv'))

@@ -80,18 +80,20 @@ public unit tv1=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nfrp', vec2(- 7598.
 public unit tv2=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nfrp', vec2(- 7942.0, - 3168.3), angle(DEGTORAD*137.934))..setName("Barpanda")..setInvulnerable(true) //Panda Inside
 public unit tv3=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nfrp', vec2(1910.3, - 1739.1), angle(DEGTORAD*266.043))..setName("Panda Worker")..setInvulnerable(true) //Panda Outside
 public unit tv4=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'nfrp', vec2(1986.3, - 1206.8), angle(DEGTORAD*15.981))..setName("Panda Worker")..setInvulnerable(true) //Panda Outside
-public unit tv5=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Npbm', vec2(- 7963.1, - 2507.4), angle(DEGTORAD*- 81.958))..setName("Bar Master")..setInvulnerable(true) //Pandaren
-public unit tv6=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hfoo', vec2(- 7331.7, - 2485.4), angle(DEGTORAD*199.776))..setName("Guard")..setInvulnerable(true)//Guard 1
-public unit tv7=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hfoo', vec2(- 7466.9, - 2337.1), angle(DEGTORAD*237.928))..setName("Guard")..setInvulnerable(true)//Guard 2
-public unit tv8=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Hpb1', vec2(- 7375.2, - 2389.9), angle(DEGTORAD*245.294))..setName("Guard Master")..setInvulnerable(true)//Warrior
+public unit tv5=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Npbm', vec2(- 7963.1, - 2507.4), angle(DEGTORAD*- 81.958))..setName("Bar Master")..setInvulnerable(true)..removeAbility('AInv') //Pandaren
+public unit tv6=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hfoo', vec2(- 7331.7, - 2485.4), angle(DEGTORAD*199.776))..setName("Guard")..setInvulnerable(true) //Guard 1
+public unit tv7=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hfoo', vec2(- 7466.9, - 2337.1), angle(DEGTORAD*237.928))..setName("Guard")..setInvulnerable(true) //Guard 2
+public unit tv8=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Hpb1', vec2(- 7375.2, - 2389.9), angle(DEGTORAD*245.294))..setName("Guard Master")..setInvulnerable(true)..removeAbility('AInv') //Warrior
   //Blacksmith
-public unit bm1=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hpea', vec2(- 5743.5, - 2665.4), angle(DEGTORAD*158.647))..setName("Weapon Forger")..setInvulnerable(true)//Upside Worker
-public unit bm2=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hpea', vec2(- 5818.4, - 3024.9),  angle(DEGTORAD*86.647))..setName("Armor Forger")..setInvulnerable(true)//Upside Worker
-public unit bm3=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Hpb2', vec2(- 6155.9, - 2220.6), angle(DEGTORAD*263.854))..setName("Blacksmith Master")..setInvulnerable(true)//Upside Worker
+public unit bm1=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hpea', vec2(- 5743.5, - 2665.4), angle(DEGTORAD*158.647))..setName("Weapon Forger")..setInvulnerable(true) //Upside Worker
+public unit bm2=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'hpea', vec2(- 5818.4, - 3024.9),  angle(DEGTORAD*86.647))..setName("Armor Forger")..setInvulnerable(true) //Upside Worker
+public unit bm3=createUnit(players[PLAYER_NEUTRAL_PASSIVE], 'Hpb2', vec2(- 6155.9, - 2220.6), angle(DEGTORAD*263.854))..setName("Blacksmith Master")..setInvulnerable(true)..removeAbility('AInv') //Blacksmith Master
 
 //public let =createUnit(players[PLAYER_NEUTRAL_PASSIVE], , vec2(), angle(DEGTORAD * ))
 
 init
+  cm4.issueTargetOrderById(851983, cm7)
+  cm7.issueTargetOrderById(851983, cm4)
   doPeriodically(1) (CallbackPeriodic cb) ->
     cm1.setAnimation(5)
     cm1_zombie.setAnimation("morph")
@@ -99,6 +101,9 @@ init
     tv4.setAnimation("attack one")
     bm1.setAnimation("stand work one")
     bm2.setAnimation("stand work one")
+    vg1.setHP(vg1.getMaxHP())
+    vg2.setHP(vg1.getMaxHP())
+    vg3.setHP(vg1.getMaxHP())
 
 
   //doAfter(10) ->

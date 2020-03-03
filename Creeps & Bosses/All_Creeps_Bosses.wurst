@@ -2,6 +2,39 @@ package All_Creeps_Bosses
 
 import public Darkums_Raid
 import public Creeps_1_10
+import public ClosureEvents
+
+let creep_location_x = new HashMap<unit,real>
+let creep_location_y = new HashMap<unit,real>
+let creep_facing_angle = new HashMap<unit,real>
+unit creep
+
+/*
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DEATH, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DETECTED, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DAMAGED, null)
+*/
+
+public function creep_get_location()
+    print("aeae")
+    if creep == null
+        creep = GetOrderTargetUnit()
+        print(creep.getName() + " GetOrdereTargetUnit()")
+        if creep == null
+            creep = BlzGetEventDamageTarget()
+            print(creep.getName() + " BlzGetEventDamageTarget()")
+            if creep == null
+                creep = GetDyingUnit()
+                print(creep.getName() + " GetDyingUnit()")
+
+    if creep_location_x.has(creep) == false
+        creep_location_x.put(creep,creep.getX())
+        creep_location_y.put(creep,creep.getY())
+        creep_facing_angle.put(creep, creep.getFacingAngle().radians())
+
+    creep = null
 
 public function respawn_creep()
 
@@ -9,13 +42,36 @@ public function respawn_creep()
     if GetTriggerUnit().getName() == "Zombie"
         unit zombie = GetTriggerUnit()
         doAfter(5) ->
-            zombie.revive(zombie.getPos(), false)
+            zombie.revive(vec2(creep_location_x.getAndRemove(zombie), creep_location_y.getAndRemove(zombie)), false)
+            zombie.setFacing(angle(creep_facing_angle.getAndRemove(zombie)))
+
     //Spider & Rats Crates
     if GetTriggerUnit().getName() == "Crates"
-        vec2 crates_pos = GetTriggerUnit().getPos()
-        angle crates_facing = GetTriggerUnit().getFacingAngle()
-        createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, GetTriggerUnit().getPos(), angle(GetTriggerUnit().getFacingAngle().radians()))
-        createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, GetTriggerUnit().getPos(), angle(GetTriggerUnit().getFacingAngle().radians()))
-        createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, GetTriggerUnit().getPos(), angle(GetTriggerUnit().getFacingAngle().radians()))
-        doAfter(30) ->
-            createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, crates_pos, angle(crates_facing.radians()))
+        unit crate = GetTriggerUnit()
+        int counter = 0
+        doPeriodicallyCounted(0.1, 3) (CallbackCounted cb) ->      
+            counter = GetRandomInt(1, 2)   
+            if counter == 1
+                createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_spider_crates, vec2(creep_location_x.get(crate), creep_location_y.get(crate)), angle(creep_facing_angle.get(crate)))
+            else
+                createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_rats_crates, vec2(creep_location_x.get(crate), creep_location_y.get(crate)), angle(creep_facing_angle.get(crate)))
+        doAfter(GetRandomReal(30,60)) ->
+            createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(creep_location_x.getAndRemove(crate), creep_location_y.getAndRemove(crate)), angle(creep_facing_angle.getAndRemove(crate)))
+
+init        
+
+    //Zombies
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_creep_zombie_lvl_1, vec2(-65,-4312), angle(DEGTORAD*270))..setMaxHP(1500)
+
+    //Spider and Rats Crates
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(2478.4, - 6045.9), angle(174.095))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(2149.4, - 7288.5), angle(0.110))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(2847.6, - 8101.7), angle(309.934))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(2961.7, - 8189.2), angle(307.440))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(4324.9, - 7866.9), angle(5.087))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(4940.7, - 7609.6), angle(288.510))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(5169.7, - 6524.9), angle(250.496))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(5274.4, - 6577.6), angle(219.821))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(4564.4, - 5985.9), angle(56.131))
+    createUnit(players[PLAYER_NEUTRAL_AGGRESSIVE], gen_unit_crate_spider_rats, vec2(4640.4, - 5458.2), angle(53.582))
+        

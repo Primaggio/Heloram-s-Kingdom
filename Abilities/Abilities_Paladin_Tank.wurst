@@ -17,7 +17,7 @@ public int gen_ability_id_pal_tank_dp = compiletime(ABIL_ID_GEN.next())
 
 
 
-@compiletime function gen_ability_id_pal_tank_sof()
+@compiletime function gen_ability_id_pal_tank_shield_of_faith()
     new AbilityDefinitionMountainKingThunderClap(gen_ability_id_pal_tank_sof)
         ..setCastingTime(1, 0)
         ..setCastingTime(2, 0)
@@ -62,7 +62,7 @@ public int gen_ability_id_pal_tank_dp = compiletime(ABIL_ID_GEN.next())
         ..setRequiredLevel(1)
         ..setLevelSkipRequirement(4)
 
-@compiletime function gen_ability_id_pal_tank_lb()
+@compiletime function gen_ability_id_pal_tank_life_bright()
     new AbilityDefinitionUnholyAuracreep(gen_ability_id_pal_tank_lb)
         ..setLifeRegenerationIncrease(1, 3)
         ..setLifeRegenerationIncrease(2, 6)
@@ -106,7 +106,7 @@ public int gen_ability_id_pal_tank_dp = compiletime(ABIL_ID_GEN.next())
         ..setRequiredLevel(5)
         ..setLevelSkipRequirement(4)
 
-@compiletime function gen_ability_id_pal_tank_ba()
+@compiletime function gen_ability_id_pal_tank_blessed_armor()
     new AbilityDefinitionPaladinDevotionAura(gen_ability_id_pal_tank_ba)
     //If ability has presets for it
         //Example:
@@ -142,7 +142,7 @@ public int gen_ability_id_pal_tank_dp = compiletime(ABIL_ID_GEN.next())
         ..setLevelSkipRequirement(4)
         //Set how much levels need to upgrade the next level
 
-@compiletime function gen_ability_id_pal_tank_dp()
+@compiletime function gen_ability_id_pal_tank_divine_protection()
     new AbilityDefinitionTaurenChieftainReincarnation(gen_ability_id_pal_tank_dp)
     //If ability has presets for it
         //Example:

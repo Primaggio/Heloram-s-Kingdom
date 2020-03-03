@@ -1,0 +1,12 @@
+package Quest3_Q_Spell
+import public Quest
+import public Icons
+
+
+public quest quest3_Q_spell = CreateQuest()
+    ..setTitle("Lost Artifact")
+    ..setDescription("Enter into the Hidden Wood and find the lost artifact that your Class Master requested. |cffffff00TIPS:|r use |cffff0000'-investigate'|r nearby structures to search for it. Also, use |cffff0000'-enter'|r to enter into the Hidden Woods.")
+    ..setIcon("ReplaceableTextures\\CommandButtons\\BTNHalahkTheLifeBringer.blp")
+
+init
+    QuestSetEnabled(quest3_Q_spell, false)

@@ -95,10 +95,10 @@ init
         new SoundDefinition("Units\\NightElf\\DruidOfTheClaw\\DruidOfTheClawMorphAlternate1.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
         players_unit_list_druid_wolf.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle())
         players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_wolf.get(caster.getOwner()).getXp(), false)
         players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_wolf.get(caster.getOwner()).getHP())/(players_unit_list_druid_wolf.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
         players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())          
-        players_unit_list_druid_human.get(caster.getOwner()).setFacing(players_unit_list_druid_human.get(caster.getOwner()).getFacingAngle()*DEGTORAD)  
         players_unit_list_druid_human.get(caster.getOwner()).show()
         SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
         doAfter(3) ->

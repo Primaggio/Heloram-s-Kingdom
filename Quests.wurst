@@ -14,13 +14,22 @@ import public SoundUtils
 import public Units_neutral
 import public AllUnits
 import public Druid_Players_Hashmaps
+import public AllItems
 
 public int start_value = 0
+
 public let players_unit_list = new IterableMap<player, unit>
+public let players_inside_list = new IterableMap<player, int>
+public let players_respawn_list = new IterableMap<player, int>
+
 public let quest_value_list = new IterableMap<player, string> //Actual situation of the quest
-public int quest_text_value = 0 //Text that is displaying at the screen
-public real quest_text_display_time = 0 //Time counting do display
-let quests_done = new IterableMap<player,int>
+
+//Quests --- 0 for not did, 1 for making and 2 for completed. Other numbers can be stages
+
+public let quest1_player_list = new IterableMap<player,int> //Village Investigation
+public let quest2_player_list = new IterableMap<player,int> //Class Master
+public let quest3_player_list = new IterableMap<player,int> //Q Spell
+public let quest4_player_list = new IterableMap<player,int> //W Spell
 
 //Quest Sounds
 public let quest_sound_new = new SoundDefinition("Sound\\Interface\\QuestNew.flac", false)
@@ -30,19 +39,11 @@ public let quest_sound_complete = new SoundDefinition("Sound\\Interface\\QuestCo
 
 //Quest 1 - Investigation
 
-public let quest1_player_list = new IterableMap<player,int> //0 for not did, 1 for making and 2 for completed. Other numbers can be stages
-public let quest2_player_list = new IterableMap<player,int> //0 for not did, 1 for making and 2 for completed. Other numbers can be stages
-public let quest_tavern_player_list = new IterableMap<player,int> //0 for not did, 1 for making and 2 for completed. Other numbers can be stages
 
+public let quest_tavern_player_list = new IterableMap<player,int> //0 for not did, 1 for making and 2 for completed. Other numbers can be stages
+public int quest_text_value = 0 //Text that is displaying at the screen
+public real quest_text_display_time = 0 //Time counting do display
 let quest1_1_text_list = new IterableMap<int, string> //Quest texts
-let quest1_2_text_list = new IterableMap<int, string> //Quest texts
-let quest1_2_target_list = new LinkedList<unit>
-let quest1_2_trigger_list = new LinkedList<unit>
-let quest1_2_text_value = new IterableMap<player, int>//Text that is displaying at the screen
-let quest1_3_text_list = new IterableMap<int, string> //Quest texts
-let quest1_3_target_list = new LinkedList<unit>
-let quest1_3_trigger_list = new LinkedList<unit>
-let quest1_3_text_value = new IterableMap<player, int>//Text that is displaying at the screen
 
 //Quest 1 - Class Master
 
@@ -51,7 +52,7 @@ quest quest_actual
 let quest_actual_list = new IterableMap<player, quest>
 
 
-//public texttag pala_test = createTTEx(vec3(cm2.getX(),cm2.getY() - 60,15), "Pala Healer", 10)..setPermanent(true)..setVisibility(true)
+//public 
 
     //Quests IterableMaps for not repeat
 let quest_1 = new IterableMap<player, int> //Villager Investigation
@@ -90,17 +91,17 @@ public function start_game()
             else
                 destroy cb01
                 if quest1_1_text_list.size() == 0
-                    quest1_1_text_list.put(1, "|cffff0000Horse Master:|r King Heloram, i found another villager lost at the southwest woods!")
+                    quest1_1_text_list.put(1, "|cffff0000Horse Master:|r King Heloram, i found another villager lost at the west woods!")
                     quest1_1_text_list.put(2, "|cffff0000King Heloram:|r Another one?! I don't know what is going on, but this events are getting too frequent...")
                     quest1_1_text_list.put(3, "|cffff0000King Heloram:|r Hey, Villager! Wake up!")
                     quest1_1_text_list.put(4, "|cffffff00Villager:|r O... Oh... Ham?")
                     quest1_1_text_list.put(5, "|cffffff00Villager:|r Where am i?")
-                    quest1_1_text_list.put(6, "|cffff0000King Heloram:|r You are at the Heloram Kingdom... I think you got lost... Do you remember what happened?")
+                    quest1_1_text_list.put(6, "|cffff0000King Heloram:|r You are at the Heloram's Kingdom... I think you got lost... Do you remember what happened?")
                     quest1_1_text_list.put(7, "|cffffff00Villager:|r I... I don't know, i guess... Maybe something at... The village...")
-                    quest1_1_text_list.put(8, "|cffff0000King Heloram:|r My General said that he found you lost at the southwest village... That sounds familiar?")
+                    quest1_1_text_list.put(8, "|cffff0000King Heloram:|r My General said that he found you lost at the west village... That sounds familiar?")
                     quest1_1_text_list.put(9, "|cffffff00Villager:|r Yes, i was... We got attacked by... I don't know, they had the face covered and... They killed everyone! Oh my god...")
                     quest1_1_text_list.put(10, "|cffff0000King Heloram:|r Ok, do you think you can head over there and try to find something that can help us to investigate what happened?")
-                    quest1_1_text_list.put(11, "|cffffff00Villager:|r Ham... I think so... I guess it's part of my responsibility now to try help to figure this out... I just... Can't belive that this happened...")                
+                    quest1_1_text_list.put(11, "|cffffff00Villager:|r Ham... I don't... I guess so... I just... Can't belive that this happened...")                
                 doPeriodically(1) cb1 ->
                     quest_text_display_time += 1
                     if quest_text_value == 0 or quest_text_display_time > (quest1_1_text_list.get(quest_text_value).length().toReal())/12
@@ -138,23 +139,31 @@ public function start_game()
                         PlaySound("Sound\\Dialogue\\HumanCampaign\\Human05\\H05VillagerM49.flac")
                         doAfter(5) ->
                             for i = 0 to 7
-                                quest_value_list.put(players[i], "|cffffff00Quest Added:|r Go investigate the southwest village.")
-                            start_unit_villager.hide()
-                            start_unit_horseman.remove()                            
-                            for i = 0 to 7
-                                players_unit_list.put(players[i], createUnit(players[i], gen_unit_id_villager, vec2(start_unit_villager.getX(), start_unit_villager.getY() - i*75), start_unit_villager.getFacingAngle())..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[i].getColor()))
-                            PlaySound("Sound\\Interface\\QuestNew.flac")
+                                if players_unit_list.has(players[i]) == false
+                                    players_unit_list.put(players[i], createUnit(players[i], gen_unit_id_villager, vec2(start_unit_villager.getX(), start_unit_villager.getY() - i*75), start_unit_villager.getFacingAngle())..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[i].getColor()))
+                                    players[i].print("|cffffff00Quest Added:|r Go investigate the west village.", 10)      
+                                    QuestSetEnabled(quest1_1, true)                              
+                                    quest_sound_new.playForPlayer(players[i])
                             start_unit_villager.remove()
-                            print(" ")
-                            print("|cffffff00Quest Added:|r Go investigate the southwest village.", 10)
+                            start_unit_horseman.remove()                            
                             q1.issuePointOrderById(851986, vec2(- 5087.4, 886.2))
-                            quest_text_value = 0
-                            QuestSetEnabled(quest1_1, true)
+                            quest_text_value = 0                            
                             doAfter(2) ->
                                 q1.abortOrder()
                                 q1.setFacing(angle(181.278*DEGTORAD))
                         destroy cb1
-                        
+
+public function new_game()
+    for i = 0 to 7
+        //if players_unit_list.has(players[i]) == false
+        if GetTriggerPlayer() == players[i]
+            players_unit_list.put(players[i], createUnit(players[i], gen_unit_id_villager, vec2(-5200, 300.0 - i*75), angle(DEGTORAD * 270))..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[i].getColor()))
+            players[i].setCameraPosition(players_unit_list.get(players[i]).getPos())
+            quest_value_list.put(players[i], "|cffffff00Quest Added:|r Go investigate the west village.")
+            players[i].print(quest_value_list.get(players[i]),10)
+            QuestSetEnabled(quest1_1, true)
+            quest_sound_new.playForPlayer(players[i])
+
 public function quest_start()
 
 //Quests Tavern - Gold & XP
@@ -177,7 +186,7 @@ public function quest_start()
     if GetOrderTargetUnit() == q2
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
             if quest1_player_list.get(GetTriggerUnit().getOwner()) == 0                
-                if quest_value_list.get(GetTriggerUnit().getOwner()) == "|cffffff00Quest Added:|r Go investigate the southwest village."       
+                if quest_value_list.get(GetTriggerUnit().getOwner()) == "|cffffff00Quest Added:|r Go investigate the west village."       
                     quest1_player_list.put(GetTriggerUnit().getOwner(),1)
                     GetTriggerUnit().getOwner().print("|cffff0000Frank:|r Hey pal... Argh... They kil... Killed everyone... Urgh... You need to be carefull... Ugh... It was a guy... With a black amor and a... A bunch of magicians... ARGH!...")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Go talk to King Heloram and tell him the information got from Frank.")
@@ -195,9 +204,8 @@ public function quest_start()
             if quest1_player_list.get(GetTriggerUnit().getOwner()) == 1
                 if quest_value_list.get(GetTriggerUnit().getOwner()) == "|cffffff00Quest Added:|r Go talk to King Heloram and tell him the information got from Frank."
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print("|cffff0000King Heloram:|r So, the village got attacked by a black armor guy and a bunch of magicians? That's not good... We are protecting this kingdom a long time ago by this soldier and his army, since the Age of the Ancients... He got consumed by the power taught by them for the Halidam's Land protectors and his madness drove him to use these magics to make an army... If you are looking for vengeance, go talk to the Class Masters inside this castle and ask them for knowledge... Maybe you can become a Master and fight with us for the honor of your people.")
+                    GetTriggerUnit().getOwner().print("|cffff0000King Heloram:|r So, the village got attacked by a black armor guy and a bunch of magicians? That's not good... We are protecting this kingdom a long time ago by this soldier and his army, since the Age of the Ancients... He got consumed by the power taught by them for the Alindor's Land Protectors and his madness drove him to use these magics to make an army... If you are looking for vengeance, go talk to the Class Masters inside this castle and ask them for knowledge... Maybe you can become a Master and fight with us for the honor of your people.")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find a Class Master that can train you.")
-                    triggered_player = GetTriggerUnit().getOwner()
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()))                    
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -207,16 +215,13 @@ public function quest_start()
                             QuestSetEnabled(quest1_3, true)
                             quest1_player_list.put(GetTriggerUnit().getOwner(), 2)
 
-//Quest 2 - Class Master
     if GetOrderTargetUnit() == cm2 //Pala Healer
-        if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+        if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)            
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Paladin Healer Master:|r So, do you want to became a apprentice of light healing? (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print("|cffff0000Paladin Healer Master:|r The Ancient Light Dragon and heaven spirits gave us the power of light for healing and purifying our people ages ago. Go to the north mountain, find the Altar of the Light and ask for their bless.")
-                    quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Altar of the Light and get the blessing of the heaven spirits.")
-                    GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print("|cffff0000Paladin Healer Master:|r The Ancient Light Dragon and the heaven spirits gave us the power of light for healing and purifying our people ages ago. Go to the north mountain, find the Altar of the Light and ask for their bless.")
                     new SoundDefinition("Units\\Human\\HeroPaladin\\HeroPaladinYes4.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Paladin Healer")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -239,18 +244,30 @@ public function quest_start()
                 quest_sound_complete.playForPlayer(GetTriggerUnit().getOwner()) 
                 GetTriggerUnit().getOwner().print("|cffff0000Paladin Healer Master:|r Well done, soldier. Now come talk to me when you get ready to start your training.")
                 QuestSetEnabled(quest2_pal_heal, false)
-                quest2_player_list.put(GetTriggerUnit().getOwner(), 2)
+                quest2_player_list.put(GetTriggerUnit().getOwner(), 2)            
+            //Quest 3 - Q Spell
+            if quest3_player_list.get(GetTriggerUnit().getOwner()) == 0 and quest2_player_list.get(GetTriggerUnit().getOwner()) == 2 and GetTriggerUnit().getName() == "Paladin Healer" and GetTriggerUnit().getProperName() == "Novice" and GetTriggerUnit().hasAbility(gen_ability_pal_heal_hl) == false
+                quest_value_list.put(GetTriggerUnit().getOwner(), "|cffff0000Paladin Healer Master:|r Allright, soldier. I have a task for you. Many year ago, we from Heloram's army built a secret place to learn and protect the knowledge about the Ancient Dragons Magics and we wrote it all in Stone Runes... But was just matter of time until we got attacked by strange magicians and some creepy creatures. Our Mages have sealed the entrance with a magical force wall to prevent them from spreading. I need you to go into the Hidden Woods and find the Paladins Artifact and bring it back to me. This artifact has the scriptures that are necessary for me to teach you your first magical ability.")
+                GetTriggerUnit().getOwner().print(" ")
+                GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()), quest_value_list.get(GetTriggerUnit().getOwner()).length().toReal()/12)
+                quest_sound_new.playForPlayer(GetTriggerUnit().getOwner())
+                quest3_player_list.put(GetTriggerUnit().getOwner(), 1)
+            if quest3_player_list.get(GetTriggerUnit().getOwner()) == 1 and GetTriggerUnit().hasItemById(gen_item_quest2_artifact) == true and GetTriggerUnit().getName() == "Paladin Healer" and GetTriggerUnit().getProperName() == "Novice"
+                GetTriggerUnit().getOwner().print(" ")
+                GetTriggerUnit().getOwner().print("|cffff0000Paladin Healer Master:|r Fair enough, soldier. I give you my bless. Now you can cast Holy Light.")
+                quest3_player_list.put(GetTriggerUnit().getOwner(), 2)
+                GetTriggerUnit().removeItemById(gen_item_quest2_artifact)
+                GetTriggerUnit().addAbility(gen_ability_pal_heal_hl)
+                quest_sound_complete.playForPlayer(GetTriggerUnit().getOwner())
 
 
-        if GetOrderTargetUnit() == cm5 //Pala Tank
+    if GetOrderTargetUnit() == cm5 //Pala Tank
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Paladin Tank Master:|r If you want to became a warrior protector of this people, you will have to study the teaching of the Ancient Light Dragon about defense. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Paladin Tank Master:|r Oh right then... The Ancient Light Dragon taught us the art of defense, but for this, we had to ask for the bless of the heaven warriors at the Altar of the Light. You can find it at the north mountain.")
-                    quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Altar of the Light and get the blessing of the heaven warriors.")
-                    GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Human\\Footman\\FootmanYes3.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Paladin Tank")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -274,17 +291,22 @@ public function quest_start()
                 GetTriggerUnit().getOwner().print("|cffff0000Paladin Tank Master:|r Well done, soldier. Now come talk to me when you get ready to start your training.")
                 QuestSetEnabled(quest2_pal_tank, false)
                 quest2_player_list.put(GetTriggerUnit().getOwner(), 2)
+                //Quest 3 - Q Spell
+            if quest3_player_list.get(GetTriggerUnit().getOwner()) == 0 and quest2_player_list.get(GetTriggerUnit().getOwner()) == 2 and GetTriggerUnit().getName() == "Paladin Tank" and GetTriggerUnit().getProperName() == "Novice"
+                quest_value_list.put(GetTriggerUnit().getOwner(), "|cffff0000Paladin Tank Master:|r Allright, soldier. I have a task for you. Many year ago, we from Heloram's army built a secret place to learn and protect the knowledge about the Ancient Dragons Magics and we wrote all in Stone Runes... But was just matter of time until we got attacked by strange magicians and some creepy creatures. Our Mages have sealed the entrance with a magical force wall to prevent them from spreading. I need you to go into the Hidden Woods and find the Paladins Artifact and bring it back to me. This artifact has the scriptures that are necessary for me to teach you your first magical ability.")
+                GetTriggerUnit().getOwner().print(" ")
+                GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()), quest_value_list.get(GetTriggerUnit().getOwner()).length().toReal()/12)
+                quest_sound_new.playForPlayer(GetTriggerUnit().getOwner())
+                quest3_player_list.put(GetTriggerUnit().getOwner(), 1)
 
 
     if GetOrderTargetUnit() == cm8 //Pala Bruiser
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Paladin Bruiser Master:|r My entire family followed the teaching of the great Ancient Light Dragon and his knowledge about the power of the light. If you want to become a real warrior of the light, you came for the right place. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Paladin Bruiser Master:|r Oh right then... The Ancient Light Dragon taught us the art of defense, but for this, we had to ask for the bless of the heaven warriors at the Altar of the Light. You can find it at the north mountain.")
-                    quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Altar of the Light and get the blessing of the heaven warriors.")
-                    GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Human\\HeroPaladin\\HeroPaladinYesAttack1.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Paladin Bruiser")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -312,13 +334,11 @@ public function quest_start()
 
     if GetOrderTargetUnit() == cm11 //Druid
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Druid Master:|r The great Ancient Nature Dragon taught our people the magics of the nature, leading us to be connected to the animal spirits. Do you want to learn more about it? (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Druid Master:|r The spirits of life and the Ancient Nature Dragon gave us their bless to learn the knowledge of the life. Go find the Altar of the Nature, north from the kingdom and ask them for blessing you.")
-                    quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Altar of the Nature and ask for the spirits of life their bless.")
-                    GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\NightElf\\DruidOfTheTalon\\DruidOfTheTalonYes2.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Druid")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -354,13 +374,11 @@ public function quest_start()
 
     if GetOrderTargetUnit() == cm20 //Shaman Elemental
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
-            if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
+            //Quest 2 - Class Master
+            if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Shaman Elemental Master:|r The spirits of the elements are living at this land around us thanks to the Ancient Nature Dragon, that taught them the magic of nature elements. Join us and became a master of the elements. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Shaman Elemental Master:|r Let the spirits of the elements guide you to your destiny. Go find the Altar of the Nature at the north mountain.")
-                    quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Altar of the Nature and let you the spirits of the elements guide your destiny.")
-                    GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Orc\\Shaman\\ShamanYes2.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Shaman Elemental")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -389,13 +407,14 @@ public function quest_start()
                 
     if GetOrderTargetUnit() == cm23 //Shaman Healer
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Shaman Healer Master:|r The life spirits have been taught by the great Ancient Nature Dragon to learn the healing magic of the age of the ancients. I can fell your life spirit asking for knowledge. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Shaman Healer Master:|r You will have to proof your life spirit for the Ancient Nature Dragon. Go at the Altar of the Nature north by here and let the elements speak to you.")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Altar of the Nature and talk to the spirits of the life.")
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print(quest_value_list.getAndRemove(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Orc\\Shaman\\ShamanYes1.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Shaman Healer")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -423,13 +442,14 @@ public function quest_start()
 
     if GetOrderTargetUnit() == cm14 //Mage Fire
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Mage Fire Master:|r The Ancient Fire Dragon learned the magics of the elements at the age of the ancients and is protecting this land since then. He taught us to dominate the art of the fire magic. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Mage Fire Master:|r Well then. You will have to drink from the Magic Fountain before start learning Fire Magics. Go and find it by southwest of the kingdom.")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Magic Fountain and drink from it.")
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print(quest_value_list.getAndRemove(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Human\\HeroBloodElf\\BloodElfMageYes3.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Mage Fire")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -456,13 +476,14 @@ public function quest_start()
 
     if GetOrderTargetUnit() == cm17 //Mage Frost
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Mage Frost Master:|r The Ancient Frost Dragon came from the gelid lands and brought the knowledge of frost magic. Here, you will learn the most advanced spells of it. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Mage Fire Master:|r I'll teach you the art of frost magic. But first, you will have to drink from the Magic Fountain to get yourself prepared. Go to southwest and climb the mountain to find it")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Magic Fountain and drink from it.")
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print(quest_value_list.getAndRemove(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Human\\Jaina\\JainaYes4.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Mage Frost")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -490,13 +511,14 @@ public function quest_start()
 
     if GetOrderTargetUnit() == cm26 //Warlock
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Warlock Master:|r The darkness can be powerful when you use it by your side. Let the dark power to be part of you. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Warlock Master:|r You made the right choice. Go find the Dark Fountain southwest here and drink from it to release your dark spirit.")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Find the Dark Fountain and drink from it.")
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print(quest_value_list.getAndRemove(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Creeps\\IceTroll\\IceTrollYes5.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Warlock")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -524,13 +546,14 @@ public function quest_start()
         
     if GetOrderTargetUnit() == cm29 //Hunter
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Hunter Master:|r The animals of this land have warrior spirits inside them. Let yours guide you to learn with their knowledge. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Hunter Master:|r The animals spirits are not easy to understand. If you really want to learn with them, go find the Altar of the Hunters and let the Ancient Warrior Dragon lead your destiny.")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Go to the southwest mountain and find the Altar of the Hunters.")
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print(quest_value_list.getAndRemove(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Creeps\\SylvanusWindrunner\\SylvanasWhat1.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Hunter")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -558,13 +581,14 @@ public function quest_start()
 
     if GetOrderTargetUnit() == cm32 //Archer
         if GetTriggerUnit().isInRange(GetOrderTargetUnit().getPos(), 125)
+            //Quest 2 - Class Master
             if quest2_player_list.get(GetTriggerUnit().getOwner()) == 0                
                 if quest_master_list.get(GetTriggerUnit().getOwner()) == "|cffff0000Archer Master:|r A bow is not just a weapon, it's your shield, your protection... Your essence. We've learned fight tactics with the great Ancient Warrior Dragon to defend ourselves. (Right click again)"
                     GetTriggerUnit().getOwner().print(" ")
                     GetTriggerUnit().getOwner().print("|cffff0000Archer Master:|r If you want to learn how to fight and use your bow like a real warrior, go find the Altar of the Archers at the southwest mountain. Ancient Warrior Dragon will lead your destiny.")
                     quest_value_list.put(GetTriggerUnit().getOwner(), "|cffffff00Quest Added:|r Go to the southwest mountain and find the Altar of the Hunters.")
                     GetTriggerUnit().getOwner().print(" ")
-                    GetTriggerUnit().getOwner().print(quest_value_list.get(GetTriggerUnit().getOwner()),10)
+                    GetTriggerUnit().getOwner().print(quest_value_list.getAndRemove(GetTriggerUnit().getOwner()),10)
                     new SoundDefinition("Units\\Creeps\\SylvanusWindrunner\\SylvanasPissed5.flac", false).playForPlayer(GetTriggerUnit().getOwner())
                     quest_master_list.put(GetTriggerUnit().getOwner(), "Archer")
                     quest_sound_next.playForPlayer(GetTriggerUnit().getOwner())
@@ -741,6 +765,7 @@ public function start_quest_swordsman_count()
 */
 
 init
+    
     players_unit_list_druid_human.put(players[0], createUnit(players[0], gen_unit_id_druid_human,  vec2(0,0), angle(0))..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[0].getColor()))
     SetHeroLevel(players_unit_list_druid_human.get(players[0]), 10, true)
     players_unit_list_druid_human.get(players[0]).setHP(500)
@@ -752,9 +777,12 @@ init
     players_unit_list_druid_moonkin.get(players[0]).hide()
     players_unit_list_druid_treant.put(players[0], createUnit(players[0], gen_unit_id_druid_treant,  vec2(0,0), angle(0))..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[0].getColor()))
     players_unit_list_druid_treant.get(players[0]).hide()
-    players_unit_list.put(players[0], createUnit(players[0], gen_unit_id_paladin_healer,  vec2(0,0), angle(0))..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[0].getColor()))
+    
+    players_unit_list.put(players[0], createUnit(players[0], gen_unit_id_archer,  vec2(0,0), angle(0))..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[0].getColor()))
     SetHeroLevel(players_unit_list.get(players[0]), 10, true)
 
+    players_unit_list.put(players[0], createUnit(players[0], gen_unit_id_warlock,  vec2(0,0), angle(0))..addEffect("war3mapImported\\GeneralHeroGlow.mdx", "origin")..setColor(players[0].getColor()))
+    SetHeroLevel(players_unit_list.get(players[0]), 10, true)
 
 
 

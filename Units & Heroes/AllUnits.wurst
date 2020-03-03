@@ -8,5 +8,10 @@ import public Unit_Druid_Moonkin
 import public Unit_Druid_Treant
 import public Unit_Druid_Wolf
 import public Unit_Paladin_Healer
+import public Unit_Paladin_Bruiser
+import public Unit_Mage_Fire
 import public Villager
 import public Class_Masters
+import public Unit_Shaman_Healer
+import public Unit_Shaman_Elemental
+import public Unit_Warlock

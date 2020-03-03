@@ -1,0 +1,395 @@
+package Abilities_Shaman_Elemental
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public DamageEvent
+import public UnitIds
+import public HashMap
+
+public int gen_ability_shaman_elem_spto = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_shaman_elem_trto = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_shaman_elem_liwa = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_shaman_elem_thst = compiletime(ABIL_ID_GEN.next())
+int gen_unit_shaman_elem_spto = compiletime(UNIT_ID_GEN.next())
+let lightning_wave_targets = new IterableMap<unit, int>
+let thunder_storm_targets = new IterableMap<unit, int>
+let players_unit_list_shaman_elem_spto = new IterableMap<player,unit>
+//public let gen_buff_id_lw = compiletime(createDummyBuffObject("|cff00b7ffLightning Weapon|r", "This unit has a chance to do damage to the target unit when hitting it.", Icons.bTNMonsoon))
+
+
+@compiletime function gen_ability_shaman_elem_spirit_totem()
+
+    //Paladin Bruiser
+    new UnitDefinition(gen_unit_shaman_elem_spto, UnitIds.serpentward1)
+        ..setName("Shaman Elemental Totem")
+        ..setCollisionSize(24)
+        ..setScalingValue(1.0)
+        ..setHitPointsMaximumBase(250)
+        ..setHitPointsRegenerationRate(5)
+        ..setDefenseBase(15)
+        ..setAttack2DamageBase(50)
+        ..setAttack2DamageNumberofDice(1)
+        ..setAttack2DamageSidesperDie(1)
+        ..setAttack2CooldownTime(1)
+        ..setAttack2Range(450)
+        ..setAttack1DamageBase(50)
+        ..setAttack1DamageNumberofDice(1)
+        ..setAttack1DamageSidesperDie(1)
+        ..setAttack1CooldownTime(1)
+        ..setAttack1Range(450)
+
+    new ChannelAbilityPreset(gen_ability_shaman_elem_spto, 2, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Spirit Totem")
+        ..setTooltipLearn("Spirit Totem")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Invokes a spirit totem that attack your enemies, damaging them.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Spirit Totem - Lvl 1 |  |cffa7fcffCooldown:|r 12 seconds")
+        ..setTooltipNormal(2, "Spirit Totem - Lvl 2 |  |cffa7fcffCooldown:|r 10 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 20 Damage Points per hit.")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 50 Damage Points per hit.")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNSerpentWard)
+        ..setIconResearch(Icons.bTNSerpentWard)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 65)
+        ..setManaCost(2, 175)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_shaman_elem_tremor_totem()
+    new ChannelAbilityPreset(gen_ability_shaman_elem_trto, 2, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Thorns Totem")
+        ..setTooltipLearn("Thorns Totem")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Invokes a nature spirit totem that roots your enemies.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Thorns Totem - Lvl 1 |  |cffa7fcffCooldown:|r 8 seconds")
+        ..setTooltipNormal(2, "Thorns Totem - Lvl 2 |  |cffa7fcffCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff00a0bdSlow Duration:|r 50% for 0.5 second | |cff93ffa5Totem Duration:|r 5 seconds")
+        ..setTooltipNormalExtended(2, "|cff00a0bdSlow Duration:|r 75% 0.75 second | |cff93ffa5Totem Duration:|r 6 seconds")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNHealingWard)
+        ..setIconResearch(Icons.bTNHealingWard)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 50)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 8)
+        ..setCooldown(2, 6)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_shaman_elem_lightning_wave()
+    new ChannelAbilityPreset(gen_ability_shaman_elem_liwa, 2, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Lightning Wave")
+        ..setTooltipLearn("Lightning Wave")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call a storm wave around you, dealing damage to your enemies when it pass through them.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Lightning Wave - Lvl 1 |  |cffa7fcffCooldown:|r 10 seconds")
+        ..setTooltipNormal(2, "Lightning Wave - Lvl 2 |  |cffa7fcffCooldown:|r 8 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cff0000ffDamage Amount:|r 75 Health Points")
+        ..setTooltipNormalExtended(2, "|cff0000ffDamage Amount:|r 175 Health Points")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNWispSplode)
+        ..setIconResearch(Icons.bTNWispSplode)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 70)
+        ..setManaCost(2, 150)
+        ..setCooldown(1, 10)
+        ..setCooldown(2, 8)
+        ..setCastingTime(1, 0)
+        ..setCastingTime(2, 0)
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_shaman_elem_thunder_storm()
+    new ChannelAbilityPreset(gen_ability_shaman_elem_thst, 1, true)
+        ..presetTargetTypes(Targettype.PASSIVE)
+        ..setName("Thunder Storm")
+        ..setTooltipLearn("Thunder Storm")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Call thunders upon the skies, dealing damage to enemies that get hit by the lightning.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Thunder Storm - Lvl 1 |  |cffa7fcffCooldown:|r 120 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Bonus:|r +20 Damage Points | |cffff8800Attack Speed Bonus:|r +25% Attack Percent Bonus")
+        //Shows it when passing the mouse through it (description)
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNOrbOfFrost)
+        ..setIconResearch(Icons.bTNOrbOfFrost)
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(5)
+        ..setManaCost(1, 0)//175)
+        ..setCooldown(1, 0)//120)
+        ..setCastingTime(1, 0)
+        ..setAnimationNames("none")
+
+init   
+
+    //Spirit Totem
+    EventListener.onCast(gen_ability_shaman_elem_spto) (unit caster) ->
+        int cb_counter = 0
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(0.01, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->
+            players_unit_list_shaman_elem_spto.put(caster.getOwner(), createUnit(caster.getOwner(), gen_unit_shaman_elem_spto, vec2(caster.getX() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).sin()*150), caster.getFacingAngle()))
+            if GetUnitAbilityLevel(caster, gen_ability_shaman_elem_spto) == 1
+                players_unit_list_shaman_elem_spto.get(caster.getOwner()).setBaseDamage(20, 1)
+            vec2 totem_pos = players_unit_list_shaman_elem_spto.get(caster.getOwner()).getPos()
+            new SoundDefinition("Units\\Orc\\HealingWard\\PlaceAncestralGuardian.flac", false).playOnPoint(caster.getPos3Fly())
+            effect totem_red_effect = addEffect("Abilities\\Spells\\Items\\VampiricPotion\\VampPotionCaster.mdl", vec3(caster.getX() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() + 45)*DEGTORAD).sin()*150, -30))..setScale(3)..setYaw(90)
+            doPeriodicallyCounted(6, 1) (CallbackCounted cb) ->
+                effect totem_destr_effect = addEffect("Abilities\\Spells\\Items\\AIsm\\AIsmTarget.mdl", totem_pos)..setScale(4)
+                doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->            
+                    players_unit_list_shaman_elem_spto.getAndRemove(caster.getOwner()).remove()
+                    totem_destr_effect.destr()
+                    totem_red_effect.destr()
+
+    //Tremor Totem
+    EventListener.onCast(gen_ability_shaman_elem_trto) (unit caster) ->
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(0.01, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->
+            real cb_counter = 0
+            effect totem = addEffect("units\\orc\\HealingWard\\HealingWard", vec3(caster.getX() + ((caster.getFacingAngle().degrees() - 45)*DEGTORAD).cos()*150, caster.getY() + ((caster.getFacingAngle().degrees() - 45)*DEGTORAD).sin()*150, 0))..setScale(1.0)..setYaw(caster.getFacingAngle())
+            vec2 totem_pos = totem.getPos()
+            new SoundDefinition("Units\\Orc\\HealingWard\\PlaceAncestralGuardian.flac", false).playOnPoint(caster.getPos3Fly())
+            doPeriodicallyCounted(1, 6) (CallbackCounted cb) ->  
+                effect totem_tremor_effect = addEffect("Abilities\\Spells\\Other\\Stampede\\StampedeMissileDeath.mdl", totem_pos)..setScale(2.0)..destr()
+            doPeriodicallyCounted(1, 6) (CallbackCounted cb) -> 
+                cb_counter += 1
+                forUnitsInRange(totem_pos, 450) (unit u) ->
+                    if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster                            
+                        if GetUnitAbilityLevel(caster, gen_ability_shaman_elem_trto) == 1
+                            u.setHP(u.getHP() - 20)
+                            real target_move_speed = u.getMoveSpeed()
+                            u.setMoveSpeedPercChange(-0.50)
+                            effect target_tremor_effect = addEffect("Abilities\\Spells\\Other\\Stampede\\StampedeMissileDeath.mdl", vec3(u.getX(), u.getY(), 0))
+                            doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->
+                                target_tremor_effect.destr()
+                                u.setMoveSpeed(target_move_speed)
+                        else if GetUnitAbilityLevel(caster, gen_ability_shaman_elem_trto) == 2
+                            u.setHP(u.getHP() - 50)
+                            real target_move_speed = u.getMoveSpeed()
+                            u.setMoveSpeedPercChange(-0.75)
+                            effect target_tremor_effect = addEffect("Abilities\\Spells\\Other\\Stampede\\StampedeMissileDeath.mdl", vec3(u.getX(), u.getY(), 0))
+                            doPeriodicallyCounted(0.75, 1) (CallbackCounted cb) ->
+                                target_tremor_effect.destr()
+                                u.setMoveSpeed(target_move_speed)
+                if cb_counter == 6
+                    totem.destr()
+
+    //Lightning Wave
+    EventListener.onCast(gen_ability_shaman_elem_liwa) (unit caster) ->
+        real wave_scale = 1.0
+        real cb_wave_counter = 0
+        caster.pause()
+        caster.setAnimation("spell two")                
+        doPeriodicallyCounted(0.02, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.4, 1) (CallbackCounted cb) ->
+            new SoundDefinition("Units\\Orc\\SentryWard\\SentryWard.flac", false).playOnPoint(caster.getPos3Fly())
+            effect wave = addEffect("Abilities\\Spells\\Orc\\LightningShield\\LightningShieldTarget.mdl", caster.getPos3Fly())..setScale(wave_scale)..setYaw(caster.getFacingAngle().degrees())
+            doPeriodicallyCounted(0.033, 30) (CallbackCounted cb) ->
+                cb_wave_counter += 1
+                wave_scale += 0.05
+                wave.setScale(wave_scale)
+                wave.setZ(0 - cb_wave_counter*3)
+                if cb_wave_counter >= 30
+                    wave.destr()
+            doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->                
+                wave.destr()                     
+        vec2 cast_pos = caster.getPos()
+        real cb_counter = 0
+        doPeriodicallyCounted(0.033, 20) (CallbackCounted cb) ->
+            forUnitsInRange(cast_pos, cb_counter*15) (unit u) ->                
+                if cast_pos.distanceTo(u.getPos()) <= (cb_counter*15 + 15) and cast_pos.distanceTo(u.getPos()) >= (cb_counter*15 - 15)
+                    if lightning_wave_targets.has(u) == false and u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster
+                        if GetUnitAbilityLevel(caster, gen_ability_shaman_elem_liwa) == 1
+                            u.setHP(u.getHP() - 75)
+                        else if GetUnitAbilityLevel(caster, gen_ability_shaman_elem_liwa) == 2
+                            u.setHP(u.getHP() - 175)
+                        lightning_wave_targets.put(u, 1)
+                        doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                            lightning_wave_targets.getAndRemove(u)
+                        flashEffect("Abilities\\Spells\\Items\\AIlb\\AIlbSpecialArt.mdl", u, "chest")
+                        new SoundDefinition("Abilities\\Spells\\Human\\StormBolt\\ThunderBoltMissileDeath.flac", false).playOnPoint(caster.getPos3Fly())                        
+            cb_counter += 1
+
+    //Thunder Storm
+    EventListener.onCast(gen_ability_shaman_elem_thst) (unit caster) ->   
+        real angle_counting = 0
+        real distance = 150
+        new SoundDefinition("Abilities\\Spells\\Human\\StormBolt\\StormBoltLaunch.flac", false).playOnPoint(caster.getPos3Fly())        
+        effect caster_effect_thunder = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl", caster, "origin")..setScale(1.4)..destr()
+        effect lightning_effect1 = addEffect("Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl", vec3(((angle_counting)*DEGTORAD).cos()*distance, ((angle_counting)*DEGTORAD).sin()*distance, 0))..setScale(1.4)
+        effect lightning_effect2 = addEffect("Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl", vec3(((angle_counting+120)*DEGTORAD).cos()*distance, ((angle_counting+120)*DEGTORAD).sin()*distance, 0))..setScale(1.4)
+        effect lightning_effect3 = addEffect("Abilities\\Spells\\Other\\Monsoon\\MonsoonBoltTarget.mdl", vec3(((angle_counting-120)*DEGTORAD).cos()*distance, ((angle_counting-120)*DEGTORAD).sin()*distance, 0))..setScale(1.4)
+        doPeriodicallyCounted(0.033, 30) (CallbackCounted cb) ->
+            distance += 10
+            angle_counting += 24
+            lightning_effect1.setPos(vec2(caster.getX() + ((angle_counting)*DEGTORAD).cos()*distance, caster.getY() + ((angle_counting)*DEGTORAD).sin()*distance))
+            lightning_effect2.setPos(vec2(caster.getX() + ((angle_counting+120)*DEGTORAD).cos()*distance, caster.getY() + ((angle_counting+120)*DEGTORAD).sin()*distance))
+            lightning_effect3.setPos(vec2(caster.getX() + ((angle_counting-120)*DEGTORAD).cos()*distance, caster.getY() + ((angle_counting-120)*DEGTORAD).sin()*distance))
+            forUnitsInRange(lightning_effect1.getPos(), 100) (unit u) ->
+                if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster and thunder_storm_targets.has(u) == false
+                    thunder_storm_targets.put(u,1)
+                    doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                        thunder_storm_targets.getAndRemove(u)
+                    u.setHP(u.getHP() - 250)
+                    flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", u, "origin")
+                    doPeriodicallyCounted(0.5, 4) (CallbackCounted cb) ->
+                        flashEffect("Abilities\\Spells\\Orc\\FeralSpirit\\feralspiritdone.mdl", u, "chest")
+                        u.setHP(u.getHP() - 25)
+            forUnitsInRange(lightning_effect2.getPos(), 100) (unit u) ->
+                if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster and thunder_storm_targets.has(u) == false
+                    thunder_storm_targets.put(u,1)
+                    doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                        thunder_storm_targets.getAndRemove(u)
+                    u.setHP(u.getHP() - 250)
+                    flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", u, "origin")
+                    doPeriodicallyCounted(0.5, 4) (CallbackCounted cb) ->
+                        flashEffect("Abilities\\Spells\\Orc\\FeralSpirit\\feralspiritdone.mdl", u, "chest")
+                        u.setHP(u.getHP() - 25)
+            forUnitsInRange(lightning_effect3.getPos(), 100) (unit u) ->
+                if u.getOwner().isAllyOf(caster.getOwner()) == false and u != caster and thunder_storm_targets.has(u) == false
+                    thunder_storm_targets.put(u,1)
+                    doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                        thunder_storm_targets.getAndRemove(u)
+                    u.setHP(u.getHP() - 250)
+                    flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", u, "origin")
+                    doPeriodicallyCounted(0.5, 4) (CallbackCounted cb) ->
+                        flashEffect("Abilities\\Spells\\Orc\\FeralSpirit\\feralspiritdone.mdl", u, "chest")
+                        u.setHP(u.getHP() - 25)
+        doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+            lightning_effect1.destr()
+            lightning_effect2.destr()
+            lightning_effect3.destr()
+                
+                   
+
+    /*
+    DamageEvent.addListener() ->
+        if DamageEvent.getSource().hasAbility(gen_ability_pal_dps_lw)
+            if DamageEvent.getSource().getName() == "Paladin Bruiser" and DamageEvent.getSource().getProperName() == "Novice"
+                if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_pal_dps_lw) == 1
+                    int number = GetRandomInt(1, 100)
+                    if number >= 1 and number <= 10
+                        DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 25)
+                        flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                        new SoundDefinition("Abilities\\Spells\\Orc\\LightningBolt\\LightningBolt.flac", false).playOnPoint(DamageEvent.getTarget().getPos3Fly()) 
+
+                if GetUnitAbilityLevel(DamageEvent.getSource(), gen_ability_pal_dps_lw) == 2
+                    int number = GetRandomInt(1, 100)
+                    if number >= 1 and number <= 25
+                        DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 50)
+                        flashEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                        new SoundDefinition("Abilities\\Spells\\Orc\\LightningBolt\\LightningBolt.flac", false).playOnPoint(DamageEvent.getTarget().getPos3Fly()) 
+
+    //Storm Call
+    EventListener.onCast(gen_ability_pal_dps_sc) (unit caster) ->
+        int cb_counter = 0
+        new SoundDefinition("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.flac", false).playOnPoint(caster.getPos3Fly()) 
+        effect target_effect_angel = addEffect("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.mdl", caster, "origin")..setScale(1)
+        doPeriodicallyCounted(1, 17) (CallbackCounted cb) ->
+            cb_counter += 1
+            if cb_counter == 2
+                players_unit_list_pal_sc.put(caster.getOwner(),createUnit(caster.getOwner(), gen_unit_pal_sc, caster.getPos(), angle(0))..setColor(PLAYER_COLOR_LIGHT_BLUE))
+            if cb_counter == 4
+                target_effect_angel.destr()
+            else if cb_counter == 17
+                players_unit_list_pal_sc.get(caster.getOwner()).pause()
+                players_unit_list_pal_sc.get(caster.getOwner()).setInvulnerable(true)
+                new SoundDefinition("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.flac", false).playOnPoint(caster.getPos3Fly()) 
+                effect target_effect_angel_recall = addEffect("Abilities\\Spells\\Human\\Resurrect\\ResurrectTarget.mdl", players_unit_list_pal_sc.get(caster.getOwner()), "origin")..setScale(1)
+                doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                    players_unit_list_pal_sc.get(caster.getOwner()).remove()
+                    target_effect_angel_recall.destr()
+
+    DamageEvent.addListener() -> 
+        if DamageEvent.getSource().getName() == "Paladin Bruiser Warrior"
+            if sc_warrior_counter == 0                
+                new SoundDefinition("Abilities\\Spells\\Human\\StormBolt\\StormBoltLaunch.flac", false).playOnPoint(DamageEvent.getTarget().getPos3Fly())
+                effect target_effect_lightning_1 = addEffect("Doodads\\Cinematic\\Lightningbolt\\Lightningbolt.mdl", DamageEvent.getTarget(), "origin")
+                effect target_effect_lightning_2 = addEffect("Abilities\\Spells\\Undead\\ReplenishMana\\ReplenishManaCaster.mdl", DamageEvent.getTarget(), "origin")
+                DamageEvent.getTarget().setHP(DamageEvent.getTarget().getHP() - 125)
+                doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                    target_effect_lightning_1.destr()
+                    target_effect_lightning_2.destr()                 
+                sc_warrior_counter = 1
+                doPeriodicallyCounted(5, 1) (CallbackCounted cb) ->
+                    sc_warrior_counter = 0
+
+            */
+                
+                    
+                        
+            
+            
+        
+        
+                        
+
+                        
+                    
+        
+        
+        
+            
+
+            
+        
+        
+
+

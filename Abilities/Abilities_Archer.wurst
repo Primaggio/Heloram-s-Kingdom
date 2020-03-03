@@ -1,0 +1,313 @@
+package Abilities_Archer
+
+import public ObjectIdGenerator //id generator
+import public AbilityObjEditing //setAbilSettings
+import public Sounds //for searching sounds
+import public Icons //Icons
+import public Abilities //for searching abils
+import public AllBuffs //Buffs made
+import public ObjectIds //commaList
+import public ClosureEvents //EventListener
+import public ChannelAbilityPreset //abilities presets
+import public ClosureTimers //doAfter, doPeriodically
+import public Effect //options for create Effect
+import public ClosureForGroups //for onPointCast group units
+import public SoundUtils //play sound for player or location
+import public HashMap
+import public UnitObjEditing
+import public DamageEvent
+
+public int gen_ability_archer_tash = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_archer_enbo = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_archer_mush = compiletime(ABIL_ID_GEN.next())
+public int gen_ability_archer_spar = compiletime(ABIL_ID_GEN.next())
+public let gen_buff_id_mush = compiletime(createDummyBuffObject("|cffb700ffMulti-Shot|r", "This unit is affected by Multi-Shot and has 10% of chance to shot multiple arrows.", Icons.bTNTrueShot))
+
+@compiletime function gen_ability_archer_target_shot()
+    new ChannelAbilityPreset(gen_ability_archer_tash, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("Q")
+        ..setHotkeyNormal("Q")
+        ..setButtonPositionNormalX(0)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(0)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNMarksmanship)
+        ..setIconResearch(Icons.bTNMarksmanship)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.POINT)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Target Shot")
+        ..setTooltipLearn("Target Shot")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Aim a target place, calling down arrows that do damage to enemies on the ground.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Target Shot - Lvl 1 |  |cffffa24bCooldown:|r 8 seconds")
+        ..setTooltipNormal(2, "Targrt Shot - Lvl 2 |  |cffffa24bCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 10 Health Points for each arrow that hits the enemy.")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 15 Health Points for each arrow that hits the enemy.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 45)
+        ..setManaCost(2, 125)
+        ..setCooldown(1, 8)
+        ..setCooldown(2, 6)
+        ..setCastRange(1, 300)
+        ..setCastRange(2, 450)     
+        ..setCastingTime(1, 0)       
+        ..setCastingTime(2, 0)       
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_archer_enchant_bow()
+    new ChannelAbilityPreset(gen_ability_archer_enbo, 2, true)
+    //Basic Info
+        ..setHotkeyLearn("W")
+        ..setHotkeyNormal("W")
+        ..setButtonPositionNormalX(1)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(1)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNImprovedBows)
+        ..setIconResearch(Icons.bTNImprovedBows)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.PASSIVE)
+        //Set animation during cast for the caster
+    //Texts
+        ..setName("Enchant Bow")
+        ..setTooltipLearn("Enchant Bow")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Involves your bow with energy for 3 seconds, rasing your attack and movement speed.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Enchant Bow - Lvl 1 |  |cffffa24bCooldown:|r 9 seconds")
+        ..setTooltipNormal(2, "Enchant Bow - Lvl 2 |  |cffffa24bCooldown:|r 6 seconds")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffb700ffAttack Speed Bonus:|r +10% Attack Speed for 3 seconds | |cffb700ffMovement Speed Bonus:|r +15% Movement Speed for 3 seconds.")
+        ..setTooltipNormalExtended(2, "|cffb700ffAttack Speed Bonus:|r +25% Attack Speed for 3 seconds | |cffb700ffMovement Speed Bonus:|r +30% Movement Speed for 3 seconds.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 30)
+        ..setManaCost(2, 70)
+        ..setCooldown(1, 9)
+        ..setCooldown(2, 6)   
+        ..setCastingTime(1, 0)       
+        ..setCastingTime(2, 0)       
+        ..setAnimationNames("none")
+
+@compiletime function gen_ability_archer_multi_shot()
+    new AbilityDefinitionPaladinDevotionAura(gen_ability_archer_mush)
+    //Basic Info
+        ..setLevels(2)
+        ..setPercentBonus(1, false)
+        ..setPercentBonus(2, false)
+        ..setArmorBonus(1, 0)
+        ..setArmorBonus(2, 0)
+        ..setHotkeyLearn("E")
+        ..setHotkeyNormal("E")
+        ..setButtonPositionNormalX(2)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(2)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNTrueShot)
+        ..setIconResearch(Icons.bTNTrueShot)
+        //Set effect that shows at the target
+        //Set animation during cast for the caster
+    //Texts
+    ..setName("Multi-Shot")
+    ..setTooltipLearn("Multi-Shot")
+        //Shows it when passing the mouse through it when learning
+        ..setTooltipLearnExtended("Gives your archer 5% of percent chance to hit your target with multiple arrows.")
+        //Shows it when passing the mouse through it when learning(description)
+        ..setTooltipNormal(1, "Multi-Shot - Lvl 1")
+        ..setTooltipNormal(2, "Multi-Shot - Lvl 2")
+        //Shows it when passing the mouse through it
+        ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 5% of chance to deal 50 Health Points.")
+        ..setTooltipNormalExtended(2, "|cffff0000Damage Amount:|r 5% of chance to deal 125 Health Points.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        ..setLevelSkipRequirement(4)
+        ..setAreaofEffect(1, 0)
+        ..setAreaofEffect(2, 0)
+        ..setBuffs(1, commaList(gen_buff_id_mush.buffId))
+        ..setBuffs(2, commaList(gen_buff_id_mush.buffId))
+        ..setArtTarget("")
+
+@compiletime function gen_ability_archer_spirit_arrow()
+    new ChannelAbilityPreset(gen_ability_archer_spar, 1, true)
+    //Basic Info
+        ..setHotkeyLearn("R")
+        ..setHotkeyNormal("R")
+        ..setButtonPositionNormalX(3)
+        ..setButtonPositionNormalY(2)
+        ..setButtonPositionResearchX(3)
+        ..setButtonPositionResearchY(1)
+        ..setIconNormal(Icons.bTNImpalingBolt)
+        ..setIconResearch(Icons.bTNImpalingBolt)
+        //Set effect that shows at the target
+        ..presetTargetTypes(Targettype.POINT)
+        //Set animation during cast for the caster
+    //Texts
+    ..setName("Spirit Arrow")
+    ..setTooltipLearn("Spirit Arrow")
+    //Shows it when passing the mouse through it when learning
+    ..setTooltipLearnExtended("Concentrates your energy to your bow, shoting a magic arrow to a direction, hitting targets that it encounters.")
+    //Shows it when passing the mouse through it when learning(description)
+    ..setTooltipNormal(1, "Spirit Arrow - Lvl 1 |  |cffa7fcffCooldown:|r 180 seconds")
+    //Shows it when passing the mouse through it
+    ..setTooltipNormalExtended(1, "|cffff0000Damage Amount:|r 275 Health Points.")
+        //Shows it when passing the mouse through it (description)
+    //Levels
+        ..setRequiredLevel(1)
+        //Set how much levels need to upgrade the next level
+        ..setManaCost(1, 0)
+        ..setCooldown(1, 5)
+        ..setCastRange(1, 300)
+        ..setCastingTime(1, 0)            
+        ..setAnimationNames("none")
+
+init
+    //Target Shot
+    EventListener.onPointCast(gen_ability_archer_tash) (unit caster, vec2 target) ->
+        int cb_counter = 0
+        real height = 750
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(1.5, 1) (CallbackCounted cb) ->
+            caster.setAnimation("stand one")
+        doPeriodicallyCounted(0.01, 1) (CallbackCounted cb) ->
+            caster.unpause()
+        doPeriodicallyCounted(0.5, 1) (CallbackCounted cb) ->                
+            doPeriodicallyCounted(0.03, 5) (CallbackCounted cb) ->                
+                effect arrow = addEffect("Abilities\\Weapons\\Arrow\\ArrowMissile.mdl", vec3(target.x + GetRandomReal(-200, 200), target.y + GetRandomReal(-200, 200), height))..setPitch(90*DEGTORAD)               
+                effect arrow_center_1 = addEffect("Abilities\\Weapons\\Arrow\\ArrowMissile.mdl", vec3(target.x + GetRandomReal(-100, 100), target.y + GetRandomReal(-100, 100), height))..setPitch(90*DEGTORAD)                    
+                effect arrow_center_2 = addEffect("Abilities\\Weapons\\Arrow\\ArrowMissile.mdl", vec3(target.x + GetRandomReal(-100, 100), target.y + GetRandomReal(-100, 100), height))..setPitch(90*DEGTORAD)                    
+                effect aim_target = addEffect("Abilities\\Spells\\NightElf\\TrueshotAura\\TrueshotAura.mdl", vec3(target.x, target.y, 0))..setScale(1.25)
+                doPeriodicallyCounted(0.015, 40) (CallbackCounted cb) ->
+                    cb_counter += 1
+                    height -= 18.125
+                    arrow.setZ(height)
+                    arrow_center_1.setZ(height)  
+                    arrow_center_2.setZ(height)  
+                    if cb_counter >= 30
+                        if cb_counter == 40
+                            new SoundDefinition("Abilities\\Weapons\\Arrow\\ArrowImpact.flac", false).playOnPoint(arrow.getPos3())
+                        if GetUnitAbilityLevel(caster, gen_ability_archer_tash) == 1
+                            forUnitsInRange(arrow.getPos(), 40) (unit u) ->
+                                u.setHP(u.getHP() - 10)
+                            forUnitsInRange(arrow_center_1.getPos(), 40) (unit u) ->
+                                u.setHP(u.getHP() - 10)
+                            forUnitsInRange(arrow_center_2.getPos(), 40) (unit u) ->
+                                u.setHP(u.getHP() - 10)         
+                        else if GetUnitAbilityLevel(caster, gen_ability_archer_tash) == 2
+                            forUnitsInRange(arrow.getPos(), 40) (unit u) ->
+                                u.setHP(u.getHP() - 15)
+                            forUnitsInRange(arrow_center_1.getPos(), 40) (unit u) ->
+                                u.setHP(u.getHP() - 15)
+                            forUnitsInRange(arrow_center_2.getPos(), 40) (unit u) ->
+                                u.setHP(u.getHP() - 15)               
+                doPeriodicallyCounted(2, 1) (CallbackCounted cb) ->
+                    arrow.destr()
+                    arrow_center_1.destr()
+                    arrow_center_2.destr()                    
+                    aim_target.destr()
+                    arrow = null
+                    arrow_center_1 = null
+                    arrow_center_2 = null
+                    aim_target = null                    
+
+    //Enchant Bow
+    EventListener.onCast(gen_ability_archer_enbo) (unit caster) ->
+        effect bow_enchant = addEffect("Abilities\\Spells\\Human\\AerialShackles\\AerialShacklesTarget.mdl", vec3(caster.getFacingAngle().cos()*50, caster.getFacingAngle().sin()*50, 45))..setScale(1.25) 
+        new SoundDefinition("Sound\\Units\\NightElf\\NightElfDissipate1.flac", false).playOnPoint(caster.getPos3Fly())                
+        real caster_ms = caster.getMoveSpeed()
+        real caster_as_1 = caster.getAttackCooldown(0)
+        real caster_as_2 = caster.getAttackCooldown(1)
+        if GetUnitAbilityLevel(caster, gen_ability_archer_enbo) == 1
+            caster.setMoveSpeedPercChange(0.15)
+            caster.setAttackCooldownPercChange(0.1, 0)
+            caster.setAttackCooldownPercChange(0.1, 1)
+        else if GetUnitAbilityLevel(caster, gen_ability_archer_enbo) == 2
+            caster.setMoveSpeedPercChange(0.30)
+            caster.setAttackCooldownPercChange(0.25, 0)
+            caster.setAttackCooldownPercChange(0.25, 1)
+        doPeriodicallyCounted(3, 1) (CallbackCounted cb) ->
+            caster.setMoveSpeed(caster_ms)
+            caster.setAttackCooldown(caster_as_1, 0)
+            caster.setAttackCooldown(caster_as_2, 1)
+            bow_enchant.destr()
+        doPeriodicallyCounted(0.033, 90) (CallbackCounted cb) ->
+            bow_enchant.setX(caster.getX() + caster.getFacingAngle().cos()*50)
+            bow_enchant.setY(caster.getY() + caster.getFacingAngle().sin()*50)
+            bow_enchant.setZ(45)
+
+    //Multi-Shot
+    DamageEvent.addListener() -> 
+        if DamageEvent.getSource().hasAbility(gen_ability_archer_mush) == true            
+            unit target_unit = DamageEvent.getTarget()
+            unit caster_unit = DamageEvent.getSource()
+            int spell_value = GetRandomInt(1, 100)
+            if spell_value > 0 and spell_value <= 5
+                doPeriodicallyCounted(0.01, 5) (CallbackCounted cb) ->                
+                    effect arrow = addEffect("Abilities\\Weapons\\Arrow\\ArrowMissile.mdl", vec3(caster_unit.getPos().x + caster_unit.getFacingAngle().cos()*50 + GetRandomReal(-25, 25), caster_unit.getPos().y + caster_unit.getFacingAngle().sin()*50 + GetRandomReal(-25, 25), 50 + GetRandomReal(-25, 25)))..setYaw(caster_unit.getPos().angleTo(target_unit.getPos()))
+                    doPeriodically(0.033) (CallbackPeriodic cb) ->
+                        arrow.setX(arrow.getPos().x + arrow.getPos().angleTo(target_unit.getPos()).cos()*25)
+                        arrow.setY(arrow.getPos().y + arrow.getPos().angleTo(target_unit.getPos()).sin()*25)
+                        arrow.setYaw(arrow.getPos().angleTo(target_unit.getPos()))
+                        arrow.setZ(arrow.getPos3().z)
+                        if arrow.getPos().x <= target_unit.getX() + 25 and arrow.getLocalX() >= target_unit.getX() - 25 and arrow.getPos().y <= target_unit.getY() + 25 and arrow.getPos().y >= target_unit.getY() - 25
+                            new SoundDefinition("Abilities\\Weapons\\Arrow\\ArrowImpact.flac", false).playOnPoint(arrow.getPos3()) 
+                            if GetUnitAbilityLevel(caster_unit, gen_ability_archer_mush) == 1
+                                target_unit.setHP(target_unit.getHP() - 10)
+                            else if GetUnitAbilityLevel(caster_unit, gen_ability_archer_mush) == 2
+                                target_unit.setHP(target_unit.getHP() - 30)
+                            arrow.destr()
+                            destroy cb
+                            target_unit = null
+                            caster_unit = null
+                            arrow = null
+
+    //Spirit Arrow
+    EventListener.onPointCast(gen_ability_archer_spar) (unit caster, vec2 target) ->
+        int cb_counter = 0
+        real rotation_angle = 0
+        new SoundDefinition("Units\\Creeps\\SylvanusWindrunner\\SylvanasPissed2.flac", false).playOnPoint(caster.getPos3Fly())
+        caster.pause()
+        caster.setAnimation("attack one")
+        doPeriodicallyCounted(1.0, 1) (CallbackCounted cb) ->  
+            caster.setAnimation("stand one")    
+            caster.unpause()
+            effect arrow = addEffect("Abilities\\Weapons\\BallistaMissile\\BallistaMissile.mdl", vec3(caster.getPos().x + caster.getFacingAngle().cos()*50, caster.getPos().y + caster.getFacingAngle().sin()*50, 50))..setYaw(caster.getPos().angleTo(target))..setScale(2)
+            angle arrow_angle = arrow.getPos().angleTo(target)
+            new SoundDefinition("Abilities\\Weapons\\Arrow\\ArrowAttack1.flac", false).playOnPoint(caster.getPos3Fly()) 
+            new SoundDefinition("Abilities\\Spells\\Human\\Banish\\BanishCaster.flac", false).playOnPoint(caster.getPos3Fly())                        
+            doPeriodically(0.033) (CallbackPeriodic cb33) ->
+                cb_counter += 1
+                forUnitsInRange(vec2(arrow.getPos().x, arrow.getPos().y), 50) (unit units) ->    
+                    if units.getOwner().isAllyOf(caster.getOwner()) == false and units != caster
+                        units.setHP(units.getHP() - 275)
+                        destroy cb33
+                        new SoundDefinition("Abilities\\Spells\\Undead\\Possession\\PossessionMissileHit1.flac", false).playOnPoint(arrow.getPos3()) 
+                        new SoundDefinition("Abilities\\Weapons\\Arrow\\ArrowImpact.flac", false).playOnPoint(arrow.getPos3())    
+                        arrow.destr() 
+                        arrow = null               
+                arrow.setX(arrow.getPos().x + arrow_angle.cos()*25)
+                arrow.setY(arrow.getPos().y + arrow_angle.sin()*25)
+                arrow.setZ(arrow.getPos3().getTerrainZ() + 50)
+                arrow.setRoll(rotation_angle)
+                rotation_angle += 12
+                if cb_counter >= 90
+                    destroy cb33
+                    arrow.destr()
+                    arrow = null
+                    new SoundDefinition("Abilities\\Spells\\Undead\\Possession\\PossessionMissileHit1.flac", false).playOnPoint(arrow.getPos3()) 
+                    new SoundDefinition("Abilities\\Weapons\\Arrow\\ArrowImpact.flac", false).playOnPoint(arrow.getPos3())     
+            
+        

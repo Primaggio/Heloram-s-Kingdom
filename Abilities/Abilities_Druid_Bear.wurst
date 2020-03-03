@@ -35,8 +35,8 @@ public int gen_ability_druid_bear_hk = compiletime(ABIL_ID_GEN.next())
     //Texts
         ..setName("Heavy Kick")
         ..setTooltipLearn("Heavy Kick")
-        ..setAnimationNames("attack,slam")
-        ..setArtCaster("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl")
+        //..setAnimationNames("attack,slam")
+        //..setArtCaster("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl")
         //Shows it when passing the mouse through it when learning
         ..setTooltipLearnExtended("Stomp the ground with you claw, stunning enemies in range and dealing damage to them.")
         //Shows it when passing the mouse through it when learning(description)
@@ -90,14 +90,15 @@ public int gen_ability_druid_bear_hk = compiletime(ABIL_ID_GEN.next())
 
 init
     //Human Form
-    EventListener.onCast(gen_ability_druid_bear_d) (unit caster) ->        
+    EventListener.onCast(gen_ability_druid_bear_d) (unit caster) ->      
         new SoundDefinition("Units\\NightElf\\DruidOfTheClaw\\DruidOfTheClawMorphAlternate1.flac", false).playForPlayer(caster.getOwner())
-        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
+        effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), - 60))..setScale(2.5)
+        target_effect.setZ(target_effect.getPos3().getTerrainZ() - 60)
         players_unit_list_druid_bear.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle())
         players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_bear.get(caster.getOwner()).getXp(), false)
         players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_bear.get(caster.getOwner()).getHP())/(players_unit_list_druid_bear.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
-        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())      
-        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD)      
+        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())        
         players_unit_list_druid_human.get(caster.getOwner()).show()
         SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
         doAfter(3) ->
@@ -105,27 +106,37 @@ init
             
     //Heavy Kick
     EventListener.onCast(gen_ability_druid_bear_hk) (unit caster) ->
-        if GetUnitAbilityLevel(caster, gen_ability_druid_bear_hk) == 1
-            new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playForPlayer(caster.getOwner())
-            forUnitsInRange(caster.getPos(), 300) (unit units) ->
-                if units.isAllyOf(caster.getOwner()) == false or units != caster and units.getOwner() != players[8]
-                    units.setHP(units.getHP() - 45)
-                    units.pause()
-                    effect target_effect_stun = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl", units, "overhead")
-                    doAfter(2) ->
-                        target_effect_stun.destr()
-                        units.unpause()                        
+        int counter = 0
+        caster.pause()
+        caster.setAnimation("attack slam one")
+        doPeriodicallyCounted(0.6, 1) (CallbackCounted cb) ->
+            caster.unpause()
+            caster.setAnimation("stand 1")
+            effect target_effect = addEffect("Abilities\\Spells\\Other\\Stampede\\StampedeMissileDeath.mdl", vec3(caster.getX(), caster.getY(), 0))..setScale(1.5)
+            target_effect.setZ(target_effect.getPos3().getTerrainZ())
+            if GetUnitAbilityLevel(caster, gen_ability_druid_bear_hk) == 1                
+                new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playForPlayer(caster.getOwner())
+                forUnitsInRange(caster.getPos(), 300) (unit units) ->
+                    if units.isAllyOf(caster.getOwner()) == false and units != caster
+                        units.setHP(units.getHP() - 45)
+                        units.pause()
+                        effect target_effect_stun = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl", units, "overhead")
+                        doAfter(2) ->
+                            target_effect_stun.destr()
+                            units.unpause()                        
+                            target_effect.destr()
             
-        if GetUnitAbilityLevel(caster, gen_ability_druid_bear_hk) == 2
-            new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playForPlayer(caster.getOwner())
-            forUnitsInRange(caster.getPos(), 300) (unit units) ->
-                if units.isAllyOf(caster.getOwner()) == false or units != caster and units.getOwner() != players[8]
-                    units.setHP(units.getHP() - 100)
-                    units.pause()
-                    effect target_effect_stun = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl", units, "overhead")
-                    doAfter(3) ->
-                        target_effect_stun.destr()
-                        units.unpause()     
+            if GetUnitAbilityLevel(caster, gen_ability_druid_bear_hk) == 2
+                new SoundDefinition("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapCaster.wav", false).playForPlayer(caster.getOwner())
+                forUnitsInRange(caster.getPos(), 300) (unit units) ->
+                    if units.isAllyOf(caster.getOwner()) == false and units != caster
+                        units.setHP(units.getHP() - 100)
+                        units.pause()
+                        effect target_effect_stun = addEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl", units, "overhead")
+                        doAfter(3) ->
+                            target_effect_stun.destr()
+                            units.unpause() 
+                            target_effect.destr()    
                     
 
         

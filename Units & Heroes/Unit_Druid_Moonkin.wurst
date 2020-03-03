@@ -56,8 +56,6 @@ public int gen_unit_id_druid_moonkin = compiletime(HERO_ID_GEN.next())
         ..setStartingIntelligence(8)
             //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
             //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
-        ..setAttack1CooldownTime(2.4)
-            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
         ..setSpeedBase(260)
         ..setAnimationRunSpeed(260)
         ..setAnimationWalkSpeed(260)
@@ -67,10 +65,16 @@ public int gen_unit_id_druid_moonkin = compiletime(HERO_ID_GEN.next())
         //Damage
             //Minimal damage = Base Damage + Number of Dices
             //Maximum damage = Base Damage + Number of Dices * Sides per Dice
-        ..setAttack1DamageBase(2)
-        ..setAttack1DamageNumberofDice(1)
-        ..setAttack1DamageSidesperDie(2)
-//--------------------------------------------------------    
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses))
+            ..setAttack1CooldownTime(2.4)            
+            ..setAttack1DamageBase(2)
+            ..setAttack1DamageNumberofDice(1)
+            ..setAttack1DamageSidesperDie(2)
+            ..setAttack2CooldownTime(2.4)
+            ..setAttack2DamageBase(2)
+            ..setAttack2DamageNumberofDice(1)
+            ..setAttack2DamageSidesperDie(2)
+    //-------------------------------------------------------- 
     //Stats per Level
 //--------------------------------------------------------
         ..setStrengthPerLevel(3)

@@ -15,7 +15,7 @@ import public ClosureForGroups //for onPointCast group units
 import public SoundUtils //play sound for player or location
 import public Druid_Players_Hashmaps
 
-public let gen_buff_id_nl = compiletime(createDummyBuffObject("|cff00ff00Nature Spirit:|r", "This unit is beeing healed over second by Nature Spirit.", Icons.bTNRejuvenation))
+public let gen_buff_id_nl = compiletime(createDummyBuffObject("|cff00ff00Nature Spirit|r", "This unit is beeing healed over second by Nature Spirit.", Icons.bTNRejuvenation))
 public int gen_ability_druid_treant_d = compiletime(ABIL_ID_GEN.next())
 public int gen_ability_druid_treant_nl = compiletime(ABIL_ID_GEN.next())
 
@@ -96,10 +96,10 @@ init
         new SoundDefinition("buildings\\NightElf\\AncientOfWonder\\AncientofWonderYes2.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)
         players_unit_list_druid_treant.get(caster.getOwner()).hide()
+        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle())
         players_unit_list_druid_human.get(caster.getOwner()).setXp(players_unit_list_druid_treant.get(caster.getOwner()).getXp(), false)
         players_unit_list_druid_human.get(caster.getOwner()).setHP(((players_unit_list_druid_treant.get(caster.getOwner()).getHP())/(players_unit_list_druid_treant.get(caster.getOwner()).getLife()))*(players_unit_list_druid_human.get(caster.getOwner()).getLife()))
-        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())
-        players_unit_list_druid_human.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD)
+        players_unit_list_druid_human.get(caster.getOwner()).setPos(caster.getPos())        
         players_unit_list_druid_human.get(caster.getOwner()).show()
         SelectUnit(players_unit_list_druid_human.get(caster.getOwner()), true)
         doAfter(3) ->
@@ -108,9 +108,10 @@ init
     //Nature Leaf
     EventListener.onTargetCast(gen_ability_druid_treant_nl) (unit caster, unit target) ->    
         int cb_counter = 0
+        int cb_counter2 = 0
         effect caster_effect = addEffect("Abilities\\Spells\\Orc\\Disenchant\\DisenchantSpecialArt.mdl", target, "chest")..setScale(1.5)
         effect target_effect_1 = addEffect("Abilities\\Spells\\Orc\\Disenchant\\DisenchantSpecialArt.mdl", caster, "chest")..setScale(1.5)
-        doAfter(1) ->
+        doPeriodicallyCounted(0.1, 1) (cb25) ->
             caster_effect.destr()
             target_effect_1.destr()
         new SoundDefinition("Abilities\\Spells\\NightElf\\HippogryphTaming\\TamingTarget1.flac", false).playOnPoint(caster.getPos3Fly())   

@@ -193,6 +193,8 @@ init
             forUnitsInRange(target_loc, 300) (units) ->
                 if units.getOwner().isAllyOf(caster.getOwner())
                     effect target_effect_heal_hc = addEffect("Abilities\\Spells\\Human\\Heal\\HealTarget.mdl", units, "origin")
+                    doPeriodicallyCounted(1, 1) (CallbackCounted cb) ->
+                        target_effect_heal_hc.destr()                        
                     units.setHP(units.getHP() + 100)
             if spell_count_hc == 6 and GetUnitAbilityLevel(caster, gen_ability_pal_heal_hc) == 1
                 destroy cb1

@@ -1,4 +1,4 @@
-package Unit_Druid_Treant
+package Unit_Hunter
 
 import public ObjectIdGenerator
 import public UnitIds
@@ -7,22 +7,22 @@ import public UnitObjEditing
 import public ObjectIds
 import public AllAbilities
 
-public int gen_unit_id_druid_treant = compiletime(HERO_ID_GEN.next())
+public int gen_unit_id_shaman_elemental = compiletime(HERO_ID_GEN.next())
 
-@compiletime function gen_unit_druid_treant()    
-    new HeroDefinition(gen_unit_id_druid_treant, 'efon')
+@compiletime function gen_unit_id_shaman_healer()
+    new HeroDefinition(gen_unit_id_shaman_elemental, UnitIds.shaman)
     //Basic Information
 //--------------------------------------------------------
-        ..setName("Druid Trent Form")
+        ..setName("Shaman Elemental")
         ..setProperNames("Novice")
-        ..setUnitSoundSet("TreeofLife")
+        ..setScalingValue(1.0)
         ..hideHeroDeathMsg(true)
         ..setFoodProduced(1)
         ..setLevel(2)
         //XP needed to level up = Value of the previous level + level * 100
         ..setAttacksEnabled(3)
         ..setCanDropItemsOnDeath(false)
-        ..setCollisionSize(32)
+        ..setCollisionSize(24)
 //--------------------------------------------------------
     //Basic Stats
 //--------------------------------------------------------
@@ -47,18 +47,18 @@ public int gen_unit_id_druid_treant = compiletime(HERO_ID_GEN.next())
         ..setArmorType(ArmorType.Hero)
 //--------------------------------------------------------
         //Stats            
-        ..setStartingStrength(1)
+        ..setStartingStrength(2)
             //Hit Points: 1 point of Strength = 25 increase in hit points 
             //Hit Point Regeneration: 1 point of Strength = .05 hit points regenerated per a second    
-        ..setStartingAgility(1)
+        ..setStartingAgility(3)
             //1 point of Agility = 0.3 increase in armor             
             //Attack Rate: 1 point of Agility = 2% increase in Attack Rate
-        ..setStartingIntelligence(9)
+        ..setStartingIntelligence(6)
             //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
             //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
-        ..setSpeedBase(260)
-        ..setAnimationRunSpeed(260)
-        ..setAnimationWalkSpeed(260)
+        ..setSpeedBase(270)
+        ..setAnimationRunSpeed(270)
+        ..setAnimationWalkSpeed(270)
         ..setAttack1AttackType(AttackType.Hero)
         ..setAttack2AttackType(AttackType.Hero)
 //--------------------------------------------------------
@@ -66,22 +66,25 @@ public int gen_unit_id_druid_treant = compiletime(HERO_ID_GEN.next())
             //Minimal damage = Base Damage + Number of Dices
             //Maximum damage = Base Damage + Number of Dices * Sides per Dice
             //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses))
-            ..setAttack1CooldownTime(2.4)            
-            ..setAttack1DamageBase(1)
-            ..setAttack1DamageNumberofDice(1)
-            ..setAttack1DamageSidesperDie(2)
-            ..setAttack2CooldownTime(2.4)
-            ..setAttack2DamageBase(1)
-            ..setAttack2DamageNumberofDice(1)
-            ..setAttack2DamageSidesperDie(2)
-    //--------------------------------------------------------  
+            ..setAttack1CooldownTime(2.5)            
+            ..setAttack1DamageBase(4)
+            ..setAttack1DamageNumberofDice(4)
+            ..setAttack1DamageSidesperDie(4)
+            ..setAttack2CooldownTime(2.5)
+            ..setAttack2DamageBase(4)
+            ..setAttack2DamageNumberofDice(4)
+            ..setAttack2DamageSidesperDie(4)
+    //--------------------------------------------------------
     //Stats per Level
 //--------------------------------------------------------
-        ..setStrengthPerLevel(2)
-        ..setAgilityPerLevel(1)
-        ..setIntelligencePerLevel(10)    
+        ..setStrengthPerLevel(4)
+        ..setAgilityPerLevel(3)
+        ..setIntelligencePerLevel(6)
         ..setPrimaryAttribute("INT")
 //--------------------------------------------------------
     //Spells & Abilities
-        ..setHeroAbilities(commaList(gen_ability_druid_treant_d, gen_ability_druid_treant_nl))
+        ..setHeroAbilities(commaList(gen_ability_shaman_elem_spto, gen_ability_shaman_elem_trto, gen_ability_shaman_elem_liwa, gen_ability_shaman_elem_thst))
         ..setNormalAbilities(commaList('AInv'))
+        //..setArtTarget("war3mapImported\\Aura.mdx")
+
+init

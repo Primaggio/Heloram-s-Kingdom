@@ -179,10 +179,10 @@ init
         new SoundDefinition("Units\\Orc\\Spiritwolf\\SpiritWolfWhat1.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
         players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_wolf.get(caster.getOwner()).setFacing(caster.getFacingAngle()) //Set form facing getting the actual form facing
         players_unit_list_druid_wolf.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
-        players_unit_list_druid_wolf.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_wolf.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_wolf.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getMaxHP()))*(players_unit_list_druid_wolf.get(caster.getOwner()).getMaxHP())) //Set form HP getting the actual form HP %
         players_unit_list_druid_wolf.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
-        players_unit_list_druid_wolf.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
         players_unit_list_druid_wolf.get(caster.getOwner()).show() //Show the form
         SelectUnit(players_unit_list_druid_wolf.get(caster.getOwner()), true) //Select the form unit
         doAfter(3) ->
@@ -193,24 +193,24 @@ init
         new SoundDefinition("Units\\NightElf\\DruidOfTheClaw\\DruidOfTheClawMorph1.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
         players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_bear.get(caster.getOwner()).setFacing(caster.getFacingAngle()) //Set form facing getting the actual form facing
         players_unit_list_druid_bear.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
-        players_unit_list_druid_bear.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_bear.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
-        players_unit_list_druid_bear.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
-        players_unit_list_druid_bear.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
+        players_unit_list_druid_bear.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getMaxHP()))*(players_unit_list_druid_bear.get(caster.getOwner()).getMaxHP())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_bear.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos        
         players_unit_list_druid_bear.get(caster.getOwner()).show() //Show the form
         SelectUnit(players_unit_list_druid_bear.get(caster.getOwner()), true) //Select the form unit
         doAfter(3) ->
             target_effect.destr() 
-        
+
     //Moonkin Form
     EventListener.onCast(gen_ability_druid_moonkin) (unit caster) ->
         new SoundDefinition("Units\\Creeps\\Owlbear\\OwlBearYes1.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
         players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setFacing(caster.getFacingAngle()) //Set form facing getting the actual form facing
         players_unit_list_druid_moonkin.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
-        players_unit_list_druid_moonkin.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_moonkin.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
-        players_unit_list_druid_moonkin.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
-        players_unit_list_druid_moonkin.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getMaxHP()))*(players_unit_list_druid_moonkin.get(caster.getOwner()).getMaxHP())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_moonkin.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos        
         players_unit_list_druid_moonkin.get(caster.getOwner()).show() //Show the form
         SelectUnit(players_unit_list_druid_moonkin.get(caster.getOwner()), true) //Select the form unit
         doAfter(3) ->
@@ -221,10 +221,10 @@ init
         new SoundDefinition("buildings\\NightElf\\AncientOfWonder\\AncientofWonderYes3.flac", false).playForPlayer(caster.getOwner())
         effect target_effect = addEffect("Abilities\\Spells\\Human\\Polymorph\\PolyMorphDoneGround.mdl", vec3(caster.getX(), caster.getY(), -60))..setScale(2.5)      
         players_unit_list_druid_human.get(caster.getOwner()).hide() //Hide actual form
+        players_unit_list_druid_treant.get(caster.getOwner()).setFacing(caster.getFacingAngle()) //Set form facing getting the actual form facing
         players_unit_list_druid_treant.get(caster.getOwner()).setXp(players_unit_list_druid_human.get(caster.getOwner()).getXp(), false) //Set form XP getting the actual form XP
-        players_unit_list_druid_treant.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getLife()))*(players_unit_list_druid_treant.get(caster.getOwner()).getLife())) //Set form HP getting the actual form HP %
+        players_unit_list_druid_treant.get(caster.getOwner()).setHP(((players_unit_list_druid_human.get(caster.getOwner()).getHP())/(players_unit_list_druid_human.get(caster.getOwner()).getMaxHP()))*(players_unit_list_druid_treant.get(caster.getOwner()).getMaxHP())) //Set form HP getting the actual form HP %
         players_unit_list_druid_treant.get(caster.getOwner()).setPos(caster.getPos()) //Set form pos getting the actual form pos
-        players_unit_list_druid_treant.get(caster.getOwner()).setFacing(caster.getFacingAngle()*DEGTORAD) //Set form facing getting the actual form facing
         players_unit_list_druid_treant.get(caster.getOwner()).show() //Show the form
         SelectUnit(players_unit_list_druid_treant.get(caster.getOwner()), true) //Select the form unit
         doAfter(3) ->

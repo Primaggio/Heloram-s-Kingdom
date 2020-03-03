@@ -22,6 +22,7 @@ public int gen_unit_id_druid_bear = compiletime(HERO_ID_GEN.next())
         ..setAttacksEnabled(3)
         ..setCanDropItemsOnDeath(false)
         ..setCollisionSize(32)
+        ..setMovementType(MovementType.Hover)
 //--------------------------------------------------------
     //Basic Stats
 //--------------------------------------------------------
@@ -55,8 +56,6 @@ public int gen_unit_id_druid_bear = compiletime(HERO_ID_GEN.next())
         ..setStartingIntelligence(1)
             //Mana Capacity: 1 point of Intelligence = 15 increase in Mana. Total Mana Capacity is calculated from the formula 15 * Hero's INT. 
             //Mana Regeneration: 1 point of Intelligence = .05 points of Mana regenerated per second.
-        ..setAttack1CooldownTime(2.4)
-            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses)) 
         ..setSpeedBase(255)
         ..setAnimationRunSpeed(255)
         ..setAnimationWalkSpeed(255)
@@ -66,10 +65,16 @@ public int gen_unit_id_druid_bear = compiletime(HERO_ID_GEN.next())
         //Damage
             //Minimal damage = Base Damage + Number of Dices
             //Maximum damage = Base Damage + Number of Dices * Sides per Dice
-        ..setAttack1DamageBase(8)
-        ..setAttack1DamageNumberofDice(8)
-        ..setAttack1DamageSidesperDie(2)
-//--------------------------------------------------------    
+            //Final Cooldown = (Base Cooldown) / (1 + (*0.02* * AGI) + (Item Bonuses) + (Ability Bonuses))
+            ..setAttack1CooldownTime(2.4)            
+            ..setAttack1DamageBase(8)
+            ..setAttack1DamageNumberofDice(8)
+            ..setAttack1DamageSidesperDie(2)
+            ..setAttack2CooldownTime(2.4)
+            ..setAttack2DamageBase(8)
+            ..setAttack2DamageNumberofDice(8)
+            ..setAttack2DamageSidesperDie(2)
+    //-------------------------------------------------------- 
     //Stats per Level
 //--------------------------------------------------------
         ..setStrengthPerLevel(9)

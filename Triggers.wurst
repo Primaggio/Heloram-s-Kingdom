@@ -3,11 +3,20 @@ package Triggers
 import public Units_neutral
 import public Quests
 import public All_Creeps_Bosses
-
-
+import public AllAbilities
 
 int player_check_triggers = 0
 real vecx = -110
+
+int trig_value = 0
+unit trig_test_unit
+int quest3_artifact_int = 0
+
+function test_name_trigger()
+    print(GetTriggerUnit().getName())
+    print(GetOrderTargetUnit().getName())
+
+//Enters & Exits
 
 region regionentercastle = CreateRegion()..addRect(gg_rct_regionentercastle)
 region regionexitcastle = CreateRegion()..addRect(gg_rct_regionexitcastle)
@@ -34,14 +43,58 @@ region regionaltarwarlock = CreateRegion()..addRect(gg_rct_regionaltarwarlock)
 
 region regionaltararcher = CreateRegion()..addRect(gg_rct_regionaltararcher)
 
-int trig_value = 0
-unit trig_test_unit
+region regionenterhiddenwoods = CreateRegion()..addRect(gg_rct_regionenterhiddenwoods)
 
-function test_name_trigger()
-    print(GetTriggerUnit().getName())
-    print(GetOrderTargetUnit().getName())
+//Dungeons & Raids
 
-//Enters & Exits
+    //Hidden Woods
+let hidden_woods_boss_entrance = createDestructable('Dofw', vec2(-4868,-10362), angle(270*DEGTORAD), 1, 1)..show(false)
+
+    //Quest 3 - Q Spell Regions
+region regionhiddenwoodsquest2 = CreateRegion()..addRect(gg_rct_regionhiddenwoodsquest2)
+region artifact1 = CreateRegion()..addRect(gg_rct_artifact1)
+region artifact2 = CreateRegion()..addRect(gg_rct_artifact2)
+region artifact3 = CreateRegion()..addRect(gg_rct_artifact3)
+region artifact4 = CreateRegion()..addRect(gg_rct_artifact4)
+region artifact5 = CreateRegion()..addRect(gg_rct_artifact5)
+region artifact6 = CreateRegion()..addRect(gg_rct_artifact6)
+
+function quest3_q_spell()
+    if players_unit_list.get(GetTriggerPlayer()).hasItemById(gen_item_quest2_artifact) == false and quest3_player_list.get(GetTriggerPlayer()) == 3
+        if quest3_artifact_int == 1 and players_unit_list.get(GetTriggerPlayer()).isInRegion(artifact1)
+            players_unit_list.get(GetTriggerPlayer()).addItemById(gen_item_quest2_artifact)
+            quest_sound_hint.playForPlayer(GetTriggerPlayer())
+        else if quest3_artifact_int == 2 and players_unit_list.get(GetTriggerPlayer()).isInRegion(artifact2)
+            players_unit_list.get(GetTriggerPlayer()).addItemById(gen_item_quest2_artifact)
+        else if quest3_artifact_int == 3 and players_unit_list.get(GetTriggerPlayer()).isInRegion(artifact3)
+            players_unit_list.get(GetTriggerPlayer()).addItemById(gen_item_quest2_artifact)
+        else if quest3_artifact_int == 4 and players_unit_list.get(GetTriggerPlayer()).isInRegion(artifact4)
+            players_unit_list.get(GetTriggerPlayer()).addItemById(gen_item_quest2_artifact)
+        else if quest3_artifact_int == 5 and players_unit_list.get(GetTriggerPlayer()).isInRegion(artifact5)
+            players_unit_list.get(GetTriggerPlayer()).addItemById(gen_item_quest2_artifact)
+        else if quest3_artifact_int == 6 and players_unit_list.get(GetTriggerPlayer()).isInRegion(artifact6)
+            players_unit_list.get(GetTriggerPlayer()).addItemById(gen_item_quest2_artifact)
+
+function exit()
+    if players_inside_list.get(GetTriggerPlayer()) == 1        
+        players_inside_list.put(GetTriggerPlayer(), 0)
+        if players_respawn_list.get(GetTriggerPlayer()) == 0
+            players_unit_list.get(GetTriggerPlayer()).setPos(-6208,901)
+
+function enter()
+    
+    //Hidden Woods
+    if players_unit_list.get(GetTriggerPlayer()).isInRegion(regionenterhiddenwoods)
+        quest3_artifact_int = GetRandomInt(1, 6)
+        for i = 0 to 7
+            if players_unit_list.get(players[i]).isInRegion(regionenterhiddenwoods)
+            players_unit_list.get(players[i]).setPos(0, -8000)
+            players[i].setCameraPosition(players_unit_list.get(players[i]).getPos())
+            players_inside_list.put(players[i],1)
+            if quest4_player_list.get(players[i]) != 2
+                hidden_woods_boss_entrance.show(true)
+                
+            
 
     //Castle
 function enter_castle()
@@ -68,7 +121,6 @@ function exit_blacksmith()
     GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
 
     //Paladins
-
 function altar_paladin()
     if GetTriggerUnit().getName() == "Paladin Healer" or GetTriggerUnit().getName() == "Paladin Tank" or GetTriggerUnit().getName() == "Paladin Bruiser" or GetTriggerUnit().getName() == "Villager"
         if quest2_player_list.get(players[0]) == 1
@@ -84,7 +136,6 @@ function exit_light()
     GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
 
     //Druid & Shaman
-
 function altar_druid()
     if GetTriggerUnit().getName() == "Druid" or GetTriggerUnit().getName() == "Villager"
         if quest2_player_list.get(players[0]) == 1
@@ -109,7 +160,6 @@ function exit_nature()
     GetTriggerUnit().getOwner().setCameraPosition(GetTriggerUnit().getPos())
 
     //Mages & Warlock
-
 function altar_mage()
     if GetTriggerUnit().getName() == "Mage Fire" or GetTriggerUnit().getName() == "Mage Frost" or GetTriggerUnit().getName() == "Villager"
         if quest2_player_list.get(players[0]) == 1
@@ -127,7 +177,6 @@ function altar_warlock()
             players[0].print("|cffffff00Quest Added:|r Go back to your Class Master and get your gear.")
 
     //Archer & Hunter
-
 function altar_archer()
     if GetTriggerUnit().getName() == "Archer" or GetTriggerUnit().getName() == "Hunter" or GetTriggerUnit().getName() == "Villager"
         if quest2_player_list.get(players[0]) == 1
@@ -157,18 +206,47 @@ function test_trigg()
                     destroy cb5
                     trig_value = 0
 
+
+
+function quest2_tip()
+    if quest3_player_list.get(GetTriggerPlayer()) == 1
+        quest3_player_list.put(GetTriggerPlayer(),3)
+        GetTriggerPlayer().print(" ")
+        GetTriggerPlayer().print("|cffffff00Quest Added:|r Find the Artifact.")
+
 init
-    print("Type |cffff0000-start|r to start the game.")
-    cm4.issueTargetOrderById(851983, cm7)
-    cm7.issueTargetOrderById(851983, cm4)
-
-    let start_trigger = CreateTrigger()..addAction(function start_game)
+    //Loaded Game
     for i = 0 to 7
-        start_trigger.registerPlayerChatEvent(players[i], "-start", true)
+        players[PLAYER_NEUTRAL_PASSIVE].setPlayerAlliance(players[i], ALLIANCE_SHARED_VISION, true)
+    print("Type  |cffff0000-start|r to start the game.")
+    print("Or type  |cffff0000-new|r to start with a new villager without watching the introduction.")
 
+    //Start Game
+    let start_game = CreateTrigger()..addAction(function start_game)
+    for i = 0 to 7
+        start_game.registerPlayerChatEvent(players[i], "-start", true)
+
+    //New Villager
+    let new_game = CreateTrigger()..addAction(function new_game)
+    for i = 0 to 7
+        new_game.registerPlayerChatEvent(players[i], "-new", true)
+
+    //Entering Dungeons & Raids
+    let enter = CreateTrigger()..addAction(function enter)
+    for i = 0 to 7
+        enter.registerPlayerChatEvent(players[i], "-enter", true)
+
+    //Exiting Dungeons & Raids
+    let exit = CreateTrigger()..addAction(function exit)
+    for i = 0 to 7
+        exit.registerPlayerChatEvent(players[i], "-exit", true)
+
+    //Trigger when the hero targets someone
     let hero_trigger = CreateTrigger()..addAction(function quest_start)
     for i = 0 to 7
         hero_trigger.registerPlayerUnitEvent(players[i], EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null)
+
+//Dungeons & Raids
 
 //Enters & Exits
 
@@ -255,8 +333,24 @@ init
     ..registerAnyUnitEvent(EVENT_PLAYER_UNIT_DEATH)
     ..addAction(function respawn_creep)
 
-    
+    CreateTrigger()
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DEATH, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_ISSUED_ORDER, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_ISSUED_POINT_ORDER, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_ISSUED_UNIT_ORDER, null)
+    ..registerPlayerUnitEvent(players[PLAYER_NEUTRAL_AGGRESSIVE], EVENT_PLAYER_UNIT_DAMAGED, null)
+    ..addAction(function creep_get_location)
 
+//Quest 2 - Q Spell
+
+    let quest_2 = CreateTrigger()..addAction(function quest3_q_spell)
+    for i = 0 to 7
+        quest_2.registerPlayerChatEvent(players[i], "-find", true)
+
+    CreateTrigger()
+    ..registerEnterRegion(regionhiddenwoodsquest2, null)
+    ..addAction(function quest2_tip)
 
     //CreateTrigger()
     //..registerPlayerUnitEvent(players[0], EVENT_PLAYER_UNIT_ISSUED_TARGET_ORDER, null)

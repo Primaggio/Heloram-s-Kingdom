@@ -9,3 +9,9 @@ import public Abilities_Druid_Wolf
 import public Abilities_Druid_Bear
 import public Abilities_Druid_Moonkin
 import public Abilities_Druid_Treant
+import public Abilities_Mage_Fire
+import public Abilities_Shaman_Healer
+import public Abilities_Shaman_Elemental
+import public Abilities_Archer
+import public Abilities_Warlock
+
